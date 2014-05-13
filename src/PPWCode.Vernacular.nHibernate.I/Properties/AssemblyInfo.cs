@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-[assembly: AssemblyTitle("PPWCode.Vernacular.nHibernate")]
+[assembly: AssemblyTitle("PPWCode.Vernacular.nHibernate.I")]
 [assembly: AssemblyDescription("Main code of the PPWCode Vernacular nHibernate Persistence library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: ComVisible(false)]
