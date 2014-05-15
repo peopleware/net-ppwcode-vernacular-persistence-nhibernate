@@ -63,7 +63,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             state[index] = value;
         }
 
-        private bool SetAuditInfo(object entity, object[] currentState, string[] propertyNames)
+        private bool SetAuditInfo(object entity, object[] currentState, string[] propertyNames, bool onSave)
         {
             IPersistentObject<T> persistentObject = entity as IPersistentObject<T>;
             if (persistentObject == null)
@@ -86,7 +86,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             }
             Type entityType = entity.GetType();
 
-            if (insertAuditable != null && persistentObject.IsTransient)
+            if (insertAuditable != null && (onSave || persistentObject.IsTransient))
             {
                 IInsertAuditableProperties insertAuditableProperties = entity as IInsertAuditableProperties;
                 string createdAtPropertyName =
@@ -142,7 +142,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            return SetAuditInfo(entity, currentState, propertyNames);
+            return SetAuditInfo(entity, currentState, propertyNames, false);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         /// </returns>
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
-            return SetAuditInfo(entity, state, propertyNames);
+            return SetAuditInfo(entity, state, propertyNames, true);
         }
 
         private struct Property : IEquatable<Property>
