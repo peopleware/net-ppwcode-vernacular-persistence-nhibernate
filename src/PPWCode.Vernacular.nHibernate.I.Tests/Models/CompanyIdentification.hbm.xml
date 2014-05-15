@@ -5,7 +5,7 @@
     assembly="PPWCode.Vernacular.nHibernate.I.Tests"
     namespace="PPWCode.Vernacular.nHibernate.I.Tests.Models">
 
-    <class name="Company" dynamic-update="true">
+    <class name="CompanyIdentification" dynamic-update="true" >
         <id name="Id">
             <generator class="hilo" />
         </id>
@@ -16,11 +16,7 @@
         <property name="LastModifiedAt" />
         <property name="LastModifiedBy" length="128" />
 
-        <property name="Name" length="128" not-null="true" />
-        <bag name="Identifications" cascade="all">
-            <key column="IdentificationId" />
-            <one-to-many class="CompanyIdentification" />
-        </bag>
+        <property name="Identification" length="128" not-null="true" />
     </class>
 
 </hibernate-mapping>

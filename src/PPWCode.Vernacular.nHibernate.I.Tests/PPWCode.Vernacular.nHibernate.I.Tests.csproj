@@ -108,6 +108,7 @@
     <Compile Include="Integration Tests\NHConfigurator.cs" />
     <Compile Include="Integration Tests\NHibernateFixture.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\CompanyIdentification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +122,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Models\CompanyIdentification.hbm.xml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

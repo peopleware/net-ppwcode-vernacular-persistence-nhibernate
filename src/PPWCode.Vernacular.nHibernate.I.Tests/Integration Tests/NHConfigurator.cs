@@ -25,6 +25,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Tests
                         db.Driver<SQLite20Driver>();
                         db.ConnectionProvider<TestConnectionProvider>();
                         db.ConnectionString = ConnectionString;
+                        db.LogFormattedSql = true;
                     })
                 .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
 
