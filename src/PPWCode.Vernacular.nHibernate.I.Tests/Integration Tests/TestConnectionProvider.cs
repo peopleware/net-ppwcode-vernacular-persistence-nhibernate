@@ -5,29 +5,30 @@ using NHibernate.Connection;
 
 namespace PPWCode.Vernacular.nHibernate.I.Tests
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class TestConnectionProvider : DriverConnectionProvider
     {
         [ThreadStatic]
-        private static IDbConnection Connection;
+        private static IDbConnection s_Connection;
 
         public static void CloseDatabase()
         {
-            if (Connection != null)
+            if (s_Connection != null)
             {
-                Connection.Dispose();
+                s_Connection.Dispose();
             }
-            Connection = null;
+            s_Connection = null;
         }
 
         public override IDbConnection GetConnection()
         {
-            if (Connection == null)
+            if (s_Connection == null)
             {
-                Connection = Driver.CreateConnection();
-                Connection.ConnectionString = ConnectionString;
-                Connection.Open();
+                s_Connection = Driver.CreateConnection();
+                s_Connection.ConnectionString = ConnectionString;
+                s_Connection.Open();
             }
-            return Connection;
+            return s_Connection;
         }
 
         public override void CloseConnection(IDbConnection conn)

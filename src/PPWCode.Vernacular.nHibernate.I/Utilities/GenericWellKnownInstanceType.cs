@@ -6,7 +6,7 @@ using System.Diagnostics.Contracts;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.nHibernate.I.Utilities
 {
     [Serializable]
     public abstract class GenericWellKnownInstanceType<T, TId> : IUserType

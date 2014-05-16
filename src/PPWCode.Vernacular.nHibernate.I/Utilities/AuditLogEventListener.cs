@@ -15,7 +15,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.nHibernate.I.Utilities
 {
     public abstract class AuditLogEventListener<T, U> :
         IRegisterEventListener,

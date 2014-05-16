@@ -6,7 +6,7 @@ using NHibernate.Event;
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.nHibernate.I.Utilities
 {
     public class CivilizedEventListener :
         IRegisterEventListener,

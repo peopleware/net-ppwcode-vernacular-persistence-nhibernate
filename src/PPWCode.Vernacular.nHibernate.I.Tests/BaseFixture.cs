@@ -22,7 +22,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Tests
             OnTeardown();
         }
 
-        protected static ILog log =
+        protected static ILog Log =
             new Func<ILog>(
                 () =>
                 {

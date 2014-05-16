@@ -5,7 +5,7 @@ using NHibernate;
 
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.nHibernate.I.Utilities
 {
     public sealed class NHibernateSessionFactory
     {

@@ -155,19 +155,21 @@
     <Compile Include="..\Solution Items\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Implementations\AuditInterceptor.cs" />
-    <Compile Include="Implementations\AuditLogEventListener.cs" />
-    <Compile Include="Implementations\CivilizedEventListener.cs" />
-    <Compile Include="Implementations\GenericWellKnownInstanceType.cs" />
+    <Compile Include="Utilities\AuditInterceptor.cs" />
+    <Compile Include="Utilities\AuditLogEventListener.cs" />
+    <Compile Include="Utilities\CivilizedEventListener.cs" />
+    <Compile Include="Utilities\DirtyChecking.cs" />
+    <Compile Include="Utilities\DirtyCheckingInterceptor.cs" />
+    <Compile Include="Utilities\GenericWellKnownInstanceType.cs" />
     <Compile Include="Implementations\NhConfiguration.cs" />
     <Compile Include="Implementations\NhConfigurationBase.cs" />
     <Compile Include="Implementations\NhFasterConfiguration.cs" />
-    <Compile Include="Implementations\NHibernateSessionFactory.cs" />
+    <Compile Include="Utilities\NHibernateSessionFactory.cs" />
     <Compile Include="Implementations\NhProperties.cs" />
     <Compile Include="Implementations\Repository.cs" />
     <Compile Include="Interfaces\IIdentityProvider.cs" />
     <Compile Include="Interfaces\IMappingAssemblies.cs" />
-    <Compile Include="Interfaces\INhConfig.cs" />
+    <Compile Include="Interfaces\INhConfiguration.cs" />
     <Compile Include="Interfaces\INhProperties.cs" />
     <Compile Include="Interfaces\IRegisterEventListener.cs" />
     <Compile Include="Interfaces\IRepository.cs" />

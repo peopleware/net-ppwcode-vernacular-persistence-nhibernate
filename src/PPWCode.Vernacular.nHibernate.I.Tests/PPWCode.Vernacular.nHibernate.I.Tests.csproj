@@ -101,9 +101,8 @@
     <Compile Include="BaseFixture.cs" />
     <Compile Include="CompanyRepository.cs" />
     <Compile Include="Integration Tests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
-    <Compile Include="Integration Tests\Audit\IdentityProvider.cs" />
-    <Compile Include="Integration Tests\Audit\TimeProvider.cs" />
     <Compile Include="Integration Tests\CompanyRepositoryTests.cs" />
+    <Compile Include="Integration Tests\DirtyCheckingExampleTest.cs" />
     <Compile Include="Integration Tests\TestConnectionProvider.cs" />
     <Compile Include="Integration Tests\NHConfigurator.cs" />
     <Compile Include="Integration Tests\NHibernateFixture.cs" />
