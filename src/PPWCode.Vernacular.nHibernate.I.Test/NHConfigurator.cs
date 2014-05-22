@@ -5,7 +5,7 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public static class NhConfigurator
     {

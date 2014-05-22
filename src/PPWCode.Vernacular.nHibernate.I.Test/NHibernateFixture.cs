@@ -7,7 +7,7 @@ using NHibernate.Cfg;
 using NHibernate.Context;
 using NHibernate.Tool.hbm2ddl;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
     {

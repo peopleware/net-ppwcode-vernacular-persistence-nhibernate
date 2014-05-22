@@ -22,6 +22,27 @@ setlocal
 			nuget push %project%.%3.nupkg -source %2
 		)
 	)
+	
+	set project=PPWCode.Vernacular.nHibernate.I.Test
+	set package_project=
+	if [%1]==[Debug] set package_project=1
+	if [%1]==[Release] set package_project=1
+	if defined package_project (
+		echo Packiging %project% ...
+		nuget restore -NoCache
+		nuget pack .\PPWCode.Vernacular.nHibernate.I.Test\%project%.csproj -Build -Properties "Configuration=%1"
+	)
+	
+	set publish_package=
+	if not [%2]==[] set publish_package=1
+	if defined publish_package (
+		if not exist %project%.%3.nupkg echo nuget package %project%.%3.nupkg not found
+		if exist %project%.%3.nupkg (
+			echo Publish %project%.%3.nupkg to source %2
+			nuget push %project%.%3.nupkg -source %2
+		)
+	)
+	
 endlocal
 goto eob
 

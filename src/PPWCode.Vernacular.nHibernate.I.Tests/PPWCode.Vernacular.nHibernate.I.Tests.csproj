@@ -98,14 +98,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseFixture.cs" />
     <Compile Include="CompanyRepository.cs" />
     <Compile Include="Integration Tests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
     <Compile Include="Integration Tests\CompanyRepositoryTests.cs" />
     <Compile Include="Integration Tests\DirtyCheckingExampleTest.cs" />
-    <Compile Include="Integration Tests\TestConnectionProvider.cs" />
-    <Compile Include="Integration Tests\NHConfigurator.cs" />
-    <Compile Include="Integration Tests\NHibernateFixture.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyIdentification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +111,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PPWCode.Vernacular.NHibernate.I.Test\PPWCode.Vernacular.NHibernate.I.Test.csproj">
+      <Project>{bd66b970-0474-468d-a95b-c42ddae75717}</Project>
+      <Name>PPWCode.Vernacular.NHibernate.I.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PPWCode.Vernacular.nHibernate.I\PPWCode.Vernacular.nHibernate.I.csproj">
       <Project>{83256ceb-ba1a-4614-9aca-653049ffbdac}</Project>
       <Name>PPWCode.Vernacular.nHibernate.I</Name>

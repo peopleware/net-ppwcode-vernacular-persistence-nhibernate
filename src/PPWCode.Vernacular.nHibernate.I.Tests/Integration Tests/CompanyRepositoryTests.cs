@@ -1,4 +1,5 @@
 ﻿using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.nHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.nHibernate.I.Tests

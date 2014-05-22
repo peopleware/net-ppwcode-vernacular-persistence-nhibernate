@@ -5,7 +5,7 @@ using log4net.Config;
 
 using NUnit.Framework;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     [TestFixture]
     public abstract class BaseFixture

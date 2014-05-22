@@ -1,9 +1,7 @@
-﻿using NHibernate;
+﻿using NUnit.Framework;
 
-using NUnit.Framework;
-
+using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.nHibernate.I.Tests.Models;
-using PPWCode.Vernacular.nHibernate.I.Utilities;
 
 namespace PPWCode.Vernacular.nHibernate.I.Tests
 {

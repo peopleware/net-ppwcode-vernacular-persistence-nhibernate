@@ -8,7 +8,7 @@ using NHibernate.Cfg;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public class DirtyChecking
     {

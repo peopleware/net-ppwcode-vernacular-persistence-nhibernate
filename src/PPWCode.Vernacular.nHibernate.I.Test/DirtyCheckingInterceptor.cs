@@ -8,7 +8,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public class DirtyCheckingInterceptor : EmptyInterceptor
     {
