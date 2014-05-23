@@ -165,6 +165,7 @@
     <Compile Include="Implementations\NhConfiguration.cs" />
     <Compile Include="Implementations\NhConfigurationBase.cs" />
     <Compile Include="Implementations\NhFasterConfiguration.cs" />
+    <Compile Include="Interfaces\INHibernateSessionFactory.cs" />
     <Compile Include="Utilities\NHibernateSessionFactory.cs" />
     <Compile Include="Implementations\NhProperties.cs" />
     <Compile Include="Implementations\Repository.cs" />

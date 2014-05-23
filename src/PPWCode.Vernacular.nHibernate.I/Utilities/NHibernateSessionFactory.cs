@@ -2,12 +2,13 @@
 using System.Diagnostics.Contracts;
 
 using NHibernate;
+using NHibernate.Cfg;
 
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.nHibernate.I.Utilities
 {
-    public sealed class NHibernateSessionFactory
+    public class NHibernateSessionFactory : INHibernateSessionFactory
     {
         private readonly object m_Locker = new object();
         private readonly INhConfiguration m_NhConfiguration;
@@ -24,7 +25,12 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             m_NhConfiguration = nhConfiguration;
         }
 
-        public ISessionFactory SessionFactory
+        protected Configuration Configuration
+        {
+            get { return m_NhConfiguration.GetConfiguration(); }
+        }
+
+        public virtual ISessionFactory SessionFactory
         {
             get
             {
@@ -34,14 +40,17 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                     {
                         if (m_SessionFactory == null)
                         {
-                            m_SessionFactory = m_NhConfiguration
-                                .GetConfiguration()
-                                .BuildSessionFactory();
+                            m_SessionFactory = Configuration.BuildSessionFactory();
+                            OnAfterCreateSessionFactory(m_SessionFactory);
                         }
                     }
                 }
                 return m_SessionFactory;
             }
+        }
+
+        protected virtual void OnAfterCreateSessionFactory(ISessionFactory sessionFactory)
+        {
         }
     }
 }
