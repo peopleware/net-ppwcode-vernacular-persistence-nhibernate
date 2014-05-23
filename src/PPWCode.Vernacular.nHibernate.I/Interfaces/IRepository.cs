@@ -10,7 +10,7 @@ using PPWCode.Vernacular.Persistence.II;
 namespace PPWCode.Vernacular.nHibernate.I.Interfaces
 {
     [ContractClass(typeof(IRepositoryContract<,>))]
-    public interface IRepository<T, TId> : IReadonlyRepository<T, TId>
+    public interface IRepository<T, in TId> : IReadonlyRepository<T, TId>
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {

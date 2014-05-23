@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 using Castle.Core.Logging;
 
@@ -68,101 +64,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null)
         {
             return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, criterions, orders));
-        }
-
-        public virtual TProperty GetPropertyValue<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression)
-        {
-            return GetPropertyValue<TProperty>(entity, GetPropertyName(propertyExpression));
-        }
-
-        public virtual TProperty GetPropertyValue<TProperty>(T entity, string propertyName)
-        {
-            VerifyPropertyName<T>(propertyName);
-            return RunFunctionInsideATransaction(() => GetPropertyValueInternal<TProperty>(entity, propertyName));
-        }
-
-        public virtual ISet<TProperty> GetChildren<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression)
-            where TProperty : IIdentity<TId>
-        {
-            return GetChildren<TProperty>(entity, GetPropertyName(propertyExpression));
-        }
-
-        public virtual ISet<TProperty> GetChildren<TProperty>(T entity, string propertyName)
-            where TProperty : IIdentity<TId>
-        {
-            VerifyPropertyName<T>(propertyName);
-            return RunFunctionInsideATransaction(() => GetChildrenInternal<TProperty>(entity, propertyName));
-        }
-
-        protected virtual ISet<TProperty> GetChildrenInternal<TProperty>(T entity, string propertyName)
-            where TProperty : IIdentity<TId>
-        {
-            T retrievedEntity = GetByIdInternal(entity.Id);
-
-            return RunControlledFunction(
-                "GetChildrenInternal",
-                () =>
-                {
-                    PropertyInfo propertyInfo = typeof(T).GetProperty(propertyName);
-                    object propertyValue = propertyInfo.GetValue(retrievedEntity, null);
-                    ICollection children;
-                    if (propertyValue == null)
-                    {
-                        children = new List<TProperty>();
-                    }
-                    else
-                    {
-                        children = propertyValue as ICollection;
-                        if (children == null)
-                        {
-                            string message = string.Format(
-                                "Property {0} isn't of the requested type {1}, it has type {2}.",
-                                propertyName,
-                                typeof(IEnumerable<TProperty>),
-                                propertyInfo.PropertyType);
-                            throw new ProgrammingError(message);
-                        }
-                    }
-                    HashSet<TProperty> result = new HashSet<TProperty>(children.Cast<TProperty>());
-                    return result;
-                },
-                entity);
-        }
-
-        protected virtual TProperty GetPropertyValueInternal<TProperty>(T entity, string propertyName)
-        {
-            IIdentity<TId> retrievedEntity = GetByIdInternal(entity.Id);
-
-            return RunControlledFunction(
-                "GetPropertyValueInternal",
-                () =>
-                {
-                    TProperty result;
-                    PropertyInfo propertyInfo = typeof(T).GetProperty(propertyName);
-                    try
-                    {
-                        result = (TProperty)propertyInfo.GetValue(retrievedEntity, null);
-                    }
-                    catch (InvalidCastException e)
-                    {
-                        string message = string.Format(
-                            "Property {0} isn't of the requested type {1}, it has type {2}.",
-                            propertyName,
-                            typeof(TProperty),
-                            propertyInfo.PropertyType);
-                        throw new ProgrammingError(message, e);
-                    }
-                    ICollection genericCollection = result as ICollection;
-                    if (genericCollection != null)
-                    {
-                        string message = string.Format(
-                            "Property {0} implements ICollection, Use GetChildren instead.",
-                            propertyName);
-                        throw new ProgrammingError(message);
-                    }
-                    return result;
-                },
-                entity);
         }
 
         protected virtual T GetByIdInternal(TId id)
@@ -232,38 +133,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 }
             }
             return criteria;
-        }
-
-        [Conditional("DEBUG"), DebuggerStepThrough]
-        protected void VerifyPropertyName<U>(string propertyName)
-            where U : T
-        {
-            Type type = typeof(U);
-            if (!string.IsNullOrEmpty(propertyName) && type.GetProperty(propertyName) == null)
-            {
-                throw new ArgumentException("Property not found", propertyName);
-            }
-        }
-
-        protected string GetPropertyName<U>(Expression<Func<U>> propertyExpression)
-        {
-            if (propertyExpression == null)
-            {
-                throw new ArgumentNullException("propertyExpression");
-            }
-            Contract.EndContractBlock();
-
-            MemberExpression body = propertyExpression.Body as MemberExpression;
-            if (body == null)
-            {
-                throw new ArgumentException("Invalid argument", "propertyExpression");
-            }
-            PropertyInfo property = body.Member as PropertyInfo;
-            if (property == null)
-            {
-                throw new ArgumentException("Argument is not a property", "propertyExpression");
-            }
-            return property.Name;
         }
 
         protected virtual void RunActionInsideATransaction(Action action)

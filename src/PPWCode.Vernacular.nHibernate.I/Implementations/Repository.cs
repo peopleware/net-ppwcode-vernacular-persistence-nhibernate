@@ -4,7 +4,6 @@ using Castle.Core.Logging;
 
 using NHibernate;
 
-using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
@@ -16,16 +15,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
-        static Repository()
-        {
-            Type t = typeof(T);
-            if (t.IsAbstract || t.IsInterface)
-            {
-                string message = string.Format("Expected a concrete class for {0}", t.FullName);
-                throw new ProgrammingError(message);
-            }
-        }
-
         protected Repository(ILogger logger, ISession session)
             : base(logger, session)
         {
