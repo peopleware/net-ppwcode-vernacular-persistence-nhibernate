@@ -11,40 +11,61 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
     {
         private const string ConnectionString = "Data Source=:memory:;Version=3;New=True;";
 
-        private static readonly Configuration s_Configuration;
-        private static readonly ISessionFactory s_SessionFactory;
+        private static readonly object s_Locker = new object();
 
-        static NhConfigurator()
-        {
-            s_Configuration = new Configuration()
-                .Configure()
-                .DataBaseIntegration(
-                    db =>
-                    {
-                        db.Dialect<SQLiteDialect>();
-                        db.Driver<SQLite20Driver>();
-                        db.ConnectionProvider<TestConnectionProvider>();
-                        db.ConnectionString = ConnectionString;
-                    })
-                .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
-
-            IDictionary<string, string> props = s_Configuration.Properties;
-            if (props.ContainsKey(Environment.ConnectionStringName))
-            {
-                props.Remove(Environment.ConnectionStringName);
-            }
-
-            s_SessionFactory = s_Configuration.BuildSessionFactory();
-        }
+        private static volatile Configuration s_Configuration;
+        private static volatile ISessionFactory s_SessionFactory;
 
         public static Configuration Configuration
         {
-            get { return s_Configuration; }
+            get
+            {
+                if (s_Configuration == null)
+                {
+                    lock (s_Locker)
+                    {
+                        if (s_Configuration == null)
+                        {
+                            s_Configuration = new Configuration()
+                                .Configure()
+                                .DataBaseIntegration(
+                                    db =>
+                                    {
+                                        db.Dialect<SQLiteDialect>();
+                                        db.Driver<SQLite20Driver>();
+                                        db.ConnectionProvider<TestConnectionProvider>();
+                                        db.ConnectionString = ConnectionString;
+                                    })
+                                .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
+
+                            IDictionary<string, string> props = s_Configuration.Properties;
+                            if (props.ContainsKey(Environment.ConnectionStringName))
+                            {
+                                props.Remove(Environment.ConnectionStringName);
+                            }
+                        }
+                    }
+                }
+                return s_Configuration;
+            }
         }
 
         public static ISessionFactory SessionFactory
         {
-            get { return s_SessionFactory; }
+            get
+            {
+                if (s_SessionFactory == null)
+                {
+                    lock (s_Locker)
+                    {
+                        if (s_SessionFactory == null)
+                        {
+                            s_SessionFactory = Configuration.BuildSessionFactory();
+                        }
+                    }
+                }
+                return s_SessionFactory;
+            }
         }
     }
 }
