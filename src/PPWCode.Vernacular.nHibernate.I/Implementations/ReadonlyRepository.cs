@@ -6,6 +6,8 @@ using System.Linq;
 
 using Castle.Core.Logging;
 
+using Iesi.Collections.Generic;
+
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Exceptions;
@@ -56,12 +58,12 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => GetByIdInternal(id));
         }
 
-        public virtual ISet<T> Find(IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null)
+        public virtual Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindInternal(criterions, orders));
         }
 
-        public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null)
+        public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, criterions, orders));
         }
@@ -77,7 +79,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 });
         }
 
-        protected virtual ISet<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual Iesi.Collections.Generic.ISet<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunControlledFunction(
                 "FindInternal",
@@ -85,7 +87,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 {
                     ICriteria criteria = CreateCriteria(criterions, orders);
                     IList<T> qryResult = criteria.List<T>();
-                    return new HashSet<T>(qryResult);
+                    return new HashedSet<T>(qryResult);
                 });
         }
 

@@ -51,11 +51,11 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         }
 
         public abstract T GetById(TId id);
-        public abstract ISet<T> Find(IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
+        public abstract Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
         public abstract TProperty GetPropertyValue<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression);
         public abstract TProperty GetPropertyValue<TProperty>(T entity, string propertyName);
-        public abstract ISet<TProperty> GetChildren<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression) where TProperty : IIdentity<TId>;
-        public abstract ISet<TProperty> GetChildren<TProperty>(T entity, string propertyName) where TProperty : IIdentity<TId>;
+        public abstract Iesi.Collections.Generic.ISet<TProperty> GetChildren<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression) where TProperty : IIdentity<TId>;
+        public abstract Iesi.Collections.Generic.ISet<TProperty> GetChildren<TProperty>(T entity, string propertyName) where TProperty : IIdentity<TId>;
     }
 }

@@ -15,8 +15,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         where TId : IEquatable<TId>
     {
         T GetById(TId id);
-        ISet<T> Find(IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
+        Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
     }
 
     // ReSharper disable InconsistentNaming
@@ -35,11 +35,11 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             return default(T);
         }
 
-        public ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
-            Contract.Ensures(Contract.Result<ISet<T>>() != null);
+            Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
 
-            return default(ISet<T>);
+            return default(Iesi.Collections.Generic.ISet<T>);
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
