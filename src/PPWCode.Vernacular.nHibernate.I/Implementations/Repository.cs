@@ -4,6 +4,7 @@ using Castle.Core.Logging;
 
 using NHibernate;
 
+using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
@@ -15,6 +16,15 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
+        static Repository()
+        {
+            if (typeof(T).IsInterface)
+            {
+                string message = string.Format("Interface's ({0}) not allowed as Repositories, use a ReadonlyRepository instead", typeof(T).FullName);
+                throw new ProgrammingError(message);
+            }
+        }
+
         protected Repository(ILogger logger, ISession session)
             : base(logger, session)
         {
