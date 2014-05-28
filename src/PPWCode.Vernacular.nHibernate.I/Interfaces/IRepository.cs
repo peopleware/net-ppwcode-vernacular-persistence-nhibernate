@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq.Expressions;
 
 using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.Persistence.II.Exceptions;
 
 namespace PPWCode.Vernacular.nHibernate.I.Interfaces
 {
     [ContractClass(typeof(IRepositoryContract<,>))]
-    public interface IRepository<T, in TId> : IReadonlyRepository<T, TId>
+    public interface IRepository<T, in TId>
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
+        T GetById(TId id);
+        Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
         T Save(T entity);
         T Update(T entity);
         void Delete(T entity);
@@ -26,6 +29,31 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
+        public T GetById(TId id)
+        {
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
+            Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true /* The ID cannot be found inside the store*/);
+
+            return default(T);
+        }
+
+        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
+
+            return default(Iesi.Collections.Generic.ISet<T>);
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            Contract.Requires(pageIndex > 0);
+            Contract.Requires(pageSize > 0);
+            Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
+
+            return default(IPagedList<T>);
+        }
+
         public T Save(T entity)
         {
             Contract.Requires(entity != null);
@@ -49,13 +77,5 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         {
             Contract.Requires(entity != null);
         }
-
-        public abstract T GetById(TId id);
-        public abstract Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
-        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions = null, IEnumerable<Order> orders = null);
-        public abstract TProperty GetPropertyValue<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression);
-        public abstract TProperty GetPropertyValue<TProperty>(T entity, string propertyName);
-        public abstract Iesi.Collections.Generic.ISet<TProperty> GetChildren<TProperty>(T entity, Expression<Func<TProperty>> propertyExpression) where TProperty : IIdentity<TId>;
-        public abstract Iesi.Collections.Generic.ISet<TProperty> GetChildren<TProperty>(T entity, string propertyName) where TProperty : IIdentity<TId>;
     }
 }

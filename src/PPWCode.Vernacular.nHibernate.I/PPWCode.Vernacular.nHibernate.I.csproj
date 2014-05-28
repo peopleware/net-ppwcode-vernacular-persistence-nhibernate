@@ -156,8 +156,6 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Implementations\ImmutableUserTypeBase.cs" />
-    <Compile Include="Implementations\ReadonlyRepository.cs" />
-    <Compile Include="Interfaces\IReadonlyRepository.cs" />
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
