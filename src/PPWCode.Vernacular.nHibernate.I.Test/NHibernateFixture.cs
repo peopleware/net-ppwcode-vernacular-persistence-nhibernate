@@ -26,10 +26,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             get { return SessionFactory.GetCurrentSession(); }
         }
 
+        protected virtual bool UseProfiler
+        {
+            get { return false; }
+        }
+
         protected override void OnSetup()
         {
             XmlConfigurator.Configure();
-            NHibernateProfiler.Initialize();
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Initialize();
+            }
             SetupNHibernateSession();
             base.OnSetup();
         }
@@ -37,7 +45,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected override void OnTeardown()
         {
             TearDownNHibernateSession();
-            NHibernateProfiler.Stop();
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Stop();
+            }
             base.OnTeardown();
         }
 
