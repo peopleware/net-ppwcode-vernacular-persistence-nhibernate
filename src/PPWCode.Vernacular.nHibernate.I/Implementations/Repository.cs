@@ -63,6 +63,11 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => FindInternal(criterions, orders));
         }
 
+        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        {
+            return RunFunctionInsideATransaction(() => FindInternal(criterions, orders, lockMode));
+        }
+
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, criterions, orders));
@@ -101,6 +106,18 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 () =>
                 {
                     ICriteria criteria = CreateCriteria(criterions, orders);
+                    IList<T> qryResult = criteria.List<T>();
+                    return new HashedSet<T>(qryResult);
+                });
+        }
+
+        protected virtual Iesi.Collections.Generic.ISet<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        {
+            return RunControlledFunction(
+                "FindInternal",
+                () =>
+                {
+                    ICriteria criteria = CreateCriteria(criterions, orders).SetLockMode(lockMode);
                     IList<T> qryResult = criteria.List<T>();
                     return new HashedSet<T>(qryResult);
                 });

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
+using NHibernate;
 using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
@@ -16,6 +17,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
     {
         T GetById(TId id);
         Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
         T Save(T entity);
         T Update(T entity);
@@ -39,6 +41,13 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         }
 
         public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
+
+            return default(Iesi.Collections.Generic.ISet<T>);
+        }
+
+        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
             Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
 
