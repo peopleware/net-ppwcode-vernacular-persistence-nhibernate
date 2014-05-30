@@ -58,6 +58,16 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => GetByIdInternal(id));
         }
 
+        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            return RunFunctionInsideATransaction(() => GetInternal(criterions, orders));
+        }
+
+        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        {
+            return RunFunctionInsideATransaction(() => GetInternal(criterions, orders, lockMode));
+        }
+
         public virtual Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindInternal(criterions, orders));
@@ -95,6 +105,30 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 () =>
                 {
                     T result = Session.Get<T>(id);
+                    return result;
+                });
+        }
+
+        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            return RunControlledFunction(
+                "GetInternal",
+                () =>
+                {
+                    ICriteria criteria = CreateCriteria(criterions, orders);
+                    T result = criteria.UniqueResult<T>();
+                    return result;
+                });
+        }
+
+        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        {
+            return RunControlledFunction(
+                "GetInternal",
+                () =>
+                {
+                    ICriteria criteria = CreateCriteria(criterions, orders);
+                    T result = criteria.SetLockMode(lockMode).UniqueResult<T>();
                     return result;
                 });
         }
@@ -144,6 +178,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                         .SetMaxResults(pageSize)
                         .Future<T>()
                         .ToList<T>();
+
                     PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
                     return result;
                 });

@@ -16,6 +16,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         where TId : IEquatable<TId>
     {
         T GetById(TId id);
+        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
         Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
         Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
@@ -37,6 +39,16 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
             Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true /* The ID cannot be found inside the store*/);
 
+            return default(T);
+        }
+
+        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            return default(T);
+        }
+
+        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        {
             return default(T);
         }
 
