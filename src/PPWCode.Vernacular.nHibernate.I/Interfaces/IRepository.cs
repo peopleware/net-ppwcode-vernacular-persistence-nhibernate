@@ -102,6 +102,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             /* cannot check a criterion here
             Contract.Ensures(Contract.Result<T>() == null || criterions.Matches(Contract.Result<T>()));
              */
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
 
             return default(T);
         }
@@ -109,6 +111,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
 
             return default(T);
         }
@@ -154,7 +158,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, entity.Id));
-            Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "entity does not exist in the DB");
 
             return default(T);
         }
