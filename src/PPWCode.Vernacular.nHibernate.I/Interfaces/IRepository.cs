@@ -15,14 +15,67 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// <h3>Extra postconditions</h3>
+        /// <para>An <see cref="IdNotFoundException{T,TId}"/> is thrown when there is no record with the given
+        /// <paramref name="id"/> in the DB. For this exception, it applies that
+        /// <code><see cref="IdNotFoundException{T,TId}"/>.<see cref="IdNotFoundException{T,TId}.Id"/> == id</code>.</para>
+        /// </remarks>
         T GetById(TId id);
-        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
-        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
+
+        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders /* MUDO: to be removed */);
+
+        // MUDO What is this? Don't understand this. Comment.
+        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders /* MUDO: to be removed */, LockMode lockMode);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// <h3>Extra postconditions</h3>
+        /// <para>All elements of the resulting set fulfill <paramref name="criterions"/>.</para>
+        /// <para>The elements are ordered in the resulting set according to <paramref name="orders"/>.</para>
+        /// </remarks>
+        // MUDO order? than we need ordered set, not a set.
         Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+
+        // MUDO What is this? Don't understand this. Comment.
         Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
+
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+
+        /// <summary>
+        /// A record is saved in the DB to represent <paramref name="entity"/>.
+        /// An object is returned that represents the new record.
+        /// </summary>
+        /// <remarks>
+        /// <h3>Extra postconditions</h3>
+        /// <para>GetById(Contract.Result<T>().Id) returns an object that is "the same" as the result of this method.
+        /// It has the same id, but the contents can be different, because the DB might be changed in the mean time.</para>
+        /// </remarks>
         T Save(T entity);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// <h3>Extra postconditions</h3>
+        /// <para>An <see cref="IdNotFoundException{T,TId}"/> is thrown when there is no record with the given
+        /// <code><paramref name="entity"/>.<see cref="IIdentity{T}.Id"/></code> in the DB. For this exception, it applies that
+        /// <code><see cref="IdNotFoundException{T,TId}"/>.<see cref="IdNotFoundException{T,TId}.Id"/> == id</code>.</para>
+        /// </remarks>
         T Update(T entity);
+
+        /// <summary>
+        /// The record that represents <paramref name="entity"/> is deleted from the DB.
+        /// </summary>
+        /// <remarks>
+        /// <h3>Extra postconditions</h3>
+        /// <para>GetById(entity.Id) throws an IdNotFoundException.</para>
+        /// </remarks>
         void Delete(T entity);
     }
 
@@ -37,18 +90,30 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         {
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
-            Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true /* The ID cannot be found inside the store*/);
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true);
 
             return default(T);
         }
 
         public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+            /* cannot check a criterion here
+            Contract.Ensures(Contract.Result<T>() == null || criterions.Matches(Contract.Result<T>()));
+             */
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+
             return default(T);
         }
 
         public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+
             return default(T);
         }
 
@@ -81,6 +146,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             Contract.Requires(entity.IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
 
             return default(T);
         }
@@ -90,6 +156,9 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             Contract.Requires(entity != null);
             Contract.Requires(!entity.IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, entity.Id));
+            Contract.EnsuresOnThrow<NotFoundException>(true, "entity does not exist in the DB");
 
             return default(T);
         }
