@@ -26,10 +26,9 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         /// </remarks>
         T GetById(TId id);
 
-        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders /* MUDO: to be removed */);
+        T Get(IEnumerable<ICriterion> criterions);
 
-        // MUDO What is this? Don't understand this. Comment.
-        T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders /* MUDO: to be removed */, LockMode lockMode);
+        T Get(IEnumerable<ICriterion> criterions, LockMode lockMode);
 
         /// <summary>
         /// 
@@ -40,10 +39,10 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         /// <para>The elements are ordered in the resulting set according to <paramref name="orders"/>.</para>
         /// </remarks>
         // MUDO order? than we need ordered set, not a set.
-        Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
 
         // MUDO What is this? Don't understand this. Comment.
-        Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
+        IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
 
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
 
@@ -117,18 +116,18 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             return default(T);
         }
 
-        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
-            Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
+            Contract.Ensures(Contract.Result<IList<T>>() != null);
 
-            return default(Iesi.Collections.Generic.ISet<T>);
+            return default(IList<T>);
         }
 
-        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
-            Contract.Ensures(Contract.Result<Iesi.Collections.Generic.ISet<T>>() != null);
+            Contract.Ensures(Contract.Result<IList<T>>() != null);
 
-            return default(Iesi.Collections.Generic.ISet<T>);
+            return default(IList<T>);
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)

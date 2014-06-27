@@ -6,8 +6,6 @@ using System.Linq;
 
 using Castle.Core.Logging;
 
-using Iesi.Collections.Generic;
-
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Exceptions;
@@ -58,22 +56,22 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => GetByIdInternal(id));
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public T Get(IEnumerable<ICriterion> criterions)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criterions, orders));
+            return RunFunctionInsideATransaction(() => GetInternal(criterions));
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public T Get(IEnumerable<ICriterion> criterions, LockMode lockMode)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criterions, orders, lockMode));
+            return RunFunctionInsideATransaction(() => GetInternal(criterions));
         }
 
-        public virtual Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public virtual IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindInternal(criterions, orders));
         }
 
-        public Iesi.Collections.Generic.ISet<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
             return RunFunctionInsideATransaction(() => FindInternal(criterions, orders, lockMode));
         }
@@ -105,55 +103,65 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 () =>
                 {
                     T result = Session.Get<T>(id);
+                    if (result == null)
+                    {
+                        throw new IdNotFoundException<T, TId>(id);
+                    }
                     return result;
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual T GetInternal(IEnumerable<ICriterion> criterions)
         {
             return RunControlledFunction(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, orders);
+                    ICriteria criteria = CreateCriteria(criterions, null);
                     T result = criteria.UniqueResult<T>();
+                    if (result == null)
+                    {
+                        throw new NotFoundException();
+                    }
                     return result;
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, LockMode lockMode)
         {
             return RunControlledFunction(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, orders);
+                    ICriteria criteria = CreateCriteria(criterions, null);
                     T result = criteria.SetLockMode(lockMode).UniqueResult<T>();
+                    if (result == null)
+                    {
+                        throw new NotFoundException();
+                    }
                     return result;
                 });
         }
 
-        protected virtual Iesi.Collections.Generic.ISet<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunControlledFunction(
                 "FindInternal",
                 () =>
                 {
                     ICriteria criteria = CreateCriteria(criterions, orders);
-                    IList<T> qryResult = criteria.List<T>();
-                    return new HashedSet<T>(qryResult);
+                    return criteria.List<T>();
                 });
         }
 
-        protected virtual Iesi.Collections.Generic.ISet<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
         {
             return RunControlledFunction(
                 "FindInternal",
                 () =>
                 {
                     ICriteria criteria = CreateCriteria(criterions, orders).SetLockMode(lockMode);
-                    IList<T> qryResult = criteria.List<T>();
-                    return new HashedSet<T>(qryResult);
+                    return criteria.List<T>();
                 });
         }
 
