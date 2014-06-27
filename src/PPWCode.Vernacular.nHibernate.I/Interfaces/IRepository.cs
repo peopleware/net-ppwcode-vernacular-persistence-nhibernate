@@ -26,23 +26,36 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         /// </remarks>
         T GetById(TId id);
 
-        T Get(IEnumerable<ICriterion> criterions);
+        T Get(IEnumerable<ICriterion> criteria);
 
-        T Get(IEnumerable<ICriterion> criterions, LockMode lockMode);
+        /// <summary>
+        /// Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{NHibernate.Criterion.ICriterion})"/>
+        /// but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        /// </summary>
+        /// <param name="criteria">List of criteria</param>
+        /// <param name="lockMode"></param>
+        /// <returns></returns>
+        T Get(IEnumerable<ICriterion> criteria, LockMode lockMode);
 
         /// <summary>
         /// 
         /// </summary>
         /// <remarks>
         /// <h3>Extra postconditions</h3>
-        /// <para>All elements of the resulting set fulfill <paramref name="criterions"/>.</para>
+        /// <para>All elements of the resulting set fulfill <paramref name="criteria"/>.</para>
         /// <para>The elements are ordered in the resulting set according to <paramref name="orders"/>.</para>
         /// </remarks>
-        // MUDO order? than we need ordered set, not a set.
-        IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders);
 
-        // MUDO What is this? Don't understand this. Comment.
-        IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode);
+        /// <summary>
+        /// Same functionality as <see cref="Find(System.Collections.Generic.IEnumerable{NHibernate.Criterion.ICriterion},System.Collections.Generic.IEnumerable{NHibernate.Criterion.Order})"/>
+        /// but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        /// </summary>
+        /// <param name="criteria">List of criterions</param>
+        /// <param name="orders">Sequence of expressions that will be used to sort the result, order is important</param>
+        /// <param name="lockMode"></param>
+        /// <returns></returns>
+        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode);
 
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
 
@@ -95,18 +108,18 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criterions)
+        public T Get(IEnumerable<ICriterion> criteria)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
-            // The result should match the criterions, but this is not easy to express in contracts
-            //Contract.Ensures(Contract.Result<T>() == null || criterions.Matches(Contract.Result<T>()));
+            // The result should match the criteria, but this is not easy to express in contracts
+            //Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
 
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, LockMode lockMode)
+        public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
@@ -115,14 +128,14 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             return default(T);
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
         {
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 

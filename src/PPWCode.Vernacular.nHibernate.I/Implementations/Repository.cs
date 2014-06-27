@@ -49,24 +49,24 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => GetByIdInternal(id));
         }
 
-        public T Get(IEnumerable<ICriterion> criterions)
+        public T Get(IEnumerable<ICriterion> criteria)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criterions));
+            return RunFunctionInsideATransaction(() => GetInternal(criteria));
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, LockMode lockMode)
+        public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criterions));
+            return RunFunctionInsideATransaction(() => GetInternal(criteria));
         }
 
-        public virtual IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public virtual IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
-            return RunFunctionInsideATransaction(() => FindInternal(criterions, orders));
+            return RunFunctionInsideATransaction(() => FindInternal(criteria, orders));
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
         {
-            return RunFunctionInsideATransaction(() => FindInternal(criterions, orders, lockMode));
+            return RunFunctionInsideATransaction(() => FindInternal(criteria, orders, lockMode));
         }
 
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
@@ -104,14 +104,14 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criterions)
+        protected virtual T GetInternal(IEnumerable<ICriterion> criteria)
         {
             return RunControlledFunction(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, null);
-                    T result = criteria.UniqueResult<T>();
+                    ICriteria qry = CreateCriteria(criteria, null);
+                    T result = qry.UniqueResult<T>();
                     if (result == null)
                     {
                         throw new NotFoundException();
@@ -120,14 +120,14 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criterions, LockMode lockMode)
+        protected virtual T GetInternal(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
             return RunControlledFunction(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, null);
-                    T result = criteria.SetLockMode(lockMode).UniqueResult<T>();
+                    ICriteria qry = CreateCriteria(criteria, null);
+                    T result = qry.SetLockMode(lockMode).UniqueResult<T>();
                     if (result == null)
                     {
                         throw new NotFoundException();
@@ -136,45 +136,47 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 });
         }
 
-        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
             return RunControlledFunction(
                 "FindInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, orders);
-                    return criteria.List<T>();
+                    ICriteria qry = CreateCriteria(criteria, orders);
+                    IList<T> result = qry.List<T>();
+                    return result;
                 });
         }
 
-        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
         {
             return RunControlledFunction(
                 "FindInternal",
                 () =>
                 {
-                    ICriteria criteria = CreateCriteria(criterions, orders).SetLockMode(lockMode);
-                    return criteria.List<T>();
+                    ICriteria qry = CreateCriteria(criteria, orders).SetLockMode(lockMode);
+                    IList<T> result = qry.List<T>();
+                    return result;
                 });
         }
 
-        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
             return RunControlledFunction(
                 "FindPagedInternal",
                 () =>
                 {
-                    ICriteria rowCountCriteria = CreateCriteria(criterions, null);
-                    IFutureValue<int> rowCount = rowCountCriteria
+                    ICriteria rowCountQry = CreateCriteria(criteria, null);
+                    IFutureValue<int> rowCount = rowCountQry
                         .SetProjection(Projections.RowCount())
                         .FutureValue<int>();
 
-                    ICriteria criteria = CreateCriteria(criterions, orders);
+                    ICriteria qry = CreateCriteria(criteria, orders);
                     if (orders == null || !orders.Any())
                     {
-                        criteria.AddOrder(Order.Asc(Projections.Id()));
+                        qry.AddOrder(Order.Asc(Projections.Id()));
                     }
-                    IList<T> qryResult = criteria
+                    IList<T> qryResult = qry
                         .SetFirstResult((pageIndex - 1) * pageSize)
                         .SetMaxResults(pageSize)
                         .Future<T>()
@@ -185,24 +187,24 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 });
         }
 
-        protected virtual ICriteria CreateCriteria(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        protected virtual ICriteria CreateCriteria(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
-            ICriteria criteria = Session.CreateCriteria<T>();
-            if (criterions != null)
+            ICriteria result = Session.CreateCriteria<T>();
+            if (criteria != null)
             {
-                foreach (ICriterion criterion in criterions)
+                foreach (ICriterion criterion in criteria)
                 {
-                    criteria.Add(criterion);
+                    result.Add(criterion);
                 }
             }
             if (orders != null)
             {
                 foreach (Order order in orders)
                 {
-                    criteria.AddOrder(order);
+                    result.AddOrder(order);
                 }
             }
-            return criteria;
+            return result;
         }
 
         protected virtual T SaveInternal(T entity)
