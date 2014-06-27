@@ -24,11 +24,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
         public NhFasterConfiguration(ILogger logger, IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
             : base(interceptor, nhProperties, mappingAssemblies, registerEventListeners)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(logger != null);
 
             m_Logger = logger;
         }

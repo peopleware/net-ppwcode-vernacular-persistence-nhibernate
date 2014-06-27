@@ -27,15 +27,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected Repository(ILogger logger, ISession session)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException("logger");
-            }
-            if (session == null)
-            {
-                throw new ArgumentNullException("session");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(logger != null);
+            Contract.Requires<ArgumentNullException>(session != null);
 
             m_Logger = logger;
             m_Session = session;
@@ -243,11 +236,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected virtual void RunActionInsideATransaction(Action action)
         {
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(action != null);
 
             RunFunctionInsideATransaction(
                 () =>
@@ -259,11 +248,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected virtual TResult RunFunctionInsideATransaction<TResult>(Func<TResult> func)
         {
-            if (func == null)
-            {
-                throw new ArgumentNullException("func");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(func != null);
 
             if (Session.Transaction.IsActive)
             {
@@ -317,15 +302,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected virtual void RunControlledAction(string requestDescription, Action action, T entity = null)
         {
-            if (string.IsNullOrWhiteSpace(requestDescription))
-            {
-                throw new ArgumentNullException("requestDescription");
-            }
-            if (action == null)
-            {
-                throw new ArgumentNullException("action");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(requestDescription));
+            Contract.Requires<ArgumentNullException>(action != null);
 
             RunControlledFunction(
                 requestDescription,
@@ -339,15 +317,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected virtual TResult RunControlledFunction<TResult>(string requestDescription, Func<TResult> func, T entity = null)
         {
-            if (string.IsNullOrWhiteSpace(requestDescription))
-            {
-                throw new ArgumentNullException("requestDescription");
-            }
-            if (func == null)
-            {
-                throw new ArgumentNullException("func");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(requestDescription));
+            Contract.Requires<ArgumentNullException>(func != null);
 
             if (Logger.IsInfoEnabled)
             {

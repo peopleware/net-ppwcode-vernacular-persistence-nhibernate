@@ -24,15 +24,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
 
         public AuditInterceptor(IIdentityProvider identityProvider, ITimeProvider timeProvider)
         {
-            if (identityProvider == null)
-            {
-                throw new ArgumentNullException("identityProvider");
-            }
-            if (timeProvider == null)
-            {
-                throw new ArgumentNullException("timeProvider");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(identityProvider != null);
+            Contract.Requires<ArgumentNullException>(timeProvider != null);
 
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;

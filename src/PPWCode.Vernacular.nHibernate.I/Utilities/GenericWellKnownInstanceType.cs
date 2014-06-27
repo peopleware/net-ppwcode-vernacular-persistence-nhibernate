@@ -17,15 +17,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
 
         protected GenericWellKnownInstanceType(IDictionary<TId, T> repository, Func<T, TId> idGetter)
         {
-            if (repository == null)
-            {
-                throw new ArgumentNullException("repository");
-            }
-            if (idGetter == null)
-            {
-                throw new ArgumentNullException("idGetter");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(repository != null);
+            Contract.Requires<ArgumentNullException>(idGetter != null);
 
             m_Repository = repository;
             m_IdGetter = idGetter;

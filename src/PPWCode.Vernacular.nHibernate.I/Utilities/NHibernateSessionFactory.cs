@@ -16,11 +16,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
 
         public NHibernateSessionFactory(INhConfiguration nhConfiguration)
         {
-            if (nhConfiguration == null)
-            {
-                throw new ArgumentNullException("nhConfiguration");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(nhConfiguration != null);
 
             m_NhConfiguration = nhConfiguration;
         }

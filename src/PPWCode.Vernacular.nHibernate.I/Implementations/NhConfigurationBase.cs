@@ -20,23 +20,10 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
 
         protected NhConfigurationBase(IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
         {
-            if (interceptor == null)
-            {
-                throw new ArgumentNullException("interceptor");
-            }
-            if (nhProperties == null)
-            {
-                throw new ArgumentNullException("nhProperties");
-            }
-            if (mappingAssemblies == null)
-            {
-                throw new ArgumentNullException("mappingAssemblies");
-            }
-            if (registerEventListeners == null)
-            {
-                throw new ArgumentNullException("registerEventListeners");
-            }
-            Contract.EndContractBlock();
+            Contract.Requires<ArgumentNullException>(interceptor != null);
+            Contract.Requires<ArgumentNullException>(nhProperties != null);
+            Contract.Requires<ArgumentNullException>(mappingAssemblies != null);
+            Contract.Requires<ArgumentNullException>(registerEventListeners != null);
 
             m_Interceptor = interceptor;
             m_NhProperties = nhProperties;

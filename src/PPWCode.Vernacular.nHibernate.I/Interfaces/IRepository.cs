@@ -95,19 +95,18 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public T Get(IEnumerable<ICriterion> criterions)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
-            /* cannot check a criterion here
-            Contract.Ensures(Contract.Result<T>() == null || criterions.Matches(Contract.Result<T>()));
-             */
+            // The result should match the criterions, but this is not easy to express in contracts
+            //Contract.Ensures(Contract.Result<T>() == null || criterions.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
 
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criterions, IEnumerable<Order> orders, LockMode lockMode)
+        public T Get(IEnumerable<ICriterion> criterions, LockMode lockMode)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
