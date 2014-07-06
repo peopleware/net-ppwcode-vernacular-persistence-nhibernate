@@ -1,18 +1,5 @@
 <?xml version="1.0" ?>
 <package>
-    <metadata>
-        <dependencies>
-            <dependency id="log4net" version="[1.2.0,)" />
-            <dependency id="NHibernate" version="[3.3.3,)" />
-            <dependency id="NHibernateProfiler.Appender" version="[2.0.0,)" />
-            <dependency id="NUnit" version="[2.6.3,)" />
-        </dependencies>
-
-</package>
-
-
-<?xml version="1.0" ?>
-<package>
   <metadata minClientVersion="2.8">
     <id>$id$</id>
     <version>$version$</version>
