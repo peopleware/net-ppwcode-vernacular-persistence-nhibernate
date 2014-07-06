@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2014 by PeopleWare n.v..
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -56,12 +70,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                 m_InconclusiveCallback.Invoke(msg);
                 return;
             }
+
             Test(entityName, id);
         }
 
         public void Test(string entityName, object id)
         {
-            List<string> ghosts = new List<String>();
+            List<string> ghosts = new List<string>();
             DirtyCheckingInterceptor interceptor = new DirtyCheckingInterceptor(ghosts);
 
             using (ISession session = m_SessionFactory.OpenSession(interceptor))
@@ -97,6 +112,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     tx.Commit();
                 }
             }
+
             return id;
         }
     }

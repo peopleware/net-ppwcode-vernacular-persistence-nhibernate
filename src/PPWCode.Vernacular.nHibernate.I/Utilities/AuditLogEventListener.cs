@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2014 by PeopleWare n.v..
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
@@ -40,8 +54,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             m_TimeProvider = timeProvider;
         }
 
-        #region Implementation of IRegisterEventListener
-
         public void Register(Configuration cfg)
         {
             cfg.EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { this }
@@ -54,10 +66,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                 .Concat(cfg.EventListeners.PostDeleteEventListeners)
                 .ToArray();
         }
-
-        #endregion
-
-        #region IPostUpdateEventListener Members
 
         public virtual void OnPostUpdate(PostUpdateEvent @event)
         {
@@ -108,6 +116,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                         }
                     }
                 }
+
                 if (auditLogs.Count > 0)
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
@@ -115,10 +124,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                 }
             }
         }
-
-        #endregion
-
-        #region IPostInsertEventListener Members
 
         public virtual void OnPostInsert(PostInsertEvent @event)
         {
@@ -156,6 +161,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                         }
                     }
                 }
+
                 if (auditLogs.Count > 0)
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
@@ -163,10 +169,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                 }
             }
         }
-
-        #endregion
-
-        #region IPostDeleteEventListener Members
 
         public virtual void OnPostDelete(PostDeleteEvent @event)
         {
@@ -190,8 +192,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             }
         }
 
-        #endregion
-
         protected static string GetStringValueFromStateArray(object[] stateArray, int position)
         {
             object value = stateArray[position];
@@ -207,6 +207,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             }
 
             public AuditLogActionEnum AuditLogAction { get; private set; }
+
             public Dictionary<string, AuditLogActionEnum> Properties { get; private set; }
 
             public static AuditLogItem Find(Type t)
@@ -241,6 +242,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                                     }
                                 }
                             }
+
                             return result;
                         });
                 return result;
