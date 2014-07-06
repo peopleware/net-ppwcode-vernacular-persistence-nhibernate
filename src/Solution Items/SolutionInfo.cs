@@ -1,7 +1,7 @@
 using System.Reflection;
-[assembly: AssemblyCompany("Peopleware NV")]
-[assembly: AssemblyProduct("PPWCode Vernacular nHibernate Persistence I")]
-[assembly: AssemblyCopyright("Copyright © PeopleWare NV 2014")]
+[assembly: AssemblyCompany("Peopleware n.v.")]
+[assembly: AssemblyProduct("PPWCode Vernacular NHibernate")]
+[assembly: AssemblyCopyright("Copyright © PeopleWare n.v. 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("1.0.0")]
