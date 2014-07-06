@@ -6,7 +6,6 @@ using NHibernate;
 using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
-using PPWCode.Vernacular.Persistence.II.Exceptions;
 
 namespace PPWCode.Vernacular.nHibernate.I.Interfaces
 {

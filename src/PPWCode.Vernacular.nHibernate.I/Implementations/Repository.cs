@@ -14,7 +14,6 @@ using PPWCode.Util.OddsAndEnds.II.Extensions;
 using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.nHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
-using PPWCode.Vernacular.Persistence.II.Exceptions;
 
 namespace PPWCode.Vernacular.nHibernate.I.Implementations
 {
