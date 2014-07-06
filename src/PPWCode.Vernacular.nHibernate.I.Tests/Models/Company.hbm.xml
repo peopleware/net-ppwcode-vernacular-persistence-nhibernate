@@ -1,27 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <hibernate-mapping
-    xmlns="urn:nhibernate-mapping-2.2"
-    assembly="PPWCode.Vernacular.nHibernate.I.Tests"
-    namespace="PPWCode.Vernacular.nHibernate.I.Tests.Models"
-    default-access="field.pascalcase-m-underscore">
+  xmlns="urn:nhibernate-mapping-2.2"
+  assembly="PPWCode.Vernacular.NHibernate.I.Tests"
+  namespace="PPWCode.Vernacular.NHibernate.I.Tests.Models"
+  default-access="field.pascalcase-m-underscore">
 
-    <class name="Company" dynamic-update="true">
-        <id name="Id">
-            <generator class="hilo" />
-        </id>
-        <version name="PersistenceVersion" generated="never" unsaved-value="0" />
+  <class name="Company" dynamic-update="true">
+    <id name="Id">
+      <generator class="hilo" />
+    </id>
+    <version name="PersistenceVersion" generated="never" unsaved-value="0" />
 
-        <property name="CreatedAt" />
-        <property name="CreatedBy" length="128" />
-        <property name="LastModifiedAt" />
-        <property name="LastModifiedBy" length="128" />
+    <property name="CreatedAt" />
+    <property name="CreatedBy" length="128" />
+    <property name="LastModifiedAt" />
+    <property name="LastModifiedBy" length="128" />
 
-        <property name="Name" length="128" not-null="true" />
-        <bag name="Identifications" cascade="all">
-            <key column="IdentificationId" />
-            <one-to-many class="CompanyIdentification" />
-        </bag>
-    </class>
+    <property name="Name" length="128" not-null="true" />
+    <bag name="Identifications" cascade="all">
+      <key column="IdentificationId" />
+      <one-to-many class="CompanyIdentification" />
+    </bag>
+  </class>
 
 </hibernate-mapping>

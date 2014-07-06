@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <hibernate-mapping
-    xmlns="urn:nhibernate-mapping-2.2"
-    assembly="PPWCode.Vernacular.nHibernate.I.Tests"
-    namespace="PPWCode.Vernacular.nHibernate.I.Tests.Models"
-    default-access="field.pascalcase-m-underscore">
+  xmlns="urn:nhibernate-mapping-2.2"
+  assembly="PPWCode.Vernacular.NHibernate.I.Tests"
+  namespace="PPWCode.Vernacular.NHibernate.I.Tests.Models"
+  default-access="field.pascalcase-m-underscore">
 
-    <class name="CompanyIdentification" dynamic-update="true">
-        <id name="Id">
-            <generator class="hilo" />
-        </id>
-        <version name="PersistenceVersion" generated="never" unsaved-value="0" />
+  <class name="CompanyIdentification" dynamic-update="true">
+    <id name="Id">
+      <generator class="hilo" />
+    </id>
+    <version name="PersistenceVersion" generated="never" unsaved-value="0" />
 
-        <property name="CreatedAt" />
-        <property name="CreatedBy" length="128" />
-        <property name="LastModifiedAt" />
-        <property name="LastModifiedBy" length="128" />
+    <property name="CreatedAt" />
+    <property name="CreatedBy" length="128" />
+    <property name="LastModifiedAt" />
+    <property name="LastModifiedBy" length="128" />
 
-        <property name="Identification" length="128" not-null="true" />
-        <property name="Number" />
-    </class>
+    <property name="Identification" length="128" not-null="true" />
+    <property name="Number" />
+  </class>
 
 </hibernate-mapping>

@@ -1,14 +1,28 @@
-﻿using System;
+﻿// Copyright 2014 by PeopleWare n.v..
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 
 using NHibernate;
 using NHibernate.Type;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class AuditInterceptor<T> : EmptyInterceptor
         where T : IEquatable<T>
@@ -53,6 +67,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             {
                 return;
             }
+
             state[index] = value;
         }
 
@@ -77,6 +92,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             {
                 throw new InvalidOperationException("Unknown IdentityName");
             }
+
             Type entityType = entity.GetType();
 
             if (insertAuditable != null && (onSave || persistentObject.IsTransient))
@@ -120,18 +136,23 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
         }
 
         /// <summary>
-        /// Called when an object is detected to be dirty, during a flush.
+        ///     Called when an object is detected to be dirty, during a flush.
         /// </summary>
-        /// <param name="currentState"/><param name="entity"/><param name="id"/><param name="previousState"/><param name="propertyNames"/><param name="types"/>
+        /// <param name="entity">The given entity.</param>
+        /// <param name="id">The id of the given entity.</param>
+        /// <param name="currentState">The current state of the entity.</param>
+        /// <param name="previousState">The previous state of the entity.</param>
+        /// <param name="propertyNames">The property names.</param>
+        /// <param name="types">The types.</param>
         /// <remarks>
-        /// The interceptor may modify the detected <c>currentState</c>, which will be propagated to
-        ///             both the database and the persistent object. Note that all flushes end in an actual
-        ///             synchronization with the database, in which as the new <c>currentState</c> will be propagated
-        ///             to the object, but not necessarily (immediately) to the database. It is strongly recommended
-        ///             that the interceptor <b>not</b> modify the <c>previousState</c>.
+        ///     The interceptor may modify the detected <c>currentState</c>, which will be propagated to
+        ///     both the database and the persistent object. Note that all flushes end in an actual
+        ///     synchronization with the database, in which as the new <c>currentState</c> will be propagated
+        ///     to the object, but not necessarily (immediately) to the database. It is strongly recommended
+        ///     that the interceptor <b>not</b> modify the <c>previousState</c>.
         /// </remarks>
         /// <returns>
-        /// <see langword="true"/> if the user modified the <c>currentState</c> in any way
+        ///     A boolean indicating whether the user modified the  <paramref name="currentState"/> in any way.
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
@@ -139,15 +160,19 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
         }
 
         /// <summary>
-        /// Called before an object is saved
+        ///     Called before an object is saved.
         /// </summary>
-        /// <param name="entity"/><param name="id"/><param name="propertyNames"/><param name="state"/><param name="types"/>
+        /// <param name="entity">The given entity.</param>
+        /// <param name="id">The id of the given entity.</param>
+        /// <param name="state">The state of the entity.</param>
+        /// <param name="propertyNames">The property names.</param>
+        /// <param name="types">The types.</param>
         /// <remarks>
-        /// The interceptor may modify the <c>state</c>, which will be used for the SQL <c>INSERT</c>
-        ///             and propagated to the persistent object
+        ///     The interceptor may modify the <c>state</c>, which will be used for the SQL <c>INSERT</c>
+        ///     and propagated to the persistent object.
         /// </remarks>
         /// <returns>
-        /// <see langword="true"/> if the user modified the <c>state</c> in any way
+        ///     A boolean indicating whether the user modified the <c>state</c> in any way.
         /// </returns>
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
@@ -159,6 +184,16 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             private readonly Type m_EntityType;
             private readonly string m_PropertyName;
 
+            public static bool operator ==(Property left, Property right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(Property left, Property right)
+            {
+                return !left.Equals(right);
+            }
+            
             public Property(Type entityType, string propertyName)
             {
                 m_EntityType = entityType;
@@ -166,10 +201,10 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             }
 
             /// <summary>
-            /// Indicates whether the current object is equal to another object of the same type.
+            ///     Indicates whether the current object is equal to another object of the same type.
             /// </summary>
             /// <returns>
-            /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+            ///     A boolean indicating whether the current object is equal to the <paramref name="other" /> parameter.
             /// </returns>
             /// <param name="other">An object to compare with this object.</param>
             public bool Equals(Property other)
@@ -179,10 +214,10 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
             }
 
             /// <summary>
-            /// Indicates whether this instance and a specified object are equal.
+            ///     Indicates whether this instance and a specified object are equal.
             /// </summary>
             /// <returns>
-            /// true if <paramref name="obj"/> and this instance are the same type and represent the same value; otherwise, false.
+            ///     A boolean indicating whether <paramref name="obj" /> and this instance are the same type and represent the same value.
             /// </returns>
             /// <param name="obj">Another object to compare to. </param>
             public override bool Equals(object obj)
@@ -191,14 +226,15 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                 {
                     return false;
                 }
+
                 return obj is Property && Equals((Property)obj);
             }
 
             /// <summary>
-            /// Returns the hash code for this instance.
+            ///     Returns the hash code for this instance.
             /// </summary>
             /// <returns>
-            /// A 32-bit signed integer that is the hash code for this instance.
+            ///     A 32-bit signed integer that is the hash code for this instance.
             /// </returns>
             public override int GetHashCode()
             {
@@ -206,16 +242,6 @@ namespace PPWCode.Vernacular.nHibernate.I.Utilities
                 {
                     return (m_EntityType.GetHashCode() * 397) ^ m_PropertyName.GetHashCode();
                 }
-            }
-
-            public static bool operator ==(Property left, Property right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(Property left, Property right)
-            {
-                return !left.Equals(right);
             }
         }
     }

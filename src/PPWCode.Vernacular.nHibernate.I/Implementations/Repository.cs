@@ -1,4 +1,18 @@
-﻿using System;
+﻿// Copyright 2014 by PeopleWare n.v..
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
@@ -12,11 +26,10 @@ using NHibernate.Exceptions;
 
 using PPWCode.Util.OddsAndEnds.II.Extensions;
 using PPWCode.Vernacular.Exceptions.II;
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
-using PPWCode.Vernacular.Persistence.II.Exceptions;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class Repository<T, TId> : IRepository<T, TId>
         where T : class, IIdentity<TId>
@@ -100,6 +113,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     {
                         throw new IdNotFoundException<T, TId>(id);
                     }
+
                     return result;
                 });
         }
@@ -116,6 +130,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     {
                         throw new NotFoundException();
                     }
+
                     return result;
                 });
         }
@@ -132,6 +147,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     {
                         throw new NotFoundException();
                     }
+
                     return result;
                 });
         }
@@ -176,6 +192,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     {
                         qry.AddOrder(Order.Asc(Projections.Id()));
                     }
+
                     IList<T> qryResult = qry
                         .SetFirstResult((pageIndex - 1) * pageSize)
                         .SetMaxResults(pageSize)
@@ -197,6 +214,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     result.Add(criterion);
                 }
             }
+
             if (orders != null)
             {
                 foreach (Order order in orders)
@@ -204,6 +222,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                     result.AddOrder(order);
                 }
             }
+
             return result;
         }
 
@@ -263,18 +282,20 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 result = func.Invoke();
                 transaction.Commit();
             }
+
             return result;
         }
 
         /// <summary>
-        /// This method *has* to convert whatever NHibernate exception to a valid PPWCode exception
-        /// Some hibernate exceptions might be semantic, some might be errors
-        /// This may depend on the actual product.
-        /// This method translates semantic exceptions in PPWCode.Util.Exception.SemanticException and throws them
-        /// and all other exceptions in PPWCode.Util.Exception.Error and throws them
+        ///     This method *has* to convert whatever NHibernate exception to a valid PPWCode exception
+        ///     Some hibernate exceptions might be semantic, some might be errors.
+        ///     This may depend on the actual product.
+        ///     This method translates semantic exceptions in PPWCode.Util.Exception.SemanticException and throws them
+        ///     and all other exceptions in PPWCode.Util.Exception.Error and throws them.
         /// </summary>
-        /// <param name="exception">The hibernate exception we are triaging</param>
-        /// <param name="message">This message will be used in the loggin in the case aException = Error</param>
+        /// <param name="exception">The hibernate exception we are triaging.</param>
+        /// <param name="message">This message will be used in the logging in the case aException = Error.</param>
+        /// <returns>An exception that is a sub class either from <see cref="SemanticException"/> or from <see cref="Error"/>.</returns>
         protected virtual Exception TriageException(Exception exception, string message)
         {
             Exception result;
@@ -293,12 +314,14 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 {
                     repositorySqlException.Constraint = sqlException.GetConstraint();
                 }
+
                 result = repositorySqlException;
             }
             else
             {
                 result = new ExternalError(message, exception);
             }
+
             throw result;
         }
 
@@ -341,7 +364,8 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 string errmsg = string.Format(
                     @"Object already changed for request {0}, class {1}, {2}",
                     requestDescription,
-                    typeof(T).Name, entity != null ? entity.ToString() : string.Empty);
+                    typeof(T).Name,
+                    entity != null ? entity.ToString() : string.Empty);
                 Logger.Debug(errmsg, sose);
                 throw new ObjectAlreadyChangedException(entity);
             }
@@ -356,6 +380,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Implementations
                 {
                     throw e;
                 }
+
                 throw;
             }
 
