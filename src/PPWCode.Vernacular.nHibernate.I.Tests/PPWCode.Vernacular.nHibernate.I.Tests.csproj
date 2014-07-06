@@ -121,9 +121,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PPWCode.Vernacular.NHibernate.I.Test\PPWCode.Vernacular.NHibernate.I.Test.csproj">
+    <ProjectReference Include="..\PPWCode.Vernacular.nHibernate.I.Test\PPWCode.Vernacular.nHibernate.I.Test.csproj">
       <Project>{bd66b970-0474-468d-a95b-c42ddae75717}</Project>
-      <Name>PPWCode.Vernacular.NHibernate.I.Test</Name>
+      <Name>PPWCode.Vernacular.nHibernate.I.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\PPWCode.Vernacular.nHibernate.I\PPWCode.Vernacular.nHibernate.I.csproj">
       <Project>{83256ceb-ba1a-4614-9aca-653049ffbdac}</Project>
