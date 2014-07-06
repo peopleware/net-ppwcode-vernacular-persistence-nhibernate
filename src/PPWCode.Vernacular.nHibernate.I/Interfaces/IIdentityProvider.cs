@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     public interface IIdentityProvider
     {

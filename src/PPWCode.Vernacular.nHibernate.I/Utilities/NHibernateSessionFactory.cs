@@ -18,9 +18,9 @@ using System.Diagnostics.Contracts;
 using NHibernate;
 using NHibernate.Cfg;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class NHibernateSessionFactory : INHibernateSessionFactory
     {

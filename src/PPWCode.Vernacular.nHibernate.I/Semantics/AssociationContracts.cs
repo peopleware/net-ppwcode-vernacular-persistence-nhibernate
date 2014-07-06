@@ -19,7 +19,7 @@ using Iesi.Collections.Generic;
 
 using NHibernate;
 
-namespace PPWCode.Vernacular.nHibernate.I.Semantics
+namespace PPWCode.Vernacular.NHibernate.I.Semantics
 {
     public static class AssociationContracts
     {

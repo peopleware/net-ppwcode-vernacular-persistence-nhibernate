@@ -24,12 +24,12 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 
 using PPWCode.Vernacular.Exceptions.II;
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public abstract class AuditLogEventListener<T, U> :
         IRegisterEventListener,

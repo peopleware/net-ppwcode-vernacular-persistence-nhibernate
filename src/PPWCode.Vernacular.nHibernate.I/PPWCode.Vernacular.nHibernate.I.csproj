@@ -7,8 +7,8 @@
     <ProjectGuid>{83256CEB-BA1A-4614-9ACA-653049FFBDAC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PPWCode.Vernacular.nHibernate.I</RootNamespace>
-    <AssemblyName>PPWCode.Vernacular.nHibernate.I</AssemblyName>
+    <RootNamespace>PPWCode.Vernacular.NHibernate.I</RootNamespace>
+    <AssemblyName>PPWCode.Vernacular.NHibernate.I</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
@@ -64,6 +64,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <CodeContractsSuggestReadonly>True</CodeContractsSuggestReadonly>
     <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
+    <DocumentationFile>..\..\scratch\bin\PPWCode.Vernacular.NHibernate.I-Debug-AnyCPU\PPWCode.Vernacular.NHibernate.I.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <DefineConstants>TRACE</DefineConstants>
@@ -109,6 +110,7 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <DocumentationFile>..\..\scratch\bin\PPWCode.Vernacular.NHibernate.I-Release-AnyCPU\PPWCode.Vernacular.NHibernate.I.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">

@@ -15,9 +15,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public class NhProperties : INhProperties
     {

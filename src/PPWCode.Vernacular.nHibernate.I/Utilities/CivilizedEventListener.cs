@@ -17,10 +17,10 @@ using System.Linq;
 using NHibernate.Cfg;
 using NHibernate.Event;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class CivilizedEventListener :
         IRegisterEventListener,

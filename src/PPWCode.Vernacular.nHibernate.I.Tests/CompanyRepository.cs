@@ -16,10 +16,10 @@ using Castle.Core.Logging;
 
 using NHibernate;
 
-using PPWCode.Vernacular.nHibernate.I.Implementations;
-using PPWCode.Vernacular.nHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Implementations;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     public class CompanyRepository : Repository<Company, int>
     {

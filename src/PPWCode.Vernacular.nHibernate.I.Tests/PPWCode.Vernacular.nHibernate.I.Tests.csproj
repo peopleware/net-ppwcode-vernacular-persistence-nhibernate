@@ -7,8 +7,8 @@
     <ProjectGuid>{753CD3CA-A0A7-4340-A492-580942B74E83}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PPWCode.Vernacular.nHibernate.I.Tests</RootNamespace>
-    <AssemblyName>PPWCode.Vernacular.nHibernate.I.Tests</AssemblyName>
+    <RootNamespace>PPWCode.Vernacular.NHibernate.I.Tests</RootNamespace>
+    <AssemblyName>PPWCode.Vernacular.NHibernate.I.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

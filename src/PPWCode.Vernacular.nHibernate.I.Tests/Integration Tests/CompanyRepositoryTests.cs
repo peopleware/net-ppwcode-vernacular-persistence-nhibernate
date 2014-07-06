@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
-using PPWCode.Vernacular.nHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     public abstract class CompanyRepositoryTests : NHibernateFixture
     {

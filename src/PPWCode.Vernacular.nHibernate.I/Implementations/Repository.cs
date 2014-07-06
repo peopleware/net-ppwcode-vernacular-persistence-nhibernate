@@ -26,10 +26,10 @@ using NHibernate.Exceptions;
 
 using PPWCode.Util.OddsAndEnds.II.Extensions;
 using PPWCode.Vernacular.Exceptions.II;
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class Repository<T, TId> : IRepository<T, TId>
         where T : class, IIdentity<TId>

@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     [ContractClass(typeof(INhPropertiesContract))]
     public interface INhProperties

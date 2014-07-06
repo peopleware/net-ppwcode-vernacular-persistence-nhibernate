@@ -14,10 +14,10 @@
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.nHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Test;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     public class DirtyCheckingExampleTests : CompanyRepositoryTests
     {

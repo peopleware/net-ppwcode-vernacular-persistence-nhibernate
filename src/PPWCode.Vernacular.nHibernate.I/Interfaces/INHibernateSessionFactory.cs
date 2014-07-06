@@ -14,7 +14,7 @@
 
 using NHibernate;
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     public interface INHibernateSessionFactory
     {

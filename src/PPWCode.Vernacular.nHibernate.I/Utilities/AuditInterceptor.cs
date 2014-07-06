@@ -19,10 +19,10 @@ using System.Diagnostics.Contracts;
 using NHibernate;
 using NHibernate.Type;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Utilities
+namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class AuditInterceptor<T> : EmptyInterceptor
         where T : IEquatable<T>

@@ -24,11 +24,11 @@ using Castle.Core.Logging;
 using NHibernate;
 using NHibernate.Cfg;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.nHibernate.I.Implementations
+namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class NhFasterConfiguration : NhConfiguration
     {

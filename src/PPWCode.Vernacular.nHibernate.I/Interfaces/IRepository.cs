@@ -21,7 +21,7 @@ using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     [ContractClass(typeof(IRepositoryContract<,>))]
     public interface IRepository<T, in TId>
@@ -46,7 +46,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         T Get(IEnumerable<ICriterion> criteria);
 
         /// <summary>
-        ///     Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{NHibernate.Criterion.ICriterion})" />
+        ///     Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{ICriterion})" />
         ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
         /// </summary>
         /// <param name="criteria">List of criteria.</param>
@@ -70,7 +70,7 @@ namespace PPWCode.Vernacular.nHibernate.I.Interfaces
         /// <summary>
         ///     Same functionality as
         ///     <see
-        ///         cref="Find(System.Collections.Generic.IEnumerable{NHibernate.Criterion.ICriterion},System.Collections.Generic.IEnumerable{NHibernate.Criterion.Order})" />
+        ///         cref="Find(System.Collections.Generic.IEnumerable{ICriterion},System.Collections.Generic.IEnumerable{Order})" />
         ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
         /// </summary>
         /// <param name="criteria">List of criteria.</param>

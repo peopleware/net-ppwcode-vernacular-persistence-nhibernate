@@ -16,7 +16,7 @@ using System.Diagnostics.Contracts;
 
 using NHibernate.Cfg;
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     [ContractClass(typeof(IRegisterEventListenerContract))]
     public interface IRegisterEventListener

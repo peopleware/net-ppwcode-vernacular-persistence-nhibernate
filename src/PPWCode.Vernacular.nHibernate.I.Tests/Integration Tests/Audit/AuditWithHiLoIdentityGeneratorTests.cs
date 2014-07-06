@@ -20,12 +20,12 @@ using NHibernate;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.nHibernate.I.Interfaces;
-using PPWCode.Vernacular.nHibernate.I.Tests.Models;
-using PPWCode.Vernacular.nHibernate.I.Utilities;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests.Audit
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Audit
 {
     public class AuditWithHiLoIdentityGeneratorTests : CompanyRepositoryTests
     {

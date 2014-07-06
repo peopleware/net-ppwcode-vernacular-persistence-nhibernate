@@ -16,7 +16,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
-namespace PPWCode.Vernacular.nHibernate.I.Interfaces
+namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     [ContractClass(typeof(IMappingAssembliesContract))]
     public interface IMappingAssemblies

@@ -18,7 +18,7 @@ using System.Runtime.Serialization;
 
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.nHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
     [Serializable, DataContract(IsReference = true)]
     public class Company : AuditableVersionedPersistentObject<int, int>

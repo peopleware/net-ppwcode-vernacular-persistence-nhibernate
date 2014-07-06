@@ -20,6 +20,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.I.Test", "PPWCode.Vernacular.NHibernate.I.Test\PPWCode.Vernacular.NHibernate.I.Test.csproj", "{BD66B970-0474-468D-A95B-C42DDAE75717}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{5298160C-E339-40DA-8E26-8B0DA9411E1E}"
+	ProjectSection(SolutionItems) = preProject
+		..\default.ps1 = ..\default.ps1
+		..\init-psake.ps1 = ..\init-psake.ps1
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CBFD3A09-C921-40CA-99D4-C7E17140845F}"
 	ProjectSection(SolutionItems) = preProject
