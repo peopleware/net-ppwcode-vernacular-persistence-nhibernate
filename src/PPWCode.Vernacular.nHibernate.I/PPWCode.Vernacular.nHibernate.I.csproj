@@ -162,6 +162,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Implementations\ImmutableUserTypeBase.cs" />
+    <Compile Include="Semantics\AssociationContracts.cs" />
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
