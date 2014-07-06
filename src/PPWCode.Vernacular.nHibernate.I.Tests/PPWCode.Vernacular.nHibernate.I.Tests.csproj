@@ -165,9 +165,9 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="CompanyRepository.cs" />
-    <Compile Include="Integration Tests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
-    <Compile Include="Integration Tests\CompanyRepositoryTests.cs" />
-    <Compile Include="Integration Tests\DirtyCheckingExampleTest.cs" />
+    <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
+    <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />
+    <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyIdentification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
