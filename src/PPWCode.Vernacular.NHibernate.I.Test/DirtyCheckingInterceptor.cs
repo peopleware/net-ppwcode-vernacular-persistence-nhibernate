@@ -31,7 +31,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyCheckingInterceptor(IList<string> dirtyProps)
         {
-            Contract.Requires<ArgumentNullException>(dirtyProps != null);
+            Contract.Requires(dirtyProps != null);
 
             m_DirtyProps = dirtyProps;
         }

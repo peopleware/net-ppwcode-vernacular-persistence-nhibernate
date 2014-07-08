@@ -33,10 +33,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyChecking(Configuration configuration, ISessionFactory sessionFactory, Action<string> failCallback, Action<string> inconclusiveCallback)
         {
-            Contract.Requires<ArgumentNullException>(configuration != null);
-            Contract.Requires<ArgumentNullException>(sessionFactory != null);
-            Contract.Requires<ArgumentNullException>(failCallback != null);
-            Contract.Requires<ArgumentNullException>(inconclusiveCallback != null);
+            Contract.Requires(configuration != null);
+            Contract.Requires(sessionFactory != null);
+            Contract.Requires(failCallback != null);
+            Contract.Requires(inconclusiveCallback != null);
 
             m_Configuration = configuration;
             m_SessionFactory = sessionFactory;

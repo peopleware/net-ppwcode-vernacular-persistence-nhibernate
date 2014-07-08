@@ -34,10 +34,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected NhConfigurationBase(IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
         {
-            Contract.Requires<ArgumentNullException>(interceptor != null);
-            Contract.Requires<ArgumentNullException>(nhProperties != null);
-            Contract.Requires<ArgumentNullException>(mappingAssemblies != null);
-            Contract.Requires<ArgumentNullException>(registerEventListeners != null);
+            Contract.Requires(interceptor != null);
+            Contract.Requires(nhProperties != null);
+            Contract.Requires(mappingAssemblies != null);
+            Contract.Requires(registerEventListeners != null);
 
             m_Interceptor = interceptor;
             m_NhProperties = nhProperties;

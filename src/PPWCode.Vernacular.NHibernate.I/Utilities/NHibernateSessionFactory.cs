@@ -30,7 +30,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         public NHibernateSessionFactory(INhConfiguration nhConfiguration)
         {
-            Contract.Requires<ArgumentNullException>(nhConfiguration != null);
+            Contract.Requires(nhConfiguration != null);
 
             m_NhConfiguration = nhConfiguration;
         }

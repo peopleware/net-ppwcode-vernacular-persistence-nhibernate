@@ -38,7 +38,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         public NhFasterConfiguration(ILogger logger, IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
             : base(interceptor, nhProperties, mappingAssemblies, registerEventListeners)
         {
-            Contract.Requires<ArgumentNullException>(logger != null);
+            Contract.Requires(logger != null);
 
             m_Logger = logger;
         }

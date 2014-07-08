@@ -47,8 +47,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected AuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider)
         {
-            Contract.Requires<ArgumentNullException>(identityProvider != null);
-            Contract.Requires<ArgumentNullException>(timeProvider != null);
+            Contract.Requires(identityProvider != null);
+            Contract.Requires(timeProvider != null);
 
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;

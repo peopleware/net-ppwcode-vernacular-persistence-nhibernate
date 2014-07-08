@@ -40,8 +40,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected Repository(ILogger logger, ISession session)
         {
-            Contract.Requires<ArgumentNullException>(logger != null);
-            Contract.Requires<ArgumentNullException>(session != null);
+            Contract.Requires(logger != null);
+            Contract.Requires(session != null);
 
             m_Logger = logger;
             m_Session = session;
@@ -257,7 +257,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual void RunActionInsideATransaction(Action action)
         {
-            Contract.Requires<ArgumentNullException>(action != null);
+            Contract.Requires(action != null);
 
             RunFunctionInsideATransaction(
                 () =>
@@ -269,7 +269,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual TResult RunFunctionInsideATransaction<TResult>(Func<TResult> func)
         {
-            Contract.Requires<ArgumentNullException>(func != null);
+            Contract.Requires(func != null);
 
             if (Session.Transaction.IsActive)
             {
@@ -327,8 +327,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual void RunControlledAction(string requestDescription, Action action, T entity = null)
         {
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires<ArgumentNullException>(action != null);
+            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
+            Contract.Requires(action != null);
 
             RunControlledFunction(
                 requestDescription,
@@ -342,8 +342,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual TResult RunControlledFunction<TResult>(string requestDescription, Func<TResult> func, T entity = null)
         {
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires<ArgumentNullException>(func != null);
+            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
+            Contract.Requires(func != null);
 
             if (Logger.IsInfoEnabled)
             {
