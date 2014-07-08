@@ -3,14 +3,14 @@
 if [%1]==[] goto usage
 
 setlocal
-    set project=PPWCode.Vernacular.nHibernate.I
+    set project=PPWCode.Vernacular.NHibernate.I
 	set package_project=
 	if [%1]==[Debug] set package_project=1
 	if [%1]==[Release] set package_project=1
 	if defined package_project (
 		echo Packiging %project% ...
 		nuget restore -NoCache
-		nuget pack .\PPWCode.Vernacular.nHibernate.I\%project%.csproj -Build -Properties "Configuration=%1"
+		nuget pack .\PPWCode.Vernacular.NHibernate.I\%project%.csproj -Build -Properties "Configuration=%1"
 	)
 	
 	set publish_package=
@@ -23,14 +23,14 @@ setlocal
 		)
 	)
 	
-	set project=PPWCode.Vernacular.nHibernate.I.Test
+	set project=PPWCode.Vernacular.NHibernate.I.Test
 	set package_project=
 	if [%1]==[Debug] set package_project=1
 	if [%1]==[Release] set package_project=1
 	if defined package_project (
 		echo Packiging %project% ...
 		nuget restore -NoCache
-		nuget pack .\PPWCode.Vernacular.nHibernate.I.Test\%project%.csproj -Build -Properties "Configuration=%1"
+		nuget pack .\PPWCode.Vernacular.NHibernate.I.Test\%project%.csproj -Build -Properties "Configuration=%1"
 	)
 	
 	set publish_package=
