@@ -152,7 +152,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     that the interceptor <b>not</b> modify the <c>previousState</c>.
         /// </remarks>
         /// <returns>
-        ///     A boolean indicating whether the user modified the  <paramref name="currentState"/> in any way.
+        ///     A boolean indicating whether the user modified the  <paramref name="currentState" /> in any way.
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
@@ -193,7 +193,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             {
                 return !left.Equals(right);
             }
-            
+
             public Property(Type entityType, string propertyName)
             {
                 m_EntityType = entityType;
@@ -217,7 +217,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             ///     Indicates whether this instance and a specified object are equal.
             /// </summary>
             /// <returns>
-            ///     A boolean indicating whether <paramref name="obj" /> and this instance are the same type and represent the same value.
+            ///     A boolean indicating whether <paramref name="obj" /> and this instance are the same type and represent the same
+            ///     value.
             /// </returns>
             /// <param name="obj">Another object to compare to. </param>
             public override bool Equals(object obj)

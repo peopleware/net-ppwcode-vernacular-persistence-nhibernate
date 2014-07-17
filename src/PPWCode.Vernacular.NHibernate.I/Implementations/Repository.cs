@@ -295,7 +295,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         /// </summary>
         /// <param name="exception">The hibernate exception we are triaging.</param>
         /// <param name="message">This message will be used in the logging in the case aException = Error.</param>
-        /// <returns>An exception that is a sub class either from <see cref="SemanticException"/> or from <see cref="Error"/>.</returns>
+        /// <returns>An exception that is a sub class either from <see cref="SemanticException" /> or from <see cref="Error" />.</returns>
         protected virtual Exception TriageException(Exception exception, string message)
         {
             Exception result;

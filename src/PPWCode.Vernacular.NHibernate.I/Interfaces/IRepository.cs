@@ -29,7 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         where TId : IEquatable<TId>
     {
         /// <summary>
-        /// Gets an entity by its id.
+        ///     Gets an entity by its id.
         /// </summary>
         /// <param name="id">The given primary key.</param>
         /// <remarks>
@@ -51,11 +51,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </summary>
         /// <param name="criteria">List of criteria.</param>
         /// <param name="lockMode">Locking mode while creating the query.</param>
-        /// <returns>The (only) record that satisfies the given <paramref name="criteria"/>.</returns>
+        /// <returns>The (only) record that satisfies the given <paramref name="criteria" />.</returns>
         T Get(IEnumerable<ICriterion> criteria, LockMode lockMode);
 
         /// <summary>
-        /// Find the records complying with the given criteria and in the given order.
+        ///     Find the records complying with the given criteria and in the given order.
         /// </summary>
         /// <param name="criteria">The given criteria.</param>
         /// <param name="orders">The given ordering algorithm.</param>
@@ -64,7 +64,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     <para>All elements of the resulting set fulfill <paramref name="criteria" />.</para>
         ///     <para>The elements are ordered in the resulting set according to <paramref name="orders" />.</para>
         /// </remarks>
-        /// <returns>A list of the records satisfying the given <paramref name="criteria"/>, and in the given <paramref name="orders"/>.</returns>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
+        ///     <paramref name="orders" />.
+        /// </returns>
         IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders);
 
         /// <summary>
@@ -76,7 +79,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <param name="criteria">List of criteria.</param>
         /// <param name="orders">Sequence of expressions that will be used to sort the result, order is important.</param>
         /// <param name="lockMode">The locking mode.</param>
-        /// <returns>A list of the records satisfying the given <paramref name="criteria"/>, and in the given <paramref name="orders"/>.</returns>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
+        ///     <paramref name="orders" />.
+        /// </returns>
         IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode);
 
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
@@ -89,15 +95,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
         ///     <para>
-        ///         <see cref="GetById"/> returns an object that is "the same" as the result of this method.
-        ///             It has the same id, but the contents can be different, because the DB might be changed in the mean time.
+        ///         <see cref="GetById" /> returns an object that is "the same" as the result of this method.
+        ///         It has the same id, but the contents can be different, because the DB might be changed in the mean time.
         ///     </para>
         /// </remarks>
         /// <returns>The saved entity.</returns>
         T Save(T entity);
 
         /// <summary>
-        /// Update a given entity.
+        ///     Update a given entity.
         /// </summary>
         /// <param name="entity">The given entity.</param>
         /// <remarks>
@@ -118,7 +124,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <param name="entity">The given entity.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
-        ///     <para><see cref="GetById"/> throws an <see cref="IdNotFoundException{T,TId}"/>.</para>
+        ///     <para><see cref="GetById" /> throws an <see cref="IdNotFoundException{T,TId}" />.</para>
         /// </remarks>
         void Delete(T entity);
     }
