@@ -27,18 +27,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
             where M : class
             where O : class
         {
-            return many != null
-                   && NHibernateUtil.IsInitialized(many)
-                   && many.All(x => x != null && toOne(x) == one);
+            return many != null && (!NHibernateUtil.IsInitialized(many) || many.All(x => x != null && toOne(x) == one));
+        }
+
+        public static bool BiDirParentToChild<O, M>(O one, ISet<M> many, Func<M, O> toOne)
+            where M : class
+            where O : class
+        {
+            return BiDirOneToMany(one, many, toOne);
         }
 
         public static bool BiDirManyToOne<O, M>(M many, O one, Func<O, ISet<M>> toMany)
             where M : class
             where O : class
         {
-            return one != null
-                   && NHibernateUtil.IsInitialized(one)
-                   && toMany(one).Any(x => x == many);
+            return one == null || !NHibernateUtil.IsInitialized(one) || toMany(one).Any(x => x == many);
+        }
+
+        public static bool BiDirChildToParent<O, M>(M many, O one, Func<O, ISet<M>> toMany)
+            where M : class
+            where O : class
+        {
+            return BiDirManyToOne(many, one, toMany);
         }
     }
 }
