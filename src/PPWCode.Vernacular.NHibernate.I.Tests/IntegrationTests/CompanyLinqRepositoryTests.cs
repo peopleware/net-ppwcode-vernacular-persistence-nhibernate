@@ -59,7 +59,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
-        public void Can_Select_Company_with_Lazy_Identifications()
+        public void Can_Get_Company_with_Lazy_Identifications()
         {
             Company company = Repository.Get(
                 companies =>
@@ -71,7 +71,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
-        public void Can_Select_Company_with_Eager_Identifications()
+        public void Can_Get_Company_with_Eager_Identifications()
         {
             Company company = Repository.Get(
                 companies =>
@@ -84,7 +84,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
-        public void Can_Select_Company_with_Identification_1()
+        public void Can_Get_Company_with_Identification_1()
         {
             Company company = Repository.Get(
                 companies =>
@@ -96,7 +96,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
-        public void Can_Select_Company_with_Identification_1_with_join()
+        public void Can_Get_Company_with_Identification_1_with_join()
         {
             Company company = Repository.Get(
                 companies => from c in companies
@@ -108,7 +108,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
-        public void Can_Select_Company_with_Paging()
+        public void Can_FindPaged_Company()
         {
             IPagedList<Company> pagedList =
                 Repository.FindPaged(
