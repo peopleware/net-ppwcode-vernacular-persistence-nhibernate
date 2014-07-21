@@ -119,6 +119,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                                  select c,
                     companies => companies.OrderBy(c => c.Name));
             Assert.IsNotNull(pagedList);
+            Assert.IsFalse(pagedList.HasPreviousPage);
+            Assert.IsFalse(pagedList.HasNextPage);
+            Assert.AreEqual(1, pagedList.Items.Count);
+            Assert.AreEqual(1, pagedList.TotalCount);
+            Assert.AreEqual(1, pagedList.TotalPages);
         }
     }
 }
