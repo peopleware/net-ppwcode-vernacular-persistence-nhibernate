@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 using NHibernate;
 using NHibernate.Criterion;
@@ -45,6 +46,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         T Get(IEnumerable<ICriterion> criteria);
 
+        T Get(Func<IQueryable<T>, IQueryable<T>> func);
+
         /// <summary>
         ///     Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{ICriterion})" />
         ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
@@ -70,6 +73,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </returns>
         IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders);
 
+        IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy);
+
         /// <summary>
         ///     Same functionality as
         ///     <see
@@ -86,6 +91,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode);
 
         IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy);
 
         /// <summary>
         ///     A record is saved in the DB to represent <paramref name="entity" />.
@@ -158,6 +165,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
+        public T Get(Func<IQueryable<T>, IQueryable<T>> func)
+        {
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+
+            // The result should match the criteria, but this is not easy to express in contracts
+            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+
+            return default(T);
+        }
+
         public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
             Contract.Ensures(!Contract.Result<T>().IsTransient);
@@ -174,6 +193,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IList<T>);
         }
 
+        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        {
+            Contract.Ensures(Contract.Result<IList<T>>() != null);
+
+            return default(IList<T>);
+        }
+
         public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
         {
             Contract.Ensures(Contract.Result<IList<T>>() != null);
@@ -182,6 +208,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        {
+            Contract.Requires(pageIndex > 0);
+            Contract.Requires(pageSize > 0);
+            Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
+
+            return default(IPagedList<T>);
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
         {
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);

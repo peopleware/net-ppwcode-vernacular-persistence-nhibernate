@@ -17,12 +17,14 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Linq.Expressions;
 
 using Castle.Core.Logging;
 
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Exceptions;
+using NHibernate.Linq;
 
 using PPWCode.Util.OddsAndEnds.II.Extensions;
 using PPWCode.Vernacular.Exceptions.II;
@@ -67,6 +69,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => GetInternal(criteria));
         }
 
+        public T Get(Func<IQueryable<T>, IQueryable<T>> func)
+        {
+            return RunFunctionInsideATransaction(() => GetInternal(func));
+        }
+
         public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
             return RunFunctionInsideATransaction(() => GetInternal(criteria));
@@ -77,6 +84,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return RunFunctionInsideATransaction(() => FindInternal(criteria, orders));
         }
 
+        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        {
+            return RunFunctionInsideATransaction(() => FindInternal(func, orderBy));
+        }
+
         public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
         {
             return RunFunctionInsideATransaction(() => FindInternal(criteria, orders, lockMode));
@@ -85,6 +97,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
         {
             return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, criterions, orders));
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        {
+            return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, func, orderBy));
         }
 
         public virtual T Save(T entity)
@@ -135,6 +152,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
+        protected virtual T GetInternal(Func<IQueryable<T>, IQueryable<T>> func)
+        {
+            return RunControlledFunction(
+                "GetInternal",
+                () =>
+                {
+                    IQueryable<T> qry = func(CreateQueryable());
+                    T result = qry.SingleOrDefault();
+                    if (result == null)
+                    {
+                        throw new NotFoundException();
+                    }
+
+                    return result;
+                });
+        }
+
         protected virtual T GetInternal(IEnumerable<ICriterion> criteria, LockMode lockMode)
         {
             return RunControlledFunction(
@@ -160,6 +194,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 {
                     ICriteria qry = CreateCriteria(criteria, orders);
                     IList<T> result = qry.List<T>();
+                    return result;
+                });
+        }
+
+        protected virtual IList<T> FindInternal(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        {
+            return RunControlledFunction(
+                "FindInternal",
+                () =>
+                {
+                    IQueryable<T> qry = func(CreateQueryable());
+                    if (orderBy != null)
+                    {
+                        qry = orderBy(qry);
+                    }
+                    IList<T> result = qry.ToList();
                     return result;
                 });
         }
@@ -204,6 +254,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
+        protected IPagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        {
+            return RunControlledFunction(
+                "FindPagedInternal",
+                () =>
+                {
+                    IQueryable<T> qry = func(CreateQueryable());
+                    if (orderBy != null)
+                    {
+                        qry = orderBy(qry);
+                    }
+                    IFutureValue<int> futureCount = qry.ToFutureValue(x => x.Count());
+                    IEnumerable<T> qryResult = qry
+                        .Skip((pageIndex - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToFuture();
+
+                    PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, futureCount.Value);
+                    return result;
+                });
+        }
+
         protected virtual ICriteria CreateCriteria(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
         {
             ICriteria result = Session.CreateCriteria<T>();
@@ -224,6 +296,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
 
             return result;
+        }
+
+        protected virtual IQueryable<T> CreateQueryable()
+        {
+            return Session.Query<T>();
         }
 
         protected virtual T SaveInternal(T entity)

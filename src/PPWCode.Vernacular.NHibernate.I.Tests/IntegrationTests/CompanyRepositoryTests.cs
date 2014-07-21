@@ -16,7 +16,7 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public abstract class CompanyRepositoryTests : NHibernateFixture
     {

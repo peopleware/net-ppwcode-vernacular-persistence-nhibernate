@@ -17,7 +17,7 @@ using NUnit.Framework;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public class DirtyCheckingExampleTests : CompanyRepositoryTests
     {

@@ -47,6 +47,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected override void OnSetup()
         {
+            base.OnSetup();
+
             XmlConfigurator.Configure();
             if (UseProfiler)
             {
@@ -54,7 +56,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             SetupNHibernateSession();
-            base.OnSetup();
         }
 
         protected override void OnTeardown()

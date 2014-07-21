@@ -25,8 +25,9 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Audit
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
 {
+    // ReSharper disable InconsistentNaming
     public class AuditWithHiLoIdentityGeneratorTests : CompanyRepositoryTests
     {
         private const string UserName = "Danny";
