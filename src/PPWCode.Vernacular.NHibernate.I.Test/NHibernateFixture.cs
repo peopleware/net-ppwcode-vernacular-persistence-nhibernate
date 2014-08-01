@@ -21,6 +21,8 @@ using NHibernate.Cfg;
 using NHibernate.Context;
 using NHibernate.Tool.hbm2ddl;
 
+using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
@@ -42,7 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected virtual bool UseProfiler
         {
-            get { return false; }
+            get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
         }
 
         protected override void OnSetup()

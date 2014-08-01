@@ -12,11 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Linq;
-
 using NHibernate;
-using NHibernate.Linq;
+using NHibernate.Criterion;
+using NHibernate.SqlCommand;
 
 using NUnit.Framework;
 
@@ -26,17 +24,13 @@ using PPWCode.Vernacular.Persistence.II;
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     // ReSharper disable InconsistentNaming
-    public class CompanyLinqRepositoryTests : BaseCompanyTests
+    public class CompanyCriteriaTests : BaseCompanyTests
     {
         [Test]
         public void Can_Get_Company_with_Lazy_Identifications()
         {
-            Func<IQueryable<Company>, IQueryable<Company>> func =
-                companies =>
-                from c in companies
-                where c.Name == "Peopleware NV"
-                select c;
-            Company company = Repository.Get(func);
+            Company company = Repository.Get(
+                qry => qry.Add(Property.ForName("Name").Eq("Peopleware NV")));
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -44,13 +38,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void Can_Get_Company_with_Eager_Identifications()
         {
-            Func<IQueryable<Company>, IQueryable<Company>> func =
-                companies =>
-                (from c in companies
-                 where c.Name == "Peopleware NV"
-                 select c)
-                    .FetchMany(c => c.Identifications);
-            Company company = Repository.Get(func);
+            Company company = Repository.Get(
+                qry => qry
+                           .Add(Property.ForName("Name").Eq("Peopleware NV"))
+                           .SetFetchMode("Identifications", FetchMode.Eager));
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -58,12 +49,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void Can_Get_Company_with_Identification_1()
         {
-            Func<IQueryable<Company>, IQueryable<Company>> func =
-                companies =>
-                from c in companies
-                where c.Identifications.Any(ci => ci.Identification == "1")
-                select c;
-            Company company = Repository.Get(func);
+            DetachedCriteria detachedCriteria = DetachedCriteria
+                .For<CompanyIdentification>()
+                .Add(Property.ForName("Identification").Eq("1"))
+                .SetProjection(Projections.Id());
+            Company company = Repository.Get(qry => qry.Add(Subqueries.Exists(detachedCriteria)));
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -72,10 +62,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         public void Can_Get_Company_with_Identification_1_with_join()
         {
             Company company = Repository.Get(
-                companies => from c in companies
-                             from ci in c.Identifications
-                             where ci.Identification == "1"
-                             select c);
+                qry => qry
+                           .CreateAlias("Identifications", "i", JoinType.InnerJoin)
+                           .Add(Property.ForName("i.Identification").Eq("1")));
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -87,10 +76,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Repository.FindPaged(
                     1,
                     20,
-                    companies => from c in companies
-                                 where c.Name == "Peopleware NV"
-                                 orderby c.Name
-                                 select c);
+                    qry => qry
+                               .Add(Property.ForName("Name").Eq("Peopleware NV"))
+                               .AddOrder(Order.Asc("Name")));
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);
             Assert.IsFalse(pagedList.HasNextPage);

@@ -18,7 +18,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 
 using NHibernate;
-using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
 
@@ -44,55 +43,128 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <returns>The entity with the given id.</returns>
         T GetById(TId id);
 
-        T Get(IEnumerable<ICriterion> criteria);
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>
+        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
+        ///         <paramref name="func" /> in the DB.
+        ///     </para>
+        /// </remarks>
+        /// <returns>The entity that is filtered by the fucntion.</returns>
+        T Get(Func<ICriteria, ICriteria> func);
 
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>
+        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
+        ///         <paramref name="func" /> in the DB.
+        ///     </para>
+        /// </remarks>
+        /// <returns>The entity that is filtered by the fucntion.</returns>
+        T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>
+        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
+        ///         <paramref name="func" /> in the DB.
+        ///     </para>
+        /// </remarks>
+        /// <returns>The entity that is filtered by the fucntion.</returns>
         T Get(Func<IQueryable<T>, IQueryable<T>> func);
 
         /// <summary>
-        ///     Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{ICriterion})" />
-        ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        ///     Find the records complying with the given function.
         /// </summary>
-        /// <param name="criteria">List of criteria.</param>
-        /// <param name="lockMode">Locking mode while creating the query.</param>
-        /// <returns>The (only) record that satisfies the given <paramref name="criteria" />.</returns>
-        T Get(IEnumerable<ICriterion> criteria, LockMode lockMode);
-
-        /// <summary>
-        ///     Find the records complying with the given criteria and in the given order.
-        /// </summary>
-        /// <param name="criteria">The given criteria.</param>
-        /// <param name="orders">The given ordering algorithm.</param>
+        /// <param name="func">The given function.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="criteria" />.</para>
-        ///     <para>The elements are ordered in the resulting set according to <paramref name="orders" />.</para>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
         /// </remarks>
         /// <returns>
-        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
-        ///     <paramref name="orders" />.
+        ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
-        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders);
-
-        IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy);
+        IList<T> Find(Func<ICriteria, ICriteria> func);
 
         /// <summary>
-        ///     Same functionality as
-        ///     <see
-        ///         cref="Find(System.Collections.Generic.IEnumerable{ICriterion},System.Collections.Generic.IEnumerable{Order})" />
-        ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        ///     Find the records complying with the given function.
         /// </summary>
-        /// <param name="criteria">List of criteria.</param>
-        /// <param name="orders">Sequence of expressions that will be used to sort the result, order is important.</param>
-        /// <param name="lockMode">The locking mode.</param>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
+        /// </remarks>
         /// <returns>
-        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
-        ///     <paramref name="orders" />.
+        ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
-        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode);
+        IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func);
 
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy);
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
+
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func);
 
         /// <summary>
         ///     A record is saved in the DB to represent <paramref name="entity" />.
@@ -153,62 +225,72 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criteria)
+        public T Get(Func<ICriteria, ICriteria> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
 
             // The result should match the criteria, but this is not easy to express in contracts
             // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
+
+            return default(T);
+        }
+
+        public T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
+        {
+            Contract.Requires(func != null);
+            Contract.Ensures(!Contract.Result<T>().IsTransient);
+
+            // The result should match the criteria, but this is not easy to express in contracts
+            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
+            Contract.Ensures(Contract.Result<T>() != null);
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
 
         public T Get(Func<IQueryable<T>, IQueryable<T>> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
 
             // The result should match the criteria, but this is not easy to express in contracts
             // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
+        public IList<T> Find(Func<ICriteria, ICriteria> func)
         {
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
-
-            return default(T);
-        }
-
-        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
-        {
+            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
+            Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
@@ -216,8 +298,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IPagedList<T>);
         }
 
-        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy)
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(pageIndex > 0);
+            Contract.Requires(pageSize > 0);
+            Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
+
+            return default(IPagedList<T>);
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func)
+        {
+            Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
@@ -252,5 +345,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(entity != null);
         }
+    }
+
+    public abstract class IRepositoryContractBase<T, TId> : IRepository<T, TId>
+        where T : class, IIdentity<TId>
+        where TId : IEquatable<TId>
+    {
+        public abstract T GetById(TId id);
+        public abstract T Get(Func<ICriteria, ICriteria> func);
+        public abstract T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        public abstract T Get(Func<IQueryable<T>, IQueryable<T>> func);
+        public abstract IList<T> Find(Func<ICriteria, ICriteria> func);
+        public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        public abstract IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func);
+        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
+        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func);
+        public abstract T Save(T entity);
+        public abstract T Update(T entity);
+        public abstract void Delete(T entity);
     }
 }

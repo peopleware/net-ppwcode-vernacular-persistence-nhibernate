@@ -132,7 +132,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PPWCode.Util.OddsAndEnds.II">
+      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.0.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
