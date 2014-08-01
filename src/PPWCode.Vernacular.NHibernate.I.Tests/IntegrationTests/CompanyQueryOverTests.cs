@@ -13,11 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Linq;
 
 using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.SqlCommand;
 
 using NUnit.Framework;
 
@@ -35,7 +33,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
                 qry => qry.Where(c => c.Name == "Peopleware NV");
             Company company = Repository.Get(func);
-            
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -48,7 +46,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                            .Where(c => c.Name == "Peopleware NV")
                            .Fetch(c => c.Identifications).Eager;
             Company company = Repository.Get(func);
-            
+
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -63,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
                 qry => qry.WithSubquery.WhereExists(detachedQuery);
             Company company = Repository.Get(func);
-            
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -77,7 +75,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                            .Inner.JoinAlias(c => c.Identifications, () => ci)
                            .Where(() => ci.Identification == "1");
             Company company = Repository.Get(func);
-            
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }

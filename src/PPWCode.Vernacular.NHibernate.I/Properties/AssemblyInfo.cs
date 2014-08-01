@@ -14,7 +14,6 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-
 [assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I")]
 [assembly: AssemblyDescription("The PPWCode Vernacular NHibernate library version I.")]
 [assembly: AssemblyConfiguration("")]
