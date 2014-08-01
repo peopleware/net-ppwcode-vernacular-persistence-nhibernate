@@ -31,6 +31,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = Repository.Get(
                 qry => qry.Add(Property.ForName("Name").Eq("Peopleware NV")));
+            
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -42,6 +43,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 qry => qry
                            .Add(Property.ForName("Name").Eq("Peopleware NV"))
                            .SetFetchMode("Identifications", FetchMode.Eager));
+            
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -54,6 +56,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 .Add(Property.ForName("Identification").Eq("1"))
                 .SetProjection(Projections.Id());
             Company company = Repository.Get(qry => qry.Add(Subqueries.Exists(detachedCriteria)));
+            
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -65,6 +68,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 qry => qry
                            .CreateAlias("Identifications", "i", JoinType.InnerJoin)
                            .Add(Property.ForName("i.Identification").Eq("1")));
+            
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -79,6 +83,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                     qry => qry
                                .Add(Property.ForName("Name").Eq("Peopleware NV"))
                                .AddOrder(Order.Asc("Name")));
+           
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);
             Assert.IsFalse(pagedList.HasNextPage);

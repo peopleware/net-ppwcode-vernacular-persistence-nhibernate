@@ -37,6 +37,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 where c.Name == "Peopleware NV"
                 select c;
             Company company = Repository.Get(func);
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -51,6 +52,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                  select c)
                     .FetchMany(c => c.Identifications);
             Company company = Repository.Get(func);
+
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -64,6 +66,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 where c.Identifications.Any(ci => ci.Identification == "1")
                 select c;
             Company company = Repository.Get(func);
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -76,6 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                              from ci in c.Identifications
                              where ci.Identification == "1"
                              select c);
+
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
         }
@@ -91,6 +95,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                                  where c.Name == "Peopleware NV"
                                  orderby c.Name
                                  select c);
+
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);
             Assert.IsFalse(pagedList.HasNextPage);
