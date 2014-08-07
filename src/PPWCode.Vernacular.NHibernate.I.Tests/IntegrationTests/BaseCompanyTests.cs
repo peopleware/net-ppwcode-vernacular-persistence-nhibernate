@@ -56,7 +56,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 tran.Commit();
             }
 
-            Session.Evict(company);
+            Session.Clear();
         }
     }
 }
