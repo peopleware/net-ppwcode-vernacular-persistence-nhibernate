@@ -39,19 +39,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         public int GetHashCode(object x)
         {
-            if (x == null)
-            {
-                throw new ArgumentNullException("x");
-            }
-
-            return x.GetHashCode();
+            return x == null ? 0 : x.GetHashCode();
         }
 
         public abstract object NullSafeGet(IDataReader rs, string[] names, object owner);
 
         public abstract void NullSafeSet(IDbCommand cmd, object value, int index);
 
-        public abstract object DeepCopy(object value);
+        public object DeepCopy(object value)
+        {
+            // since object is immutable, return original
+            return value;
+        }
 
         public object Replace(object original, object target, object owner)
         {
