@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using NHibernate;
 using NHibernate.Criterion;
 
@@ -30,9 +28,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void Can_Get_Company_with_Lazy_Identifications()
         {
-            Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
-                qry => qry.Where(c => c.Name == "Peopleware NV");
-            Company company = Repository.Get(func);
+            Company company = Repository.Get(qry => qry.Where(c => c.Name == "Peopleware NV"));
 
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
@@ -41,11 +37,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void Can_Get_Company_with_Eager_Identifications()
         {
-            Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
-                qry => qry
-                           .Where(c => c.Name == "Peopleware NV")
-                           .Fetch(c => c.Identifications).Eager;
-            Company company = Repository.Get(func);
+            Company company = Repository.Get(
+                qry => qry.Where(c => c.Name == "Peopleware NV")
+                          .Fetch(c => c.Identifications).Eager);
 
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
@@ -56,11 +50,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             QueryOver<CompanyIdentification, CompanyIdentification> detachedQuery =
                 QueryOver.Of<CompanyIdentification>()
-                    .Where(ci => ci.Identification == "1")
-                    .Select(Projections.Id());
-            Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
-                qry => qry.WithSubquery.WhereExists(detachedQuery);
-            Company company = Repository.Get(func);
+                         .Where(ci => ci.Identification == "1")
+                         .Select(Projections.Id());
+            Company company = Repository.Get(qry => qry.WithSubquery.WhereExists(detachedQuery));
 
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
@@ -70,11 +62,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         public void Can_Get_Company_with_Identification_1_with_explicit_join()
         {
             CompanyIdentification ci = null;
-            Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
-                qry => qry
-                           .Inner.JoinAlias(c => c.Identifications, () => ci)
-                           .Where(() => ci.Identification == "1");
-            Company company = Repository.Get(func);
+            Company company = Repository.Get(
+                qry => qry.Inner.JoinAlias(c => c.Identifications, () => ci)
+                          .Where(() => ci.Identification == "1"));
 
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
@@ -83,11 +73,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void Can_FindPaged_Company()
         {
-            Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>> func =
-                qry => qry
-                           .Where(c => c.Name == "Peopleware NV")
-                           .OrderBy(c => c.Name).Asc();
-            IPagedList<Company> pagedList = Repository.FindPaged(1, 20, func);
+            IPagedList<Company> pagedList = Repository.FindPaged(
+                1,
+                20,
+                qry => qry.Where(c => c.Name == "Peopleware NV")
+                          .OrderBy(c => c.Name).Asc());
 
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);

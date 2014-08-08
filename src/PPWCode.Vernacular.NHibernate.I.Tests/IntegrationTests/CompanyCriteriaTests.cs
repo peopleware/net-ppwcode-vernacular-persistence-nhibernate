@@ -40,9 +40,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         public void Can_Get_Company_with_Eager_Identifications()
         {
             Company company = Repository.Get(
-                qry => qry
-                           .Add(Property.ForName("Name").Eq("Peopleware NV"))
-                           .SetFetchMode("Identifications", FetchMode.Eager));
+                qry => qry.Add(Property.ForName("Name").Eq("Peopleware NV"))
+                          .SetFetchMode("Identifications", FetchMode.Eager));
 
             Assert.IsNotNull(company);
             Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
@@ -65,9 +64,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         public void Can_Get_Company_with_Identification_1_with_join()
         {
             Company company = Repository.Get(
-                qry => qry
-                           .CreateAlias("Identifications", "i", JoinType.InnerJoin)
-                           .Add(Property.ForName("i.Identification").Eq("1")));
+                qry => qry.CreateAlias("Identifications", "i", JoinType.InnerJoin)
+                          .Add(Property.ForName("i.Identification").Eq("1")));
 
             Assert.IsNotNull(company);
             Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
@@ -80,9 +78,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Repository.FindPaged(
                     1,
                     20,
-                    qry => qry
-                               .Add(Property.ForName("Name").Eq("Peopleware NV"))
-                               .AddOrder(Order.Asc("Name")));
+                    qry => qry.Add(Property.ForName("Name").Eq("Peopleware NV"))
+                              .AddOrder(Order.Asc("Name")));
 
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);

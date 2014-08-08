@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 using NHibernate;
 
@@ -72,20 +71,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     Gets an entity by a function.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
-        ///         <paramref name="func" /> in the DB.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The entity that is filtered by the fucntion.</returns>
-        T Get(Func<IQueryable<T>, IQueryable<T>> func);
-
-        /// <summary>
         ///     Find the records complying with the given function.
         /// </summary>
         /// <param name="func">The given function.</param>
@@ -110,19 +95,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Find the records complying with the given function.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
-        /// </remarks>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="func" />.
-        /// </returns>
-        IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func);
 
         /// <summary>
         ///     Find a set of records complying with the given function.
@@ -151,20 +123,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Find a set of records complying with the given function.
-        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
-        /// </remarks>
-        /// <returns>
-        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
-        /// </returns>
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func);
 
         /// <summary>
         ///     A record is saved in the DB to represent <paramref name="entity" />.
@@ -251,19 +209,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Get(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            Contract.Requires(func != null);
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-
-            // The result should match the criteria, but this is not easy to express in contracts
-            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
-            Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
-
-            return default(T);
-        }
-
         public IList<T> Find(Func<ICriteria, ICriteria> func)
         {
             Contract.Requires(func != null);
@@ -273,14 +218,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         }
 
         public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(func != null);
-            Contract.Ensures(Contract.Result<IList<T>>() != null);
-
-            return default(IList<T>);
-        }
-
-        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func)
         {
             Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
@@ -299,16 +236,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(func != null);
-            Contract.Requires(pageIndex > 0);
-            Contract.Requires(pageSize > 0);
-            Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
-
-            return default(IPagedList<T>);
-        }
-
-        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func)
         {
             Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
@@ -354,13 +281,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public abstract T GetById(TId id);
         public abstract T Get(Func<ICriteria, ICriteria> func);
         public abstract T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract T Get(Func<IQueryable<T>, IQueryable<T>> func);
         public abstract IList<T> Find(Func<ICriteria, ICriteria> func);
         public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func);
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func);
         public abstract T Save(T entity);
         public abstract T Update(T entity);
         public abstract void Delete(T entity);

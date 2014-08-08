@@ -25,7 +25,6 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
-using NHibernate.Linq;
 
 using PPWCode.Util.OddsAndEnds.II.Extensions;
 using PPWCode.Vernacular.Exceptions.II;
@@ -75,11 +74,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return EnsureNhTransaction(() => GetInternal(func));
         }
 
-        public T Get(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return EnsureNhTransaction(() => GetInternal(func));
-        }
-
         public virtual IList<T> Find(Func<ICriteria, ICriteria> func)
         {
             return EnsureNhTransaction(() => FindInternal(func));
@@ -90,22 +84,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return EnsureNhTransaction(() => FindInternal(func));
         }
 
-        public IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return EnsureNhTransaction(() => FindInternal(func));
-        }
-
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
             return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
-        }
-
-        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func)
         {
             return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
@@ -158,23 +142,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual T GetInternal(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return EnsureControlledEnvironment(
-                "GetInternal",
-                () =>
-                {
-                    IQueryable<T> qry = func(CreateQueryable());
-                    T result = qry.SingleOrDefault();
-                    if (result == null)
-                    {
-                        throw new NotFoundException();
-                    }
-
-                    return result;
-                });
-        }
-
         protected virtual T GetInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
             return EnsureControlledEnvironment(
@@ -212,18 +179,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 {
                     IQueryOver<T> qry = func(CreateQueryOver());
                     IList<T> result = qry.List<T>();
-                    return result;
-                });
-        }
-
-        protected virtual IList<T> FindInternal(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return EnsureControlledEnvironment(
-                "FindInternal",
-                () =>
-                {
-                    IQueryable<T> qry = func(CreateQueryable());
-                    IList<T> result = qry.ToList();
                     return result;
                 });
         }
@@ -277,35 +232,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected IPagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return EnsureControlledEnvironment(
-                "FindPagedInternal",
-                () =>
-                {
-                    IQueryable<T> qry = func(CreateQueryable());
-
-                    IFutureValue<int> rowCount = qry
-                        .ToFutureValue(x => x.Count());
-
-                    IEnumerable<T> qryResult = qry
-                        .Skip((pageIndex - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToFuture();
-
-                    PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
-                    return result;
-                });
-        }
-
         protected virtual ICriteria CreateCriteria()
         {
             return Session.CreateCriteria<T>();
-        }
-
-        protected virtual IQueryable<T> CreateQueryable()
-        {
-            return Session.Query<T>();
         }
 
         protected virtual IQueryOver<T, T> CreateQueryOver()
