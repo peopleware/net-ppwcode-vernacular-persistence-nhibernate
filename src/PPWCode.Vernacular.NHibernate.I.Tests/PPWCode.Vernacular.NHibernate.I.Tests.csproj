@@ -173,7 +173,7 @@
     </Compile>
     <Compile Include="CompanyRepository.cs" />
     <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
-    <Compile Include="IntegrationTests\BaseCompanyTests.cs" />
+    <Compile Include="IntegrationTests\CompanyBaseTests.cs" />
     <Compile Include="IntegrationTests\CompanyCriteriaTests.cs" />
     <Compile Include="IntegrationTests\CompanyQueryOverTests.cs" />
     <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />

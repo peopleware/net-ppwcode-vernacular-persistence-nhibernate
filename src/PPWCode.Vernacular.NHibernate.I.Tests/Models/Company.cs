@@ -13,9 +13,12 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using Iesi.Collections.Generic;
+
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
@@ -23,8 +26,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [Serializable, DataContract(IsReference = true)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Identifications != null);
+            Contract.Invariant(AssociationContracts.BiDirOneToMany(this, Identifications, i => i.Company));
+        }
+
         [DataMember]
-        private IList<CompanyIdentification> m_Identifications;
+        private ISet<CompanyIdentification> m_Identifications = new HashedSet<CompanyIdentification>();
 
         [DataMember]
         private string m_Name;
@@ -35,10 +45,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             set { m_Name = value; }
         }
 
-        public virtual IList<CompanyIdentification> Identifications
+        public virtual ISet<CompanyIdentification> Identifications
         {
             get { return m_Identifications; }
-            set { m_Identifications = value; }
+        }
+
+        protected internal virtual void RemoveIdentification(CompanyIdentification companyIdentification)
+        {
+            Contract.Requires(companyIdentification != null);
+            Contract.Ensures(!Identifications.Contains(companyIdentification));
+
+            m_Identifications.Remove(companyIdentification);
+        }
+
+        protected internal virtual void AddIdentification(CompanyIdentification companyIdentification)
+        {
+            Contract.Requires(companyIdentification != null);
+            Contract.Ensures(Identifications.Contains(companyIdentification));
+
+            m_Identifications.Add(companyIdentification);
         }
     }
 }

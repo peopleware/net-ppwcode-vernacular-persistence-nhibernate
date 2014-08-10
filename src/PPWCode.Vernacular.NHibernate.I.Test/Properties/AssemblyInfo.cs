@@ -14,6 +14,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+
 [assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Test")]
 [assembly: AssemblyDescription("Utility code to test NHibernate using SqlLite")]
 [assembly: AssemblyConfiguration("")]

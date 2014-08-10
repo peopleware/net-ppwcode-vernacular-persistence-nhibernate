@@ -24,7 +24,7 @@ using PPWCode.Vernacular.Persistence.II;
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     // ReSharper disable InconsistentNaming
-    public class CompanyCriteriaTests : BaseCompanyTests
+    public class CompanyCriteriaTests : CompanyBaseTests
     {
         [Test]
         public void Can_Get_Company_with_Lazy_Identifications()

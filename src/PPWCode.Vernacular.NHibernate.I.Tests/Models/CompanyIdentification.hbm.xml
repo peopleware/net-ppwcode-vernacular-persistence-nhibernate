@@ -10,7 +10,6 @@
         <id name="Id">
             <generator class="hilo" />
         </id>
-        <version name="PersistenceVersion" generated="never" unsaved-value="0" />
 
         <property name="CreatedAt" />
         <property name="CreatedBy" length="128" />
@@ -19,6 +18,8 @@
 
         <property name="Identification" length="128" not-null="true" />
         <property name="Number" />
+
+        <many-to-one name="Company" column="CompanyId" not-null="true" foreign-key="FK_Company"/>
     </class>
 
 </hibernate-mapping>

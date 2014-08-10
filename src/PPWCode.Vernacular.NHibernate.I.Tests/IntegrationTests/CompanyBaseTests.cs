@@ -1,4 +1,4 @@
-// Copyright 2014 by PeopleWare n.v..
+ï»¿// Copyright 2014 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
+{
+    public class CompanyBaseTests : CompanyRepositoryTests
+    {
+        protected override void OnSetup()
+        {
+            base.OnSetup();
 
-[assembly: AssemblyCompany("Peopleware n.v.")]
-[assembly: AssemblyProduct("PPWCode Vernacular NHibernate")]
-[assembly: AssemblyCopyright("Copyright © PeopleWare n.v. 2014")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("1.0.0")]
-[assembly: AssemblyFileVersion("1.0.1")]
-[assembly: AssemblyInformationalVersion("1.0.1")]
+            CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+        }
+    }
+}

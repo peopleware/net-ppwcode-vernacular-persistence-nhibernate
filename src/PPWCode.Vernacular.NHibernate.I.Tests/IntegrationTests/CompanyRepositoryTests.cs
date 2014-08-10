@@ -12,6 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
+
+using NHibernate;
+
+using NUnit.Framework;
+
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
@@ -27,6 +33,50 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             base.OnSetup();
 
             Repository = new CompanyRepository(Session);
+        }
+
+        protected enum CompanyCreationType
+        {
+            NO_CHILDREN,
+            WITH_2_CHILDREN
+        }
+
+        protected Company CreateCompany(CompanyCreationType companyCreationType)
+        {
+            Company savedCompany;
+            Company company =
+                new Company
+                {
+                    Name = "Peopleware NV"
+                };
+
+            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)
+                {
+                    // ReSharper disable ObjectCreationAsStatement
+                    new CompanyIdentification
+                    {
+                        Identification = "1",
+                        Company = company
+                    };
+                    new CompanyIdentification
+                    {
+                        Identification = "2",
+                        Company = company
+                    };
+                    // ReSharper restore ObjectCreationAsStatement
+                }
+                savedCompany = Repository.MakePersistent(company);
+
+                trans.Commit();
+            }
+            Session.Clear();
+
+            Assert.AreNotSame(company, savedCompany);
+            Assert.AreEqual(companyCreationType == CompanyCreationType.NO_CHILDREN ? 0 : 2, savedCompany.Identifications.Count);
+
+            return savedCompany;
         }
     }
 }

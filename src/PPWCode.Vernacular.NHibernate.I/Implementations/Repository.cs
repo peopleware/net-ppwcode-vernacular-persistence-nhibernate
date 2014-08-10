@@ -94,19 +94,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
 
-        public virtual T Save(T entity)
+        public virtual T MakePersistent(T entity)
         {
-            return EnsureNhTransaction(() => SaveInternal(entity));
+            return EnsureNhTransaction(() => MakePersistentInternal(entity));
         }
 
-        public virtual T Update(T entity)
+        public virtual void MakeTransient(T entity)
         {
-            return EnsureNhTransaction(() => UpdateInternal(entity));
-        }
-
-        public virtual void Delete(T entity)
-        {
-            EnsureNhTransaction(() => DeleteInternal(entity));
+            EnsureNhTransaction(() => MakeTransientInternal(entity));
         }
 
         protected virtual T GetByIdInternal(TId id)
@@ -242,33 +237,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return Session.QueryOver<T>();
         }
 
-        protected virtual T SaveInternal(T entity)
+        protected virtual T MakePersistentInternal(T entity)
         {
-            return EnsureControlledEnvironment(
-                "SaveInternal",
-                () =>
-                {
-                    Session.Save(entity);
-                    return entity;
-                },
-                entity);
+            return EnsureControlledEnvironment("MakePersistentInternal", () => Session.Merge(entity), entity);
         }
 
-        protected virtual T UpdateInternal(T entity)
+        protected virtual void MakeTransientInternal(T entity)
         {
-            return EnsureControlledEnvironment(
-                "UpdateInternal",
-                () =>
-                {
-                    T result = Session.Merge(entity);
-                    return result;
-                },
-                entity);
-        }
-
-        protected virtual void DeleteInternal(T entity)
-        {
-            EnsureControlledEnvironment("DeleteInternal", () => Session.Delete(entity), entity);
+            EnsureControlledEnvironment("MakeTransientInternal", () => Session.Delete(entity), entity);
         }
 
         protected virtual void EnsureNhTransaction(Action action)

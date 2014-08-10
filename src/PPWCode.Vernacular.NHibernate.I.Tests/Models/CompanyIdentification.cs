@@ -13,20 +13,31 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
     [Serializable, DataContract(IsReference = true)]
-    public class CompanyIdentification : AuditableVersionedPersistentObject<int, int>
+    public class CompanyIdentification : AuditablePersistentObject<int>
     {
+        [ContractInvariantMethod]
+        private void ObjectsInvariant()
+        {
+            Contract.Invariant(AssociationContracts.BiDirManyToOne(this, Company, c => c.Identifications));
+        }
+
         [DataMember]
         private string m_Identification;
 
         [DataMember]
         private int m_Number;
+
+        [DataMember]
+        private Company m_Company;
 
         public virtual string Identification
         {
@@ -38,6 +49,31 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
             get { return m_Number; }
             set { m_Number = value; }
+        }
+
+        public virtual Company Company
+        {
+            get { return m_Company; }
+            set
+            {
+                Contract.Ensures(Company == value);
+                // ReSharper disable once PossibleNullReferenceException
+                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || !Contract.OldValue(Company).Identifications.Contains(this));
+                Contract.Ensures(Company == null || Company.Identifications.Contains(this));
+
+                if (Company != value)
+                {
+                    if (m_Company != null)
+                    {
+                        m_Company.RemoveIdentification(this);
+                    }
+                    m_Company = value;
+                    if (m_Company != null)
+                    {
+                        m_Company.AddIdentification(this);
+                    }
+                }
+            }
         }
     }
 }

@@ -18,10 +18,11 @@
         <property name="LastModifiedBy" length="128" />
 
         <property name="Name" length="128" not-null="true" />
-        <bag name="Identifications" cascade="all">
-            <key column="IdentificationId" />
+
+        <set name="Identifications" inverse="true" cascade="all">
+            <key column="CompanyId" />
             <one-to-many class="CompanyIdentification" />
-        </bag>
+        </set>
     </class>
 
 </hibernate-mapping>

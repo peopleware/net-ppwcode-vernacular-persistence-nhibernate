@@ -12,37 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NHibernate;
+
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Test;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public class DirtyCheckingExampleTests : CompanyRepositoryTests
+    public class DirtyCheckingExampleTests : CompanyBaseTests
     {
         [Test]
         public void DirtyCheckingTest()
         {
-            CompanyIdentification companyIdentification1 =
-                new CompanyIdentification
-                {
-                    Identification = "1"
-                };
-            CompanyIdentification companyIdentification2 =
-                new CompanyIdentification
-                {
-                    Identification = "2"
-                };
-            Company company =
-                new Company
-                {
-                    Name = "Peopleware NV",
-                    Identifications = new[] { companyIdentification1, companyIdentification2 }
-                };
-            Repository.Save(company);
-            Session.Evict(company);
-
             /* Set Number to null (but Number is defined as int) */
             /*
             using (ISession session = NhConfigurator.SessionFactory.OpenSession())

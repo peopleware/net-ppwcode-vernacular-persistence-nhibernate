@@ -16,7 +16,7 @@
     <description>$description$</description>
 
     <releaseNotes>
-      1.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
+      1.0.1 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
@@ -28,8 +28,8 @@
       <dependency id="Castle.Core" version="[3.3.0,)" />
       <dependency id="Castle.Windsor" version="[3.3.0,)" />
       <dependency id="Castle.LoggingFacility" version="[3.3.0,)" />
-      <dependency id="NHibernate" version="[3.3,3.4)" />
-      <dependency id="Iesi.Collections" version="[3.2,4.0)" />
+      <dependency id="NHibernate" version="[3.3,4.0)" />
+      <dependency id="Iesi.Collections" version="[3.3,4.0)" />
       <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.Persistence.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />

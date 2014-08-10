@@ -53,7 +53,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///         <paramref name="func" /> in the DB.
         ///     </para>
         /// </remarks>
-        /// <returns>The entity that is filtered by the fucntion.</returns>
+        /// <returns>The entity that is filtered by the function.</returns>
         T Get(Func<ICriteria, ICriteria> func);
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///         <paramref name="func" /> in the DB.
         ///     </para>
         /// </remarks>
-        /// <returns>The entity that is filtered by the fucntion.</returns>
+        /// <returns>The entity that is filtered by the function.</returns>
         T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <param name="func">The given function.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
         ///     A list of the records satisfying the given <paramref name="func" />.
@@ -89,7 +89,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <param name="func">The given function.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
         ///     A list of the records satisfying the given <paramref name="func" />.
@@ -100,7 +100,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     Find a set of records complying with the given function.
         ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
         /// </summary>
-        /// <param name="func">The given function.</param>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
@@ -114,7 +116,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     Find a set of records complying with the given function.
         ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
         /// </summary>
-        /// <param name="func">The given function.</param>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
@@ -137,23 +141,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     </para>
         /// </remarks>
         /// <returns>The saved entity.</returns>
-        T Save(T entity);
-
-        /// <summary>
-        ///     Update a given entity.
-        /// </summary>
-        /// <param name="entity">The given entity.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="IdNotFoundException{T,TId}" /> is thrown when there is no record with the given
-        ///         <code><paramref name="entity" />.<see cref="IIdentity{T}.Id" /></code> in the DB. For this exception, it
-        ///         applies that
-        ///         <code><see cref="IdNotFoundException{T,TId}" />.<see cref="IdNotFoundException{T,TId}.Id" /> == id</code>.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The updated entity.</returns>
-        T Update(T entity);
+        T MakePersistent(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -163,7 +151,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     <h3>Extra post conditions</h3>
         ///     <para><see cref="GetById" /> throws an <see cref="IdNotFoundException{T,TId}" />.</para>
         /// </remarks>
-        void Delete(T entity);
+        void MakeTransient(T entity);
     }
 
     // ReSharper disable InconsistentNaming
@@ -245,10 +233,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IPagedList<T>);
         }
 
-        public T Save(T entity)
+        public T MakePersistent(T entity)
         {
             Contract.Requires(entity != null);
-            Contract.Requires(entity.IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
@@ -256,37 +243,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Update(T entity)
-        {
-            Contract.Requires(entity != null);
-            Contract.Requires(!entity.IsTransient);
-            Contract.Ensures(Contract.Result<T>() != null);
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, entity.Id));
-            Contract.EnsuresOnThrow<NotFoundException>(true, "entity does not exist in the DB");
-
-            return default(T);
-        }
-
-        public void Delete(T entity)
+        public void MakeTransient(T entity)
         {
             Contract.Requires(entity != null);
         }
-    }
-
-    public abstract class IRepositoryContractBase<T, TId> : IRepository<T, TId>
-        where T : class, IIdentity<TId>
-        where TId : IEquatable<TId>
-    {
-        public abstract T GetById(TId id);
-        public abstract T Get(Func<ICriteria, ICriteria> func);
-        public abstract T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract IList<T> Find(Func<ICriteria, ICriteria> func);
-        public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
-        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-        public abstract T Save(T entity);
-        public abstract T Update(T entity);
-        public abstract void Delete(T entity);
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Data;
 
 using Moq;
 
@@ -48,15 +49,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
         [Test]
         public void Created_Audit_Fields_Should_be_Set_After_Save()
         {
-            Company company =
-                new Company
-                {
-                    Name = "Peopleware NV"
-                };
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
-            Company savedCompany = Repository.Save(company);
-
-            Assert.AreSame(company, savedCompany);
             Assert.AreEqual(UserName, company.CreatedBy);
             Assert.AreEqual(m_Now, company.CreatedAt);
         }
@@ -64,30 +58,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
         [Test]
         public void Created_Audit_Fields_Should_be_Set_After_Save_With_Children()
         {
-            CompanyIdentification companyIdentification1 =
-                new CompanyIdentification
-                {
-                    Identification = "1"
-                };
-            CompanyIdentification companyIdentification2 =
-                new CompanyIdentification
-                {
-                    Identification = "2"
-                };
-            Company company =
-                new Company
-                {
-                    Name = "Peopleware NV",
-                    Identifications = new[] { companyIdentification1, companyIdentification2 }
-                };
+            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company savedCompany = Repository.Save(company);
-
-            Assert.AreSame(company, savedCompany);
             Assert.AreEqual(UserName, company.CreatedBy);
             Assert.AreEqual(m_Now, company.CreatedAt);
 
-            Assert.AreEqual(2, company.Identifications.Count);
             foreach (CompanyIdentification companyIdentification in company.Identifications)
             {
                 Assert.AreEqual(UserName, companyIdentification.CreatedBy);
@@ -98,15 +73,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
         [Test]
         public void LastModified_Audit_Fields_Should_be_Null_After_Save()
         {
-            Company company =
-                new Company
-                {
-                    Name = "Peopleware NV"
-                };
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
-            Company savedCompany = Repository.Save(company);
-
-            Assert.AreSame(company, savedCompany);
             Assert.IsNull(company.LastModifiedAt);
             Assert.IsNull(company.LastModifiedBy);
         }
@@ -114,26 +82,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
         [Test]
         public void LastModified_Audit_Fields_Should_be_Null_After_Save_With_Children()
         {
-            CompanyIdentification companyIdentification1 =
-                new CompanyIdentification
-                {
-                    Identification = "1"
-                };
-            CompanyIdentification companyIdentification2 =
-                new CompanyIdentification
-                {
-                    Identification = "2"
-                };
-            Company company =
-                new Company
-                {
-                    Name = "Peopleware NV",
-                    Identifications = new[] { companyIdentification1, companyIdentification2 }
-                };
+            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company savedCompany = Repository.Save(company);
-
-            Assert.AreSame(company, savedCompany);
             Assert.IsNull(company.LastModifiedAt);
             Assert.IsNull(company.LastModifiedBy);
 

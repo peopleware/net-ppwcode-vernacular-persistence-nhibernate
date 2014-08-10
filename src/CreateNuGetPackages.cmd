@@ -8,7 +8,7 @@ setlocal
 	if [%1]==[Debug] set package_project=1
 	if [%1]==[Release] set package_project=1
 	if defined package_project (
-		echo Packiging %project% ...
+		echo Packaging %project% ...
 		nuget restore -NoCache
 		nuget pack .\PPWCode.Vernacular.NHibernate.I\%project%.csproj -Build -Properties "Configuration=%1"
 	)
@@ -28,7 +28,7 @@ setlocal
 	if [%1]==[Debug] set package_project=1
 	if [%1]==[Release] set package_project=1
 	if defined package_project (
-		echo Packiging %project% ...
+		echo Packaging %project% ...
 		nuget restore -NoCache
 		nuget pack .\PPWCode.Vernacular.NHibernate.I.Test\%project%.csproj -Build -Properties "Configuration=%1"
 	)
@@ -50,7 +50,7 @@ goto eob
 echo.
 echo REQ p1=Specifiy configuration build (Debug, Release, ...)
 echo OPT p2=Publish to nuget source (local, ...)
-echo OPT p3=Version of package (1.0.0
+echo OPT p3=Version of package (1.0.0)
 echo.
 echo Example:
 echo   call CreateNuGetPackage Release local 1.0.0
