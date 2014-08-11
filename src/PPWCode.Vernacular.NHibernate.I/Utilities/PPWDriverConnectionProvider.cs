@@ -14,16 +14,17 @@
 
 using System;
 using System.Data;
+using System.Text;
 
+using NHibernate;
 using NHibernate.Connection;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
-        public PPWDriverConnectionProvider()
-        {
-        }
+        private static readonly IInternalLogger s_Log = LoggerProvider.LoggerFor(typeof(PPWDriverConnectionProvider));
+
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
         ///     In some cases we have seen that the <paramref name="conn" /> was not known (aka null), the result was
@@ -40,6 +41,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             if (conn != null)
             {
                 base.CloseConnection(conn);
+            }
+            else if (s_Log.IsWarnEnabled)
+            {
+                StringBuilder sb = new StringBuilder()
+                    .AppendLine("CloseConnection called with <null> conn.")
+                    .AppendLine()
+                    .AppendLine("Stack Trace :")
+                    .AppendLine()
+                    .AppendLine(Environment.StackTrace)
+                    .AppendLine();
+                s_Log.Warn(sb.ToString());
             }
         }
     }
