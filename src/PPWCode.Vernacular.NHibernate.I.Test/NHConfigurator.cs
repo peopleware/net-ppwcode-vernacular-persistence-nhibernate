@@ -41,6 +41,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         if (s_Configuration == null)
                         {
                             s_Configuration = new Configuration()
+                                .DataBaseIntegration(
+                                    db =>
+                                    {
+                                        db.Dialect<SQLiteDialect>();
+                                        db.Driver<SQLite20Driver>();
+                                    })
                                 .Configure()
                                 .DataBaseIntegration(
                                     db =>
@@ -50,7 +56,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                                         db.ConnectionProvider<TestConnectionProvider>();
                                         db.ConnectionString = ConnectionString;
                                     })
-                                .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
+                                .SetProperty(Environment.CurrentSessionContextClass, "thread_static")
+                                .SetProperty(Environment.ShowSql, "true")
+                                .SetProperty(Environment.FormatSql, "true");
 
                             IDictionary<string, string> props = s_Configuration.Properties;
                             if (props.ContainsKey(Environment.ConnectionStringName))
