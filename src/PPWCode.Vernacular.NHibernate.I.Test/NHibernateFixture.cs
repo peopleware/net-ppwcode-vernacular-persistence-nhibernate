@@ -47,26 +47,37 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
         }
 
+        protected override void OnFixtureSetup()
+        {
+            base.OnFixtureSetup();
+
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Initialize();
+            }
+        }
+
+        protected override void OnFixtureTeardown()
+        {
+            base.OnFixtureTeardown();
+
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Stop();
+            }
+        }
+
         protected override void OnSetup()
         {
             base.OnSetup();
 
             XmlConfigurator.Configure();
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Initialize();
-            }
-
             SetupNHibernateSession();
         }
 
         protected override void OnTeardown()
         {
             TearDownNHibernateSession();
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Stop();
-            }
 
             base.OnTeardown();
         }
