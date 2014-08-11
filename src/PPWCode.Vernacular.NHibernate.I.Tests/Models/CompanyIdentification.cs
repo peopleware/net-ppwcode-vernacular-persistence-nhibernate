@@ -67,6 +67,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                     {
                         m_Company.RemoveIdentification(this);
                     }
+
                     m_Company = value;
                     if (m_Company != null)
                     {

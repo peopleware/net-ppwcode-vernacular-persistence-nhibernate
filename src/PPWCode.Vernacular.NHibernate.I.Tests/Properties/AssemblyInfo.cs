@@ -14,6 +14,7 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
+
 [assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
 [assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
 [assembly: AssemblyConfiguration("")]

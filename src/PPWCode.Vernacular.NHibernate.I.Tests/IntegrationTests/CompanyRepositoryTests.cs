@@ -37,7 +37,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         protected enum CompanyCreationType
         {
+            /// <summary>
+            ///     Save initially a company without any identifications.
+            /// </summary>
             NO_CHILDREN,
+
+            /// <summary>
+            ///     Save initially a company with 2 identifications, they are identified by a Identification 1 and 2.
+            /// </summary>
             WITH_2_CHILDREN
         }
 
@@ -54,23 +61,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             {
                 if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)
                 {
-                    // ReSharper disable ObjectCreationAsStatement
+                    // ReSharper disable once ObjectCreationAsStatement
                     new CompanyIdentification
                     {
                         Identification = "1",
                         Company = company
                     };
+
+                    // ReSharper disable once ObjectCreationAsStatement
                     new CompanyIdentification
                     {
                         Identification = "2",
                         Company = company
                     };
-                    // ReSharper restore ObjectCreationAsStatement
                 }
-                savedCompany = Repository.MakePersistent(company);
 
+                savedCompany = Repository.MakePersistent(company);
                 trans.Commit();
             }
+
             Session.Clear();
 
             Assert.AreNotSame(company, savedCompany);
