@@ -40,8 +40,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        public abstract T MakePersistent(T entity);
+        public abstract T Save(T entity);
 
-        public abstract void MakeTransient(T entity);
+        public abstract void Delete(T entity);
     }
 }

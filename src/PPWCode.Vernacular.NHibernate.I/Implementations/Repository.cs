@@ -94,14 +94,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
 
-        public virtual T MakePersistent(T entity)
+        public virtual T Save(T entity)
         {
-            return EnsureNhTransaction(() => MakePersistentInternal(entity));
+            return EnsureNhTransaction(() => SaveInternal(entity));
         }
 
-        public virtual void MakeTransient(T entity)
+        public virtual void Delete(T entity)
         {
-            EnsureNhTransaction(() => MakeTransientInternal(entity));
+            EnsureNhTransaction(() => DeleteInternal(entity));
         }
 
         protected virtual T GetByIdInternal(TId id)
@@ -227,15 +227,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual T MakePersistentInternal(T entity)
+        protected virtual T SaveInternal(T entity)
         {
-            return EnsureControlledEnvironment("MakePersistentInternal", () => Session.Merge(entity), entity);
+            return EnsureControlledEnvironment("SaveInternal", () => Session.Merge(entity), entity);
         }
 
-        protected virtual void MakeTransientInternal(T entity)
+        protected virtual void DeleteInternal(T entity)
         {
             EnsureControlledEnvironment(
-                "MakeTransientInternal",
+                "DeleteInternal",
                 () =>
                 {
                     if (!entity.IsTransient)

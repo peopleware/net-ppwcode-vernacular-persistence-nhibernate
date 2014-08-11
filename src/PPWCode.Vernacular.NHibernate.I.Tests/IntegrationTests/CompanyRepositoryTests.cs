@@ -100,7 +100,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             Company savedCompany;
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                savedCompany = Repository.MakePersistent(company);
+                savedCompany = Repository.Save(company);
                 trans.Commit();
             }
 
@@ -127,7 +127,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             Company savedCompany;
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
-                savedCompany = Repository.MakePersistent(company);
+                savedCompany = Repository.Save(company);
                 trans.Commit();
             }
 

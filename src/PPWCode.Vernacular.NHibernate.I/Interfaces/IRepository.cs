@@ -141,7 +141,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     </para>
         /// </remarks>
         /// <returns>The saved entity.</returns>
-        T MakePersistent(T entity);
+        T Save(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -151,7 +151,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     <h3>Extra post conditions</h3>
         ///     <para><see cref="GetById" /> throws an <see cref="IdNotFoundException{T,TId}" />.</para>
         /// </remarks>
-        void MakeTransient(T entity);
+        void Delete(T entity);
     }
 
     // ReSharper disable InconsistentNaming
@@ -233,7 +233,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IPagedList<T>);
         }
 
-        public T MakePersistent(T entity)
+        public T Save(T entity)
         {
             Contract.Requires(entity != null);
             Contract.Ensures(Contract.Result<T>() != null);
@@ -243,7 +243,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public void MakeTransient(T entity)
+        public void Delete(T entity)
         {
             Contract.Requires(entity != null);
         }
