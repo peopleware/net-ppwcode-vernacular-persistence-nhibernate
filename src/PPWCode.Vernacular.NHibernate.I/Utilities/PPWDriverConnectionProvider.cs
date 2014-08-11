@@ -28,7 +28,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
         ///     In some cases we have seen that the <paramref name="conn" /> was not known (aka null), the result was
-        ///     <see cref="NullReferenceException" /> in the abstract class <see cref="ConnectionProvider" />.
+        ///     that the exception <see cref="NullReferenceException" /> was thrown in the abstract class
+        ///     <see cref="ConnectionProvider" />.
         ///     Usage :
         ///     <property name="connection.provider">
         ///         PPWCode.Vernacular.NHibernate.I.Utilities.PPWDriverConnectionProvider,
