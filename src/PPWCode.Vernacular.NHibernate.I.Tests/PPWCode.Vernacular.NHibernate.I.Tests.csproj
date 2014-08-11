@@ -181,6 +181,7 @@
     <Compile Include="IntegrationTests\CompanyCriteriaTests.cs" />
     <Compile Include="IntegrationTests\CompanyQueryOverTests.cs" />
     <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />
+    <Compile Include="IntegrationTests\CompanyBiDirectionalityTests.cs" />
     <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyIdentification.cs" />

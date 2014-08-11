@@ -27,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [ContractInvariantMethod]
         private void ObjectsInvariant()
         {
-            Contract.Invariant(AssociationContracts.BiDirManyToOne(this, Company, c => c.Identifications));
+            Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Company, c => c.Identifications));
         }
 
         [DataMember]
@@ -61,14 +61,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                 Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || !Contract.OldValue(Company).Identifications.Contains(this));
                 Contract.Ensures(Company == null || Company.Identifications.Contains(this));
 
-                if (Company != value)
+                if (m_Company != value)
                 {
-                    if (m_Company != null)
+                    Company previousCompany = m_Company;
+                    m_Company = value;
+
+                    if (previousCompany != null)
                     {
-                        m_Company.RemoveIdentification(this);
+                        previousCompany.RemoveIdentification(this);
                     }
 
-                    m_Company = value;
                     if (m_Company != null)
                     {
                         m_Company.AddIdentification(this);

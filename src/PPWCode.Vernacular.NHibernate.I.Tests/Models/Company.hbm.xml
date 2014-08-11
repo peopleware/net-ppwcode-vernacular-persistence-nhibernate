@@ -19,7 +19,7 @@
 
         <property name="Name" length="128" not-null="true" />
 
-        <set name="Identifications" inverse="true" cascade="all">
+        <set name="Identifications" inverse="true" cascade="all-delete-orphan">
             <key column="CompanyId" />
             <one-to-many class="CompanyIdentification" />
         </set>

@@ -30,7 +30,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         private void ObjectInvariant()
         {
             Contract.Invariant(Identifications != null);
-            Contract.Invariant(AssociationContracts.BiDirOneToMany(this, Identifications, i => i.Company));
+            Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Identifications, i => i.Company));
         }
 
         [DataMember]
@@ -50,20 +50,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             get { return m_Identifications; }
         }
 
-        protected internal virtual void RemoveIdentification(CompanyIdentification companyIdentification)
+        public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {
-            Contract.Requires(companyIdentification != null);
             Contract.Ensures(!Identifications.Contains(companyIdentification));
 
-            m_Identifications.Remove(companyIdentification);
+            if (companyIdentification != null && m_Identifications.Remove(companyIdentification))
+            {
+                companyIdentification.Company = null;
+            }
         }
 
-        protected internal virtual void AddIdentification(CompanyIdentification companyIdentification)
+        public virtual void AddIdentification(CompanyIdentification companyIdentification)
         {
-            Contract.Requires(companyIdentification != null);
             Contract.Ensures(Identifications.Contains(companyIdentification));
 
-            m_Identifications.Add(companyIdentification);
+            if (companyIdentification != null && m_Identifications.Add(companyIdentification))
+            {
+                companyIdentification.Company = this;
+            }
         }
     }
 }

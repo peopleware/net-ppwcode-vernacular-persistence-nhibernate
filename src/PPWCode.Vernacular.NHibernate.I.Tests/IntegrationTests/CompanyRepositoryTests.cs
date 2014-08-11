@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data;
-
-using NHibernate;
-
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -50,39 +46,35 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         protected Company CreateCompany(CompanyCreationType companyCreationType)
         {
-            Company savedCompany;
             Company company =
                 new Company
                 {
                     Name = "Peopleware NV"
                 };
 
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)
             {
-                if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)
+                // ReSharper disable once ObjectCreationAsStatement
+                new CompanyIdentification
                 {
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new CompanyIdentification
-                    {
-                        Identification = "1",
-                        Company = company
-                    };
+                    Identification = "1",
+                    Company = company
+                };
 
-                    // ReSharper disable once ObjectCreationAsStatement
-                    new CompanyIdentification
-                    {
-                        Identification = "2",
-                        Company = company
-                    };
-                }
-
-                savedCompany = Repository.MakePersistent(company);
-                trans.Commit();
+                // ReSharper disable once ObjectCreationAsStatement
+                new CompanyIdentification
+                {
+                    Identification = "2",
+                    Company = company
+                };
             }
+
+            Company savedCompany = Repository.MakePersistent(company);
 
             Session.Clear();
 
             Assert.AreNotSame(company, savedCompany);
+            Assert.AreEqual(1, savedCompany.PersistenceVersion);
             Assert.AreEqual(companyCreationType == CompanyCreationType.NO_CHILDREN ? 0 : 2, savedCompany.Identifications.Count);
 
             return savedCompany;
