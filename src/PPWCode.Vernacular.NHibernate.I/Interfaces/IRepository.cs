@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 using NHibernate;
-using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Persistence.II;
 
@@ -43,49 +42,91 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <returns>The entity with the given id.</returns>
         T GetById(TId id);
 
-        T Get(IEnumerable<ICriterion> criteria);
-
         /// <summary>
-        ///     Same functionality as <see cref="Get(System.Collections.Generic.IEnumerable{ICriterion})" />
-        ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        ///     Gets an entity by a function.
         /// </summary>
-        /// <param name="criteria">List of criteria.</param>
-        /// <param name="lockMode">Locking mode while creating the query.</param>
-        /// <returns>The (only) record that satisfies the given <paramref name="criteria" />.</returns>
-        T Get(IEnumerable<ICriterion> criteria, LockMode lockMode);
-
-        /// <summary>
-        ///     Find the records complying with the given criteria and in the given order.
-        /// </summary>
-        /// <param name="criteria">The given criteria.</param>
-        /// <param name="orders">The given ordering algorithm.</param>
+        /// <param name="func">The given function.</param>
         /// <remarks>
         ///     <h3>Extra post conditions</h3>
-        ///     <para>All elements of the resulting set fulfill <paramref name="criteria" />.</para>
-        ///     <para>The elements are ordered in the resulting set according to <paramref name="orders" />.</para>
+        ///     <para>
+        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
+        ///         <paramref name="func" /> in the DB.
+        ///     </para>
         /// </remarks>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
-        ///     <paramref name="orders" />.
-        /// </returns>
-        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders);
+        /// <returns>The entity that is filtered by the function.</returns>
+        T Get(Func<ICriteria, ICriteria> func);
 
         /// <summary>
-        ///     Same functionality as
-        ///     <see
-        ///         cref="Find(System.Collections.Generic.IEnumerable{ICriterion},System.Collections.Generic.IEnumerable{Order})" />
-        ///     but you have the ability to use a pessimistic lock on the database of the fetched rows.
+        ///     Gets an entity by a function.
         /// </summary>
-        /// <param name="criteria">List of criteria.</param>
-        /// <param name="orders">Sequence of expressions that will be used to sort the result, order is important.</param>
-        /// <param name="lockMode">The locking mode.</param>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="criteria" />, and in the given
-        ///     <paramref name="orders" />.
-        /// </returns>
-        IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode);
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>
+        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
+        ///         <paramref name="func" /> in the DB.
+        ///     </para>
+        /// </remarks>
+        /// <returns>The entity that is filtered by the function.</returns>
+        T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders);
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        IList<T> Find(Func<ICriteria, ICriteria> func);
+
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
+
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
         ///     A record is saved in the DB to represent <paramref name="entity" />.
@@ -101,22 +142,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </remarks>
         /// <returns>The saved entity.</returns>
         T Save(T entity);
-
-        /// <summary>
-        ///     Update a given entity.
-        /// </summary>
-        /// <param name="entity">The given entity.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="IdNotFoundException{T,TId}" /> is thrown when there is no record with the given
-        ///         <code><paramref name="entity" />.<see cref="IIdentity{T}.Id" /></code> in the DB. For this exception, it
-        ///         applies that
-        ///         <code><see cref="IdNotFoundException{T,TId}" />.<see cref="IdNotFoundException{T,TId}.Id" /> == id</code>.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The updated entity.</returns>
-        T Update(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -146,43 +171,61 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criteria)
+        public T Get(Func<ICriteria, ICriteria> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
 
             // The result should match the criteria, but this is not easy to express in contracts
             // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
 
-        public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
+        public T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
+
+            // The result should match the criteria, but this is not easy to express in contracts
+            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the criteria");
+            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
+        public IList<T> Find(Func<ICriteria, ICriteria> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
+            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
         }
 
-        public IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
+            Contract.Requires(func != null);
+            Contract.Requires(pageIndex > 0);
+            Contract.Requires(pageSize > 0);
+            Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
+
+            return default(IPagedList<T>);
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
+        {
+            Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
@@ -193,22 +236,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public T Save(T entity)
         {
             Contract.Requires(entity != null);
-            Contract.Requires(entity.IsTransient);
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
-
-            return default(T);
-        }
-
-        public T Update(T entity)
-        {
-            Contract.Requires(entity != null);
-            Contract.Requires(!entity.IsTransient);
-            Contract.Ensures(Contract.Result<T>() != null);
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, entity.Id));
-            Contract.EnsuresOnThrow<NotFoundException>(true, "entity does not exist in the DB");
 
             return default(T);
         }

@@ -13,9 +13,12 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using Iesi.Collections.Generic;
+
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
@@ -23,22 +26,96 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [Serializable, DataContract(IsReference = true)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
-        [DataMember]
-        private IList<CompanyIdentification> m_Identifications;
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Identifications != null);
+            Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Identifications, i => i.Company));
+            Contract.Invariant(FailedCompany == null || FailedCompany.Company == this);
+            Contract.Invariant(IsFailed == (FailedCompany != null));
+        }
 
         [DataMember]
         private string m_Name;
 
+        [DataMember]
+        private FailedCompany m_FailedCompany;
+
+        [DataMember]
+        private ISet<CompanyIdentification> m_Identifications = new HashedSet<CompanyIdentification>();
+
         public virtual string Name
         {
             get { return m_Name; }
-            set { m_Name = value; }
+            set
+            {
+                Contract.Ensures(Name == value);
+
+                m_Name = value;
+            }
         }
 
-        public virtual IList<CompanyIdentification> Identifications
+        public virtual FailedCompany FailedCompany
+        {
+            get { return m_FailedCompany; }
+            set
+            {
+                Contract.Ensures(FailedCompany == value);
+                // ReSharper disable once PossibleNullReferenceException
+                Contract.Ensures(Contract.OldValue(FailedCompany) == null || Contract.OldValue(FailedCompany) == value || Contract.OldValue(FailedCompany).Company != this);
+                Contract.Ensures(FailedCompany == null || FailedCompany.Company == this);
+
+                if (m_FailedCompany != value)
+                {
+                    FailedCompany previousFailedCompany = m_FailedCompany;
+                    m_FailedCompany = value;
+
+                    if (previousFailedCompany != null)
+                    {
+                        previousFailedCompany.Company = null;
+                    }
+
+                    if (m_FailedCompany != null)
+                    {
+                        m_FailedCompany.Company = this;
+                    }
+                }
+            }
+        }
+
+        public virtual bool IsFailed
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<bool>() == (FailedCompany != null));
+
+                return FailedCompany != null;
+            }
+        }
+
+        public virtual ISet<CompanyIdentification> Identifications
         {
             get { return m_Identifications; }
-            set { m_Identifications = value; }
+        }
+
+        public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
+        {
+            Contract.Ensures(!Identifications.Contains(companyIdentification));
+
+            if (companyIdentification != null && m_Identifications.Remove(companyIdentification))
+            {
+                companyIdentification.Company = null;
+            }
+        }
+
+        public virtual void AddIdentification(CompanyIdentification companyIdentification)
+        {
+            Contract.Ensures(Identifications.Contains(companyIdentification));
+
+            if (companyIdentification != null && m_Identifications.Add(companyIdentification))
+            {
+                companyIdentification.Company = this;
+            }
         }
     }
 }

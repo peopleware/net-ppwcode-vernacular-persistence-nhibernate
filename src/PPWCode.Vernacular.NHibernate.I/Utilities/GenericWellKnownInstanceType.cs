@@ -17,13 +17,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Contracts;
 
-using NHibernate.SqlTypes;
-using NHibernate.UserTypes;
+using PPWCode.Vernacular.NHibernate.I.Implementations;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     [Serializable]
-    public abstract class GenericWellKnownInstanceType<T, TId> : IUserType
+    public abstract class GenericWellKnownInstanceType<T, TId> : ImmutableUserTypeBase
         where T : class
     {
         private readonly Func<T, TId> m_IdGetter;
@@ -38,37 +37,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             m_IdGetter = idGetter;
         }
 
-        public Type ReturnedType
+        public override Type ReturnedType
         {
             get { return typeof(T); }
         }
 
-        public bool IsMutable
-        {
-            get { return false; }
-        }
-
-        public new bool Equals(object x, object y)
-        {
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-            if (ReferenceEquals(null, x) || ReferenceEquals(null, y))
-            {
-                return false;
-            }
-
-            return x.Equals(y);
-        }
-
-        public int GetHashCode(object x)
-        {
-            return (x == null) ? 0 : x.GetHashCode();
-        }
-
-        public object NullSafeGet(IDataReader rs, string[] names, object owner)
+        public override object NullSafeGet(IDataReader rs, string[] names, object owner)
         {
             int index0 = rs.GetOrdinal(names[0]);
             if (rs.IsDBNull(index0))
@@ -82,7 +56,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             return value;
         }
 
-        public void NullSafeSet(IDbCommand cmd, object value, int index)
+        public override void NullSafeSet(IDbCommand cmd, object value, int index)
         {
             if (value == null)
             {
@@ -93,27 +67,5 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 ((IDbDataParameter)cmd.Parameters[index]).Value = m_IdGetter((T)value);
             }
         }
-
-        public object DeepCopy(object value)
-        {
-            return value;
-        }
-
-        public object Replace(object original, object target, object owner)
-        {
-            return original;
-        }
-
-        public object Assemble(object cached, object owner)
-        {
-            return cached;
-        }
-
-        public object Disassemble(object value)
-        {
-            return value;
-        }
-
-        public abstract SqlType[] SqlTypes { get; }
     }
 }

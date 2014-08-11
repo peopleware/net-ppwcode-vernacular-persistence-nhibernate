@@ -21,6 +21,8 @@ using NHibernate.Cfg;
 using NHibernate.Context;
 using NHibernate.Tool.hbm2ddl;
 
+using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
@@ -42,28 +44,40 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected virtual bool UseProfiler
         {
-            get { return false; }
+            get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
         }
 
-        protected override void OnSetup()
+        protected override void OnFixtureSetup()
         {
-            XmlConfigurator.Configure();
+            base.OnFixtureSetup();
+
             if (UseProfiler)
             {
                 NHibernateProfiler.Initialize();
             }
+        }
 
-            SetupNHibernateSession();
+        protected override void OnFixtureTeardown()
+        {
+            base.OnFixtureTeardown();
+
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Stop();
+            }
+        }
+
+        protected override void OnSetup()
+        {
             base.OnSetup();
+
+            XmlConfigurator.Configure();
+            SetupNHibernateSession();
         }
 
         protected override void OnTeardown()
         {
             TearDownNHibernateSession();
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Stop();
-            }
 
             base.OnTeardown();
         }

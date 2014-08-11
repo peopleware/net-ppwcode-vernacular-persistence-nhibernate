@@ -19,6 +19,8 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 
+using PPWCode.Vernacular.NHibernate.I.Utilities;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public static class NhConfigurator
@@ -41,6 +43,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         if (s_Configuration == null)
                         {
                             s_Configuration = new Configuration()
+                                .DataBaseIntegration(
+                                    db =>
+                                    {
+                                        db.Dialect<SQLiteDialect>();
+                                        db.Driver<SQLite20Driver>();
+                                    })
                                 .Configure()
                                 .DataBaseIntegration(
                                     db =>
@@ -50,13 +58,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                                         db.ConnectionProvider<TestConnectionProvider>();
                                         db.ConnectionString = ConnectionString;
                                     })
-                                .SetProperty(Environment.CurrentSessionContextClass, "thread_static");
+                                .SetProperty(Environment.CurrentSessionContextClass, "thread_static")
+                                .SetProperty(Environment.ShowSql, "true")
+                                .SetProperty(Environment.FormatSql, "true");
 
                             IDictionary<string, string> props = s_Configuration.Properties;
                             if (props.ContainsKey(Environment.ConnectionStringName))
                             {
                                 props.Remove(Environment.ConnectionStringName);
                             }
+
+                            new CivilizedEventListener().Register(s_Configuration);
                         }
                     }
                 }

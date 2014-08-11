@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 
 using Iesi.Collections.Generic;
@@ -23,6 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
 {
     public static class AssociationContracts
     {
+        [Pure]
         public static bool BiDirOneToMany<O, M>(O one, ISet<M> many, Func<M, O> toOne)
             where M : class
             where O : class
@@ -30,6 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
             return many != null && (!NHibernateUtil.IsInitialized(many) || many.All(x => x != null && toOne(x) == one));
         }
 
+        [Pure]
         public static bool BiDirParentToChild<O, M>(O one, ISet<M> many, Func<M, O> toOne)
             where M : class
             where O : class
@@ -37,6 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
             return BiDirOneToMany(one, many, toOne);
         }
 
+        [Pure]
         public static bool BiDirManyToOne<O, M>(M many, O one, Func<O, ISet<M>> toMany)
             where M : class
             where O : class
@@ -44,6 +48,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
             return one == null || !NHibernateUtil.IsInitialized(one) || toMany(one).Any(x => x == many);
         }
 
+        [Pure]
         public static bool BiDirChildToParent<O, M>(M many, O one, Func<O, ISet<M>> toMany)
             where M : class
             where O : class

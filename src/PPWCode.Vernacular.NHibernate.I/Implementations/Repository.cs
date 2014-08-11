@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -22,6 +23,7 @@ using Castle.Core.Logging;
 
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Engine;
 using NHibernate.Exceptions;
 
 using PPWCode.Util.OddsAndEnds.II.Extensions;
@@ -59,52 +61,52 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         public virtual T GetById(TId id)
         {
-            return RunFunctionInsideATransaction(() => GetByIdInternal(id));
+            return EnsureNhTransaction(() => GetByIdInternal(id));
         }
 
-        public T Get(IEnumerable<ICriterion> criteria)
+        public T Get(Func<ICriteria, ICriteria> func)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criteria));
+            return EnsureNhTransaction(() => GetInternal(func));
         }
 
-        public T Get(IEnumerable<ICriterion> criteria, LockMode lockMode)
+        public T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return RunFunctionInsideATransaction(() => GetInternal(criteria));
+            return EnsureNhTransaction(() => GetInternal(func));
         }
 
-        public virtual IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
+        public virtual IList<T> Find(Func<ICriteria, ICriteria> func)
         {
-            return RunFunctionInsideATransaction(() => FindInternal(criteria, orders));
+            return EnsureNhTransaction(() => FindInternal(func));
         }
 
-        public IList<T> Find(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
+        public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return RunFunctionInsideATransaction(() => FindInternal(criteria, orders, lockMode));
+            return EnsureNhTransaction(() => FindInternal(func));
         }
 
-        public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, IEnumerable<ICriterion> criterions, IEnumerable<Order> orders)
+        public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
-            return RunFunctionInsideATransaction(() => FindPagedInternal(pageIndex, pageSize, criterions, orders));
+            return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
+        }
+
+        public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
+        {
+            return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
 
         public virtual T Save(T entity)
         {
-            return RunFunctionInsideATransaction(() => SaveInternal(entity));
-        }
-
-        public virtual T Update(T entity)
-        {
-            return RunFunctionInsideATransaction(() => UpdateInternal(entity));
+            return EnsureNhTransaction(() => SaveInternal(entity));
         }
 
         public virtual void Delete(T entity)
         {
-            RunActionInsideATransaction(() => DeleteInternal(entity));
+            EnsureNhTransaction(() => DeleteInternal(entity));
         }
 
         protected virtual T GetByIdInternal(TId id)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "GetByIdInternal",
                 () =>
                 {
@@ -118,13 +120,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criteria)
+        protected virtual T GetInternal(Func<ICriteria, ICriteria> func)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria qry = CreateCriteria(criteria, null);
+                    ICriteria qry = func(CreateCriteria());
                     T result = qry.UniqueResult<T>();
                     if (result == null)
                     {
@@ -135,14 +137,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual T GetInternal(IEnumerable<ICriterion> criteria, LockMode lockMode)
+        protected virtual T GetInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "GetInternal",
                 () =>
                 {
-                    ICriteria qry = CreateCriteria(criteria, null);
-                    T result = qry.SetLockMode(lockMode).UniqueResult<T>();
+                    IQueryOver<T> qry = func(CreateQueryOver());
+                    T result = qry.SingleOrDefault();
                     if (result == null)
                     {
                         throw new NotFoundException();
@@ -152,48 +154,46 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
+        protected virtual IList<T> FindInternal(Func<ICriteria, ICriteria> func)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "FindInternal",
                 () =>
                 {
-                    ICriteria qry = CreateCriteria(criteria, orders);
+                    ICriteria qry = func(CreateCriteria());
                     IList<T> result = qry.List<T>();
                     return result;
                 });
         }
 
-        protected virtual IList<T> FindInternal(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders, LockMode lockMode)
+        protected virtual IList<T> FindInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "FindInternal",
                 () =>
                 {
-                    ICriteria qry = CreateCriteria(criteria, orders).SetLockMode(lockMode);
+                    IQueryOver<T> qry = func(CreateQueryOver());
                     IList<T> result = qry.List<T>();
                     return result;
                 });
         }
 
-        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
+        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
-            return RunControlledFunction(
+            return EnsureControlledEnvironment(
                 "FindPagedInternal",
                 () =>
                 {
-                    ICriteria rowCountQry = CreateCriteria(criteria, null);
-                    IFutureValue<int> rowCount = rowCountQry
+                    ICriteria qryRowCount = func(CreateCriteria());
+                    qryRowCount.ClearOrders();
+
+                    IFutureValue<int> rowCount = qryRowCount
+                        .SetFirstResult(0)
+                        .SetMaxResults(RowSelection.NoValue)
                         .SetProjection(Projections.RowCount())
                         .FutureValue<int>();
 
-                    ICriteria qry = CreateCriteria(criteria, orders);
-                    if (orders == null || !orders.Any())
-                    {
-                        qry.AddOrder(Order.Asc(Projections.Id()));
-                    }
-
-                    IList<T> qryResult = qry
+                    IList<T> qryResult = func(CreateCriteria())
                         .SetFirstResult((pageIndex - 1) * pageSize)
                         .SetMaxResults(pageSize)
                         .Future<T>()
@@ -204,62 +204,63 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual ICriteria CreateCriteria(IEnumerable<ICriterion> criteria, IEnumerable<Order> orders)
+        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            ICriteria result = Session.CreateCriteria<T>();
-            if (criteria != null)
-            {
-                foreach (ICriterion criterion in criteria)
+            return EnsureControlledEnvironment(
+                "FindPagedInternal",
+                () =>
                 {
-                    result.Add(criterion);
-                }
-            }
+                    IQueryOver<T> queryOver = func(CreateQueryOver());
 
-            if (orders != null)
-            {
-                foreach (Order order in orders)
-                {
-                    result.AddOrder(order);
-                }
-            }
+                    IFutureValue<int> rowCount = queryOver
+                        .ToRowCountQuery()
+                        .FutureValue<int>();
 
-            return result;
+                    IList<T> qryResult = queryOver
+                        .Skip((pageIndex - 1) * pageSize)
+                        .Take(pageSize)
+                        .Future<T>()
+                        .ToList<T>();
+
+                    PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
+                    return result;
+                });
         }
 
         protected virtual T SaveInternal(T entity)
         {
-            return RunControlledFunction(
-                "SaveInternal",
-                () =>
-                {
-                    Session.Save(entity);
-                    return entity;
-                },
-                entity);
-        }
-
-        protected virtual T UpdateInternal(T entity)
-        {
-            return RunControlledFunction(
-                "UpdateInternal",
-                () =>
-                {
-                    T result = Session.Merge(entity);
-                    return result;
-                },
-                entity);
+            return EnsureControlledEnvironment("SaveInternal", () => Session.Merge(entity), entity);
         }
 
         protected virtual void DeleteInternal(T entity)
         {
-            RunControlledAction("DeleteInternal", () => Session.Delete(entity), entity);
+            EnsureControlledEnvironment(
+                "DeleteInternal",
+                () =>
+                {
+                    if (!entity.IsTransient)
+                    {
+                        Session.Delete(entity);
+                    }
+                },
+                entity);
         }
 
-        protected virtual void RunActionInsideATransaction(Action action)
+        protected virtual ICriteria CreateCriteria()
+        {
+            return Session.CreateCriteria<T>();
+        }
+
+        protected virtual IQueryOver<T, T> CreateQueryOver()
+        {
+            return Session.QueryOver<T>();
+        }
+
+        protected virtual void EnsureNhTransaction(Action action)
         {
             Contract.Requires(action != null);
 
-            RunFunctionInsideATransaction(
+            EnsureNhTransaction(
                 () =>
                 {
                     action.Invoke();
@@ -267,7 +268,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
-        protected virtual TResult RunFunctionInsideATransaction<TResult>(Func<TResult> func)
+        protected virtual TResult EnsureNhTransaction<TResult>(Func<TResult> func)
         {
             Contract.Requires(func != null);
 
@@ -277,7 +278,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
 
             TResult result;
-            using (ITransaction transaction = Session.BeginTransaction())
+            using (ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 result = func.Invoke();
                 transaction.Commit();
@@ -325,12 +326,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             throw result;
         }
 
-        protected virtual void RunControlledAction(string requestDescription, Action action, T entity = null)
+        protected virtual void EnsureControlledEnvironment(string requestDescription, Action action, T entity = null)
         {
             Contract.Requires(!string.IsNullOrEmpty(requestDescription));
             Contract.Requires(action != null);
 
-            RunControlledFunction(
+            EnsureControlledEnvironment(
                 requestDescription,
                 () =>
                 {
@@ -340,7 +341,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 entity);
         }
 
-        protected virtual TResult RunControlledFunction<TResult>(string requestDescription, Func<TResult> func, T entity = null)
+        protected virtual TResult EnsureControlledEnvironment<TResult>(string requestDescription, Func<TResult> func, T entity = null)
         {
             Contract.Requires(!string.IsNullOrEmpty(requestDescription));
             Contract.Requires(func != null);
