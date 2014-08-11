@@ -227,6 +227,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 });
         }
 
+        protected virtual T MakePersistentInternal(T entity)
+        {
+            return EnsureControlledEnvironment("MakePersistentInternal", () => Session.Merge(entity), entity);
+        }
+
+        protected virtual void MakeTransientInternal(T entity)
+        {
+            EnsureControlledEnvironment(
+                "MakeTransientInternal",
+                () =>
+                {
+                    if (!entity.IsTransient)
+                    {
+                        Session.Delete(entity);
+                    }
+                },
+                entity);
+        }
+
         protected virtual ICriteria CreateCriteria()
         {
             return Session.CreateCriteria<T>();
@@ -235,16 +254,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         protected virtual IQueryOver<T, T> CreateQueryOver()
         {
             return Session.QueryOver<T>();
-        }
-
-        protected virtual T MakePersistentInternal(T entity)
-        {
-            return EnsureControlledEnvironment("MakePersistentInternal", () => Session.Merge(entity), entity);
-        }
-
-        protected virtual void MakeTransientInternal(T entity)
-        {
-            EnsureControlledEnvironment("MakeTransientInternal", () => Session.Delete(entity), entity);
         }
 
         protected virtual void EnsureNhTransaction(Action action)

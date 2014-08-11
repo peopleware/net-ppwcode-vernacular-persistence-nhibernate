@@ -21,6 +21,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
+    // ReSharper disable once InconsistentNaming
     public abstract class IRepositoryContractBase<T, TId> : IRepository<T, TId>
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
