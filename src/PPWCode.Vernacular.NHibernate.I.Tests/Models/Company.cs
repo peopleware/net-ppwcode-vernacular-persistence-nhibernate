@@ -31,18 +31,66 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
             Contract.Invariant(Identifications != null);
             Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Identifications, i => i.Company));
+            Contract.Invariant(FailedCompany == null || FailedCompany.Company == this);
+            Contract.Invariant(IsFailed == (FailedCompany != null));
         }
-
-        [DataMember]
-        private ISet<CompanyIdentification> m_Identifications = new HashedSet<CompanyIdentification>();
 
         [DataMember]
         private string m_Name;
 
+        [DataMember]
+        private FailedCompany m_FailedCompany;
+
+        [DataMember]
+        private ISet<CompanyIdentification> m_Identifications = new HashedSet<CompanyIdentification>();
+
         public virtual string Name
         {
             get { return m_Name; }
-            set { m_Name = value; }
+            set
+            {
+                Contract.Ensures(Name == value);
+
+                m_Name = value;
+            }
+        }
+
+        public virtual FailedCompany FailedCompany
+        {
+            get { return m_FailedCompany; }
+            set
+            {
+                Contract.Ensures(FailedCompany == value);
+                // ReSharper disable once PossibleNullReferenceException
+                Contract.Ensures(Contract.OldValue(FailedCompany) == null || Contract.OldValue(FailedCompany) == value || Contract.OldValue(FailedCompany).Company != this);
+                Contract.Ensures(FailedCompany == null || FailedCompany.Company == this);
+
+                if (m_FailedCompany != value)
+                {
+                    FailedCompany previousFailedCompany = m_FailedCompany;
+                    m_FailedCompany = value;
+
+                    if (previousFailedCompany != null)
+                    {
+                        previousFailedCompany.Company = null;
+                    }
+
+                    if (m_FailedCompany != null)
+                    {
+                        m_FailedCompany.Company = this;
+                    }
+                }
+            }
+        }
+
+        public virtual bool IsFailed
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<bool>() == (FailedCompany != null));
+
+                return FailedCompany != null;
+            }
         }
 
         public virtual ISet<CompanyIdentification> Identifications

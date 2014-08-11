@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<hibernate-mapping
+    xmlns="urn:nhibernate-mapping-2.2"
+    assembly="PPWCode.Vernacular.NHibernate.I.Tests"
+    namespace="PPWCode.Vernacular.NHibernate.I.Tests.Models"
+    default-access="field.pascalcase-m-underscore">
+
+    <class name="FailedCompany" dynamic-update="true">
+        <id name="Id">
+            <generator class="foreign">
+                <param name="property">Company</param>
+            </generator>
+        </id>
+
+        <property name="CreatedAt" update="false" />
+        <property name="CreatedBy" length="128" update="false" />
+
+        <property name="FailingDate" not-null="true" />
+
+        <one-to-one name="Company" constrained="true" foreign-key="FK_Company" />
+    </class>
+
+</hibernate-mapping>

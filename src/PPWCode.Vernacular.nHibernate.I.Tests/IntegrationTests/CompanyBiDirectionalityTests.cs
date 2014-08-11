@@ -261,5 +261,97 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             Company selectedCompany = Repository.GetById(mergedCompany.Id);
             Assert.IsFalse(selectedCompany.Identifications.Any());
         }
+
+        [Test]
+        public void Check_BiDirectionality_FailedCompany_Add_FailedCompany_To_Company()
+        {
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            Company mergedCompany;
+            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                // 1. Attach company to session
+                mergedCompany = Repository.MakePersistent(company);
+
+                // 2. Add FailedCompany
+                FailedCompany failedCompany =
+                    new FailedCompany
+                    {
+                        FailingDate = Now
+                    };
+                mergedCompany.FailedCompany = failedCompany;
+
+                trans.Commit();
+            }
+
+            // 4. Clear session
+            Session.Clear();
+
+            // 5. Check Db status
+            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Assert.IsNotNull(selectedCompany.FailedCompany);
+            Assert.IsTrue(selectedCompany.IsFailed);
+        }
+
+        [Test]
+        public void Check_BiDirectionality_FailedCompany_Add_FailedCompany_To_Company2()
+        {
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            Company mergedCompany;
+            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                // 1. Attach company to session
+                mergedCompany = Repository.MakePersistent(company);
+
+                // 2. Add FailedCompany
+                // ReSharper disable once ObjectCreationAsStatement
+                new FailedCompany
+                {
+                    FailingDate = Now,
+                    Company = mergedCompany
+                };
+
+                trans.Commit();
+            }
+
+            // 4. Clear session
+            Session.Clear();
+
+            // 5. Check Db status
+            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Assert.IsNotNull(selectedCompany.FailedCompany);
+            Assert.IsTrue(selectedCompany.IsFailed);
+        }
+
+        [Test]
+        public void Check_BiDirectionality_FailedCompany_Remove_FailedCompany_From_Company()
+        {
+            Company company = CreateFailedCompany(CompanyCreationType.NO_CHILDREN);
+
+            Company mergedCompany;
+            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                // 1. Attach company to session
+                mergedCompany = Repository.MakePersistent(company);
+
+                // 2. Remove FailedCompany
+                FailedCompany failedCompany = mergedCompany.FailedCompany;
+                mergedCompany.FailedCompany = null;
+                // Due cascading delete isn't supported for one-to-one relation, 
+                // see https://nhibernate.jira.com/browse/NH-1262
+                FailedCompanyRepository.MakeTransient(failedCompany);
+
+                trans.Commit();
+            }
+
+            // 4. Clear session
+            Session.Clear();
+
+            // 5. Check Db status
+            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Assert.IsNull(selectedCompany.FailedCompany);
+            Assert.IsFalse(selectedCompany.IsFailed);
+        }
     }
 }

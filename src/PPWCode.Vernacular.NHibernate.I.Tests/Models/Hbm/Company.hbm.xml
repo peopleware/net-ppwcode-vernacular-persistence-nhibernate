@@ -12,10 +12,10 @@
         </id>
         <version name="PersistenceVersion" generated="never" unsaved-value="0" />
 
-        <property name="CreatedAt" />
-        <property name="CreatedBy" length="128" />
-        <property name="LastModifiedAt" />
-        <property name="LastModifiedBy" length="128" />
+        <property name="CreatedAt" update="false" />
+        <property name="CreatedBy" length="128" update="false" />
+        <property name="LastModifiedAt" insert="false" />
+        <property name="LastModifiedBy" length="128" insert="false" />
 
         <property name="Name" length="128" not-null="true" />
 
@@ -23,6 +23,8 @@
             <key column="CompanyId" />
             <one-to-many class="CompanyIdentification" />
         </set>
+
+        <one-to-one name="FailedCompany" cascade="all" />
     </class>
 
 </hibernate-mapping>

@@ -19,6 +19,8 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 
+using PPWCode.Vernacular.NHibernate.I.Utilities;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public static class NhConfigurator
@@ -65,6 +67,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                             {
                                 props.Remove(Environment.ConnectionStringName);
                             }
+
+                            new CivilizedEventListener().Register(s_Configuration);
                         }
                     }
                 }

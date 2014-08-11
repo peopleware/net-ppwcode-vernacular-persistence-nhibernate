@@ -11,15 +11,15 @@
             <generator class="hilo" />
         </id>
 
-        <property name="CreatedAt" />
-        <property name="CreatedBy" length="128" />
-        <property name="LastModifiedAt" />
-        <property name="LastModifiedBy" length="128" />
+        <property name="CreatedAt" update="false" />
+        <property name="CreatedBy" length="128" update="false" />
+        <property name="LastModifiedAt" insert="false" />
+        <property name="LastModifiedBy" length="128" insert="false" />
 
         <property name="Identification" length="128" not-null="true" />
         <property name="Number" />
 
-        <many-to-one name="Company" column="CompanyId" not-null="true" foreign-key="FK_Company"/>
+        <many-to-one name="Company" column="CompanyId" not-null="true" foreign-key="FK_Company" />
     </class>
 
 </hibernate-mapping>

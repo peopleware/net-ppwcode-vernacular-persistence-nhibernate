@@ -12,47 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Data;
-
-using Moq;
-
-using NHibernate;
-
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-using PPWCode.Vernacular.NHibernate.I.Utilities;
-using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
 {
     // ReSharper disable InconsistentNaming
     public class AuditWithHiLoIdentityGeneratorTests : CompanyRepositoryTests
     {
-        private const string UserName = "Danny";
-        private readonly DateTime m_Now = DateTime.Now.ToUniversalTime();
-
-        protected override ISession OpenSession()
-        {
-            Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
-            identityProvider.Setup(ip => ip.IdentityName).Returns(UserName);
-
-            Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
-            timeProvider.Setup(tp => tp.Now).Returns(m_Now);
-
-            AuditInterceptor<int> sessionLocalInterceptor = new AuditInterceptor<int>(identityProvider.Object, timeProvider.Object);
-            return SessionFactory.OpenSession(sessionLocalInterceptor);
-        }
-
         [Test]
         public void Created_Audit_Fields_Should_be_Set_After_Save()
         {
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
             Assert.AreEqual(UserName, company.CreatedBy);
-            Assert.AreEqual(m_Now, company.CreatedAt);
+            Assert.AreEqual(Now, company.CreatedAt);
         }
 
         [Test]
@@ -61,12 +36,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
             Assert.AreEqual(UserName, company.CreatedBy);
-            Assert.AreEqual(m_Now, company.CreatedAt);
+            Assert.AreEqual(Now, company.CreatedAt);
 
             foreach (CompanyIdentification companyIdentification in company.Identifications)
             {
                 Assert.AreEqual(UserName, companyIdentification.CreatedBy);
-                Assert.AreEqual(m_Now, companyIdentification.CreatedAt);
+                Assert.AreEqual(Now, companyIdentification.CreatedAt);
             }
         }
 

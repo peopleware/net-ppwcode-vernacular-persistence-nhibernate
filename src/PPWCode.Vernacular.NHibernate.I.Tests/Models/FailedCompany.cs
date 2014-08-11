@@ -16,48 +16,34 @@ using System;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.Semantics;
+using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true)]
-    public class CompanyIdentification : AuditablePersistentObject<int>
+    [DataContract(IsReference = true), Serializable]
+    public class FailedCompany : InsertAuditablePersistentObject<int>
     {
         [ContractInvariantMethod]
-        private void ObjectsInvariant()
+        private void ObjectInvariant()
         {
-            Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Company, c => c.Identifications));
+            Contract.Invariant(Company == null || Company.FailedCompany == this);
         }
 
         [DataMember]
-        private string m_Identification;
-
-        [DataMember]
-        private int m_Number;
+        private DateTime m_FailingDate;
 
         [DataMember]
         private Company m_Company;
 
-        public virtual string Identification
+        public virtual DateTime FailingDate
         {
-            get { return m_Identification; }
+            get { return m_FailingDate; }
             set
             {
-                Contract.Ensures(Identification == value);
+                Contract.Ensures(FailingDate == value);
 
-                m_Identification = value;
-            }
-        }
-
-        public virtual int Number
-        {
-            get { return m_Number; }
-            set
-            {
-                Contract.Ensures(Number == value);
-
-                m_Number = value;
+                m_FailingDate = value;
             }
         }
 
@@ -68,8 +54,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             {
                 Contract.Ensures(Company == value);
                 // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || !Contract.OldValue(Company).Identifications.Contains(this));
-                Contract.Ensures(Company == null || Company.Identifications.Contains(this));
+                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || Contract.OldValue(Company).FailedCompany != this);
+                Contract.Ensures(Company == null || Company.FailedCompany == this);
 
                 if (m_Company != value)
                 {
@@ -78,15 +64,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                     if (previousCompany != null)
                     {
-                        previousCompany.RemoveIdentification(this);
+                        previousCompany.FailedCompany = null;
                     }
 
                     if (m_Company != null)
                     {
-                        m_Company.AddIdentification(this);
+                        m_Company.FailedCompany = this;
                     }
                 }
             }
+        }
+
+        public override CompoundSemanticException WildExceptions()
+        {
+            CompoundSemanticException sce = base.WildExceptions();
+
+            if (Company == null)
+            {
+                sce.AddElement(new PropertyException(this, "Company", PropertyException.MandatoryMessage, null));
+            }
+
+            return sce;
         }
     }
 }
