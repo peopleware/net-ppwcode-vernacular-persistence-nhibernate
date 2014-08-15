@@ -14,23 +14,26 @@
 
 using System;
 
+using NHibernate;
+
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public abstract class AuditLogMapping<TId> : PersistentObjectMapper<AuditLog<TId>, TId>
+    public abstract class AuditLogMapping<T, TId> : PersistentObjectMapper<T, TId>
+        where T : AuditLog<TId>
         where TId : IEquatable<TId>
     {
         protected AuditLogMapping()
         {
-            Property(x => x.EntryType);
-            Property(x => x.EntityName);
-            Property(x => x.EntityId);
-            Property(x => x.PropertyName);
-            Property(x => x.OldValue);
-            Property(x => x.NewValue);
-            Property(x => x.CreatedAt);
-            Property(x => x.CreatedBy);
+            Property(x => x.EntryType, m => m.NotNullable(true));
+            Property(x => x.EntityName, m => m.NotNullable(true));
+            Property(x => x.EntityId, m => m.NotNullable(true));
+            Property(x => x.PropertyName, m => m.NotNullable(true));
+            Property(x => x.OldValue, m => m.Type(NHibernateUtil.StringClob));
+            Property(x => x.NewValue, m => m.Type(NHibernateUtil.StringClob));
+            Property(x => x.CreatedAt, m => m.NotNullable(true));
+            Property(x => x.CreatedBy, m => m.NotNullable(true));
         }
     }
 }
