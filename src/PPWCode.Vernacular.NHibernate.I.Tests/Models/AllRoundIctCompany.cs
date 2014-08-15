@@ -13,12 +13,26 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
     [DataContract(IsReference = true), Serializable]
-    public class IctCompany : Company
+    public class AllRoundIctCompany : IctCompany
     {
+        [DataMember]
+        private string m_AllRound;
+
+        public virtual string AllRound
+        {
+            get { return m_AllRound; }
+            set
+            {
+                Contract.Ensures(AllRound == value);
+
+                m_AllRound = value;
+            }
+        }
     }
 }

@@ -54,7 +54,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     }
                 }
 
-                foreach (HbmMapping hbmMapping in HbmMapping.GetHbmMappings())
+                HbmMapping hbmMapping = HbmMapping.GetHbmMapping();
+                if (hbmMapping != null)
                 {
                     configuration.AddMapping(hbmMapping);
                 }

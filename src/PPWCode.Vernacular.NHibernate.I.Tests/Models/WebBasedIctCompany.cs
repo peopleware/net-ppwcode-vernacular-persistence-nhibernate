@@ -13,12 +13,26 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
     [DataContract(IsReference = true), Serializable]
-    public class IctCompany : Company
+    public class WebBasedIctCompany : IctCompany
     {
+        [DataMember]
+        private string m_WebBased;
+
+        public virtual string WebBased
+        {
+            get { return m_WebBased; }
+            set
+            {
+                Contract.Ensures(WebBased == value);
+
+                m_WebBased = value;
+            }
+        }
     }
 }

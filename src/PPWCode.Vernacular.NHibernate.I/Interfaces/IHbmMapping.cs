@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-
 using NHibernate.Cfg.MappingSchema;
 
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     /// <summary>
-    ///     If <see cref="GetHbmMappings" /> returns a not-null
+    ///     If <see cref="GetHbmMapping" /> returns a not-null
     ///     <see cref="HbmMapping" />, it will be used instead of <see cref="IMappingAssemblies.GetAssemblies" /> to determine
     ///     the mappings.
     /// </summary>
-    [ContractClass(typeof(IHbmMappingContract))]
     public interface IHbmMapping
     {
         /// <summary>
@@ -33,18 +29,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <returns>
         ///     A <see cref="HbmMapping" /> instance or null.
         /// </returns>
-        IEnumerable<HbmMapping> GetHbmMappings();
-    }
-
-    // ReSharper disable once InconsistentNaming
-    [ContractClassFor(typeof(IHbmMapping))]
-    public abstract class IHbmMappingContract : IHbmMapping
-    {
-        public IEnumerable<HbmMapping> GetHbmMappings()
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<HbmMapping>>() != null);
-
-            return default(IEnumerable<HbmMapping>);
-        }
+        HbmMapping GetHbmMapping();
     }
 }

@@ -28,6 +28,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
                          m.Length(128);
                          m.NotNullable(true);
                      });
+
             Set(c => c.Identifications,
                 c =>
                 {
@@ -35,6 +36,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
                     c.Inverse(true);
                 },
                 r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
+
             OneToOne(c => c.FailedCompany, m => m.Cascade(Cascade.All));
         }
     }

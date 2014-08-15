@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Runtime.Serialization;
+using NHibernate.Mapping.ByCode.Conformist;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
 {
-    [DataContract(IsReference = true), Serializable]
-    public class IctCompany : Company
+    public class AllRoundIctCompanyMapper : SubclassMapping<AllRoundIctCompany>
     {
+        public AllRoundIctCompanyMapper()
+        {
+            Property(c => c.AllRound);
+        }
     }
 }

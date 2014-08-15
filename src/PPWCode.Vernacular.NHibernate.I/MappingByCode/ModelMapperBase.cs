@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             Contract.Requires(mappingAssemblies != null);
 
             m_MappingAssemblies = mappingAssemblies;
-            m_ModelMapper = new ConventionModelMapper();
+            m_ModelMapper = new ModelMapper();
 
             ModelMapper.BeforeMapAny += OnBeforeMapAny;
             ModelMapper.BeforeMapBag += OnBeforeMapBag;
@@ -82,12 +82,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return m_ModelMapper; }
         }
 
-        public IEnumerable<HbmMapping> GetHbmMappings()
+        public HbmMapping GetHbmMapping()
         {
-            IEnumerable<Type> exportedTypes = m_MappingAssemblies
-                .GetAssemblies()
-                .SelectMany(a => a.GetExportedTypes());
-            ModelMapper.AddMappings(exportedTypes);
+            ModelMapper.AddMappings(MappingTypes);
 
             HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
             hbmMapping.defaultlazy = DefaultLazy;
@@ -101,7 +98,17 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 hbmMapping.defaultcascade = DefaultCascade;
             }
 
-            yield return hbmMapping;
+            return hbmMapping;
+        }
+
+        protected virtual IEnumerable<Type> MappingTypes
+        {
+            get
+            {
+                return m_MappingAssemblies
+                    .GetAssemblies()
+                    .SelectMany(a => a.GetExportedTypes());
+            }
         }
 
         protected virtual string DefaultAccess

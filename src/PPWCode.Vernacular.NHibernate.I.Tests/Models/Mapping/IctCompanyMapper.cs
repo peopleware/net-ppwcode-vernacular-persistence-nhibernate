@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
 {
-    //public class IctCompanyMapper : SubclassMapping<Company>
-    //{
-    //}
+    public class IctCompanyMapper : SubclassMapping<IctCompany>
+    {
+    }
 }

@@ -73,8 +73,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         props.Remove(Environment.ConnectionStringName);
                     }
 
-                    IEnumerable<HbmMapping> hbmMappings = GetHbmMappings();
-                    foreach (HbmMapping hbmMapping in hbmMappings)
+                    HbmMapping hbmMapping = GetHbmMapping();
+                    if (hbmMapping != null)
                     {
                         m_Configuration.AddMapping(hbmMapping);
                     }
@@ -86,9 +86,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        protected virtual IEnumerable<HbmMapping> GetHbmMappings()
+        protected virtual HbmMapping GetHbmMapping()
         {
-            yield break;
+            return null;
         }
 
         protected virtual ISessionFactory SessionFactory
@@ -168,7 +168,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         private void TearDownContextualSession()
         {
             ISession session = CurrentSessionContext.Unbind(SessionFactory);
-            session.Close();
+            if (session != null)
+            {
+                session.Close();
+            }
         }
 
         private void BuildSchema()

@@ -31,7 +31,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         public void XmlMapping()
         {
             IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            foreach (HbmMapping hbmMapping in mapper.GetHbmMappings())
+            HbmMapping hbmMapping = mapper.GetHbmMapping();
+            if (hbmMapping != null)
             {
                 Console.WriteLine(hbmMapping.AsString());
             }

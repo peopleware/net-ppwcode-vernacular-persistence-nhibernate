@@ -51,10 +51,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         protected readonly DateTime Now = DateTime.Now.ToUniversalTime();
 
-        protected override IEnumerable<HbmMapping> GetHbmMappings()
+        protected override HbmMapping GetHbmMapping()
         {
             IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            return mapper.GetHbmMappings();
+            return mapper.GetHbmMapping();
         }
 
         protected override ISession OpenSession()

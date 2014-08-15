@@ -88,8 +88,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
         {
-            // ReSharper disable once PossibleNullReferenceException
-            joinedSubclassCustomizer.Key(k => k.Column(string.Format("{0}Id", type.BaseType.Name)));
+            joinedSubclassCustomizer.Key(k =>
+                                         {
+                                             k.Column("Id");
+                                             k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
+                                         });
         }
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
@@ -131,12 +134,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         private static string DetermineKeyColumnName(IModelInspector inspector, PropertyPath member)
         {
             MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
-            if (inspector.IsOneToMany(member.LocalMember) && otherSideProperty != null)
-            {
-                return string.Format("{0}Id", otherSideProperty.Name);
-            }
-
-            return string.Format("{0}Id", member.Owner().Name);
+            string name = inspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
+                              ? otherSideProperty.Name
+                              : member.Owner().Name;
+            return string.Format("{0}Id", name);
         }
     }
 }
