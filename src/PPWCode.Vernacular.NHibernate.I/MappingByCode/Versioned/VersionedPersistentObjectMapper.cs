@@ -12,11 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System;
 
-[assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
-[assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
-[assembly: AssemblyConfiguration("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("2ec58b94-6758-4c74-9ae5-140102d76d32")]
+using PPWCode.Vernacular.Persistence.II;
+
+namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
+{
+    public abstract class VersionedPersistentObjectMapper<T, TId, TVersion>
+        : PersistentObjectMapper<T, TId>
+        where T : class, IVersionedPersistentObject<TId, TVersion>
+        where TId : IEquatable<TId>
+    {
+        protected VersionedPersistentObjectMapper()
+        {
+            Version(x => x.PersistenceVersion, m => m.UnsavedValue(default(TId)));
+        }
+    }
+}

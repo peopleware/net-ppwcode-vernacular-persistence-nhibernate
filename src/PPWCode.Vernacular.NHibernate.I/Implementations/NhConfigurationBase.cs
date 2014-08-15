@@ -24,29 +24,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class NhConfigurationBase : INhConfiguration
     {
-        private readonly IInterceptor m_Interceptor;
+        private readonly INhInterceptor m_NhInterceptor;
         private readonly object m_Locker = new object();
-        private readonly IMappingAssemblies m_MappingAssemblies;
         private readonly INhProperties m_NhProperties;
+        private readonly IMappingAssemblies m_MappingAssemblies;
+        private readonly IHbmMapping m_HbmMapping;
         private readonly IRegisterEventListener[] m_RegisterEventListeners;
         private volatile Configuration m_Configuration;
 
-        protected NhConfigurationBase(IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
+        protected NhConfigurationBase(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
         {
-            Contract.Requires(interceptor != null);
+            Contract.Requires(nhInterceptor != null);
             Contract.Requires(nhProperties != null);
             Contract.Requires(mappingAssemblies != null);
+            Contract.Requires(hbmMapping != null);
             Contract.Requires(registerEventListeners != null);
 
-            m_Interceptor = interceptor;
+            m_NhInterceptor = nhInterceptor;
             m_NhProperties = nhProperties;
             m_MappingAssemblies = mappingAssemblies;
+            m_HbmMapping = hbmMapping;
             m_RegisterEventListeners = registerEventListeners;
-        }
-
-        protected IMappingAssemblies MappingAssemblies
-        {
-            get { return m_MappingAssemblies; }
         }
 
         protected INhProperties NhProperties
@@ -61,9 +59,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected abstract Configuration Configuration { get; }
 
-        protected IInterceptor Interceptor
+        protected INhInterceptor NhInterceptor
         {
-            get { return m_Interceptor; }
+            get { return m_NhInterceptor; }
+        }
+
+        protected IHbmMapping HbmMapping
+        {
+            get { return m_HbmMapping; }
+        }
+
+        protected IMappingAssemblies MappingAssemblies
+        {
+            get { return m_MappingAssemblies; }
         }
 
         public Configuration GetConfiguration()
@@ -75,7 +83,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     if (m_Configuration == null)
                     {
                         m_Configuration = Configuration;
-                        m_Configuration.SetInterceptor(Interceptor);
+                        IInterceptor interceptor = NhInterceptor.GetInterceptor();
+                        if (interceptor != null)
+                        {
+                            m_Configuration.SetInterceptor(interceptor);
+                        }
+
                         foreach (IRegisterEventListener registerListener in RegisterEventListeners)
                         {
                             registerListener.Register(m_Configuration);

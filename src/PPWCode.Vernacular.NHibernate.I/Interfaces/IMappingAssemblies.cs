@@ -16,11 +16,34 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
+using NHibernate.Mapping.ByCode;
+
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
+    /// <summary>
+    ///     Used to determine where we can find our hbm definition for our models.
+    /// </summary>
     [ContractClass(typeof(IMappingAssembliesContract))]
     public interface IMappingAssemblies
     {
+        /// <summary>
+        ///     Returns all assemblies:
+        ///     <list type="bullet">
+        ///         <item>
+        ///             <description>with embedded hbm-files</description>
+        ///         </item>
+        ///         <item>
+        ///             <description>
+        ///                 when the hbmMapping is done by code, all assemblies that
+        ///                 contains the necessary <see cref="IConformistHoldersProvider" /> that are used to create the hbmMapping
+        ///                 by code
+        ///             </description>
+        ///         </item>
+        ///     </list>
+        /// </summary>
+        /// <returns>
+        ///     Sequence of <see cref="Assembly" />
+        /// </returns>
         IEnumerable<Assembly> GetAssemblies();
     }
 

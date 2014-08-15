@@ -176,6 +176,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="CompanyRepository.cs" />
+    <Compile Include="ConventionMappingTests.cs" />
     <Compile Include="FailedCompanyRepository.cs" />
     <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
     <Compile Include="IntegrationTests\CompanyBaseTests.cs" />
@@ -186,8 +187,15 @@
     <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyIdentification.cs" />
+    <Compile Include="Models\IctCompany.cs" />
+    <Compile Include="Models\Mapping\CompanyIdentificationMapper.cs" />
+    <Compile Include="Models\Mapping\CompanyMapper.cs" />
     <Compile Include="Models\FailedCompany.cs" />
+    <Compile Include="Models\Mapping\FailedCompanyMapper.cs" />
+    <Compile Include="Models\Mapping\IctCompanyMapper.cs" />
+    <Compile Include="Models\Mapping\TestsMappingAssemblies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\Mapping\TestsSimpleModelMapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -206,11 +214,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Models\Hbm\CompanyIdentification.hbm.xml" />
-    <EmbeddedResource Include="Models\Hbm\Company.hbm.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Models\Hbm\FailedCompany.hbm.xml" />
     <Content Include="x64\SQLite.Interop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -12,21 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Castle.Core.Logging;
+using System;
 
-using NHibernate;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.I.Implementations;
-using PPWCode.Vernacular.NHibernate.I.Tests;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using NUnit.Framework;
+
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
-    public class CompanyRepository : Repository<Company, int>
+    [TestFixture]
+    public class ConventionMappingTests
     {
-        public CompanyRepository(ISession session)
-            : base(new NullLogger(), session)
+        [Test, Explicit]
+        public void XmlMapping()
         {
+            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
+            foreach (HbmMapping hbmMapping in mapper.GetHbmMappings())
+            {
+                Console.WriteLine(hbmMapping.AsString());
+            }
         }
     }
 }

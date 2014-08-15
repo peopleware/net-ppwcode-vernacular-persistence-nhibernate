@@ -21,7 +21,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 using Castle.Core.Logging;
 
-using NHibernate;
 using NHibernate.Cfg;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -35,8 +34,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         private const string ConfigFile = "hibernate.cfg.xml";
         private readonly ILogger m_Logger;
 
-        public NhFasterConfiguration(ILogger logger, IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
-            : base(interceptor, nhProperties, mappingAssemblies, registerEventListeners)
+        protected NhFasterConfiguration(ILogger logger, INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
         {
             Contract.Requires(logger != null);
 

@@ -19,6 +19,7 @@ using NHibernate;
 
 using NUnit.Framework;
 
+using PPWCode.Vernacular.NHibernate.I.Tests;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
@@ -338,6 +339,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 // 2. Remove FailedCompany
                 FailedCompany failedCompany = mergedCompany.FailedCompany;
                 mergedCompany.FailedCompany = null;
+
                 // Due cascading delete isn't supported for one-to-one relation, 
                 // see https://nhibernate.jira.com/browse/NH-1262
                 FailedCompanyRepository.Delete(failedCompany);

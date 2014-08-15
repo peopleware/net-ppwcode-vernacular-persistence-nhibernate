@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using NHibernate.Mapping.ByCode;
 
-[assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
-[assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
-[assembly: AssemblyConfiguration("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("2ec58b94-6758-4c74-9ae5-140102d76d32")]
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+{
+    public class FailedCompanyMapper : InsertAuditablePersistentObjectMapper<FailedCompany, int>
+    {
+        public FailedCompanyMapper()
+        {
+            Id(fc => fc.Id, m => m.Generator(Generators.Foreign<FailedCompany>(fc => fc.Company)));
+            Property(fc => fc.FailingDate);
+            OneToOne(fc => fc.Company, m => m.Constrained(true));
+        }
+    }
+}

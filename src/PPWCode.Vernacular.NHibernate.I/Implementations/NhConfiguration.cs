@@ -15,17 +15,17 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
-    public class NhConfiguration : NhConfigurationBase
+    public abstract class NhConfiguration : NhConfigurationBase
     {
-        public NhConfiguration(IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
-            : base(interceptor, nhProperties, mappingAssemblies, registerEventListeners)
+        protected NhConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
         {
         }
 
@@ -33,33 +33,38 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             get
             {
-                Configuration result = new Configuration();
-                result.Configure();
+                Configuration configuration = new Configuration();
+                configuration.Configure();
                 foreach (KeyValuePair<string, string> item in NhProperties.Properties)
                 {
-                    if (result.Properties.ContainsKey(item.Key))
+                    if (configuration.Properties.ContainsKey(item.Key))
                     {
                         if (string.IsNullOrWhiteSpace(item.Value))
                         {
-                            result.Properties.Remove(item.Key);
+                            configuration.Properties.Remove(item.Key);
                         }
                         else
                         {
-                            result.SetProperty(item.Key, item.Value);
+                            configuration.SetProperty(item.Key, item.Value);
                         }
                     }
                     else
                     {
-                        result.Properties.Add(item);
+                        configuration.Properties.Add(item);
                     }
+                }
+
+                foreach (HbmMapping hbmMapping in HbmMapping.GetHbmMappings())
+                {
+                    configuration.AddMapping(hbmMapping);
                 }
 
                 foreach (Assembly assembly in MappingAssemblies.GetAssemblies())
                 {
-                    result.AddAssembly(assembly);
+                    configuration.AddAssembly(assembly);
                 }
 
-                return result;
+                return configuration;
             }
         }
     }

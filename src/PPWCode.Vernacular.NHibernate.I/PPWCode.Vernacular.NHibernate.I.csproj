@@ -168,7 +168,21 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Implementations\ImmutableUserTypeBase.cs" />
+    <Compile Include="Interfaces\IHbmMapping.cs" />
+    <Compile Include="Interfaces\INhInterceptor.cs" />
     <Compile Include="Interfaces\IRepositoryContractBase.cs" />
+    <Compile Include="MappingByCode\ModelMapperBase.cs" />
+    <Compile Include="MappingByCode\PropertyPathExtensions.cs" />
+    <Compile Include="MappingByCode\NoneVersioned\AuditablePeristentObjectMapper.cs" />
+    <Compile Include="MappingByCode\AuditLogMapping.cs" />
+    <Compile Include="MappingByCode\NoneVersioned\InsertAuditablePersistentObjectMapper.cs" />
+    <Compile Include="MappingByCode\NoneVersioned\UpdateAuditablePersistentObjectMapper.cs" />
+    <Compile Include="MappingByCode\PersistentObjectMapper.cs" />
+    <Compile Include="MappingByCode\SimpleModelMapper.cs" />
+    <Compile Include="MappingByCode\Versioned\AuditableVersionedPeristentObjectMapper.cs" />
+    <Compile Include="MappingByCode\Versioned\InsertAuditableVersionedPersistentObjectMapper.cs" />
+    <Compile Include="MappingByCode\Versioned\UpdateAuditableVersionedPersistentObjectMapper.cs" />
+    <Compile Include="MappingByCode\Versioned\VersionedPersistentObjectMapper.cs" />
     <Compile Include="Semantics\AssociationContracts.cs" />
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
@@ -193,6 +207,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\StyleCop.MSBuild.PPWCode.4.7.49.0\build\StyleCop.MSBuild.PPWCode.Targets" Condition="Exists('..\packages\StyleCop.MSBuild.PPWCode.4.7.49.0\build\StyleCop.MSBuild.PPWCode.Targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

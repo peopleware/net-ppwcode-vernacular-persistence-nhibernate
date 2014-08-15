@@ -12,11 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using System;
 
-[assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
-[assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
-[assembly: AssemblyConfiguration("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("2ec58b94-6758-4c74-9ae5-140102d76d32")]
+using NHibernate.Mapping.ByCode.Conformist;
+
+using PPWCode.Vernacular.Persistence.II;
+
+namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
+{
+    public abstract class PersistentObjectMapper<T, TId>
+        : ClassMapping<T>
+        where T : class, IPersistentObject<TId>
+        where TId : IEquatable<TId>
+    {
+        protected const int MaxUserNameLength = 128;
+
+        protected PersistentObjectMapper()
+        {
+            Id(x => x.Id);
+        }
+    }
+}

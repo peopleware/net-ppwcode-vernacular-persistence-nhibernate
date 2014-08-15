@@ -13,17 +13,22 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 using Moq;
 
 using NHibernate;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping.ByCode;
 
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
+using PPWCode.Vernacular.NHibernate.I.Tests;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
 
@@ -47,6 +52,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         protected const string UserName = "Danny";
 
         protected readonly DateTime Now = DateTime.Now.ToUniversalTime();
+
+        protected override IEnumerable<HbmMapping> GetHbmMappings()
+        {
+            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
+            return mapper.GetHbmMappings();
+        }
 
         protected override ISession OpenSession()
         {

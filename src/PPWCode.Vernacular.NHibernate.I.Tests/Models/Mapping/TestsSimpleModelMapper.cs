@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
-[assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
-[assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
-[assembly: AssemblyConfiguration("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("2ec58b94-6758-4c74-9ae5-140102d76d32")]
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+{
+    public class TestsSimpleModelMapper : SimpleModelMapper
+    {
+        public TestsSimpleModelMapper(IMappingAssemblies mappingAssemblies)
+            : base(mappingAssemblies)
+        {
+        }
+
+        protected override bool UseCamelCaseUnderScoreForDbObjects
+        {
+            get { return false; }
+        }
+    }
+}

@@ -12,21 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Castle.Core.Logging;
+using System;
 
-using NHibernate;
+using PPWCode.Vernacular.Persistence.II;
 
-using PPWCode.Vernacular.NHibernate.I.Implementations;
-using PPWCode.Vernacular.NHibernate.I.Tests;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public class CompanyRepository : Repository<Company, int>
+    public abstract class AuditLogMapping<TId> : PersistentObjectMapper<AuditLog<TId>, TId>
+        where TId : IEquatable<TId>
     {
-        public CompanyRepository(ISession session)
-            : base(new NullLogger(), session)
+        protected AuditLogMapping()
         {
+            Property(x => x.EntryType);
+            Property(x => x.EntityName);
+            Property(x => x.EntityId);
+            Property(x => x.PropertyName);
+            Property(x => x.OldValue);
+            Property(x => x.NewValue);
+            Property(x => x.CreatedAt);
+            Property(x => x.CreatedBy);
         }
     }
 }

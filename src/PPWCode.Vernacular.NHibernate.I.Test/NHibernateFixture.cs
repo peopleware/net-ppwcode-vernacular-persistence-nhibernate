@@ -12,24 +12,85 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
+
 using HibernatingRhinos.Profiler.Appender.NHibernate;
 
 using log4net.Config;
 
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Context;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using NHibernate.Tool.hbm2ddl;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+using PPWCode.Vernacular.NHibernate.I.Utilities;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
     {
-        protected ISessionFactory SessionFactory
+        private const string ConnectionString = "Data Source=:memory:;Version=3;New=True;";
+
+        private ISessionFactory m_SessionFactory;
+        private Configuration m_Configuration;
+
+        protected Configuration Configuration
         {
-            get { return NhConfigurator.SessionFactory; }
+            get
+            {
+                if (m_Configuration == null)
+                {
+                    m_Configuration = new Configuration()
+                        .DataBaseIntegration(
+                            db =>
+                            {
+                                db.Dialect<SQLiteDialect>();
+                                db.Driver<SQLite20Driver>();
+                            })
+                        .Configure()
+                        .DataBaseIntegration(
+                            db =>
+                            {
+                                db.Dialect<SQLiteDialect>();
+                                db.Driver<SQLite20Driver>();
+                                db.ConnectionProvider<TestConnectionProvider>();
+                                db.ConnectionString = ConnectionString;
+                            })
+                        .SetProperty(Environment.CurrentSessionContextClass, "thread_static")
+                        .SetProperty(Environment.ShowSql, "true")
+                        .SetProperty(Environment.FormatSql, "true");
+
+                    IDictionary<string, string> props = m_Configuration.Properties;
+                    if (props.ContainsKey(Environment.ConnectionStringName))
+                    {
+                        props.Remove(Environment.ConnectionStringName);
+                    }
+
+                    new CivilizedEventListener().Register(m_Configuration);
+
+                    IEnumerable<HbmMapping> hbmMappings = GetHbmMappings();
+                    foreach (HbmMapping hbmMapping in hbmMappings)
+                    {
+                        m_Configuration.AddMapping(hbmMapping);
+                    }
+                }
+
+                return m_Configuration;
+            }
+        }
+
+        protected virtual IEnumerable<HbmMapping> GetHbmMappings()
+        {
+            yield break;
+        }
+
+        protected virtual ISessionFactory SessionFactory
+        {
+            get { return m_SessionFactory ?? (m_SessionFactory = Configuration.BuildSessionFactory()); }
         }
 
         protected virtual ISession OpenSession()
@@ -103,15 +164,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         private void TearDownContextualSession()
         {
-            ISessionFactory sessionFactory = NhConfigurator.SessionFactory;
-            ISession session = CurrentSessionContext.Unbind(sessionFactory);
+            ISession session = CurrentSessionContext.Unbind(SessionFactory);
             session.Close();
         }
 
         private void BuildSchema()
         {
-            Configuration cfg = NhConfigurator.Configuration;
-            SchemaExport schemaExport = new SchemaExport(cfg);
+            SchemaExport schemaExport = new SchemaExport(Configuration);
             schemaExport.Create(false, true);
         }
     }

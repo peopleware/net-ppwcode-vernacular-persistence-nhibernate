@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 }
             }
             */
-            new DirtyChecking(NhConfigurator.Configuration, NhConfigurator.SessionFactory, Assert.Fail, Assert.Inconclusive).Test();
+            new DirtyChecking(Configuration, SessionFactory, Assert.Fail, Assert.Inconclusive).Test();
         }
     }
 }
