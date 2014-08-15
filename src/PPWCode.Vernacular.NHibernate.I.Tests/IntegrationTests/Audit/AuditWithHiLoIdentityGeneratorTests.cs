@@ -14,7 +14,6 @@
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Tests;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit

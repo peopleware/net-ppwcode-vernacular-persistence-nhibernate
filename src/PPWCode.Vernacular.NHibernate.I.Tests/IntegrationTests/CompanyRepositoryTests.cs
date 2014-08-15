@@ -20,13 +20,11 @@ using Moq;
 
 using NHibernate;
 using NHibernate.Cfg.MappingSchema;
-using NHibernate.Mapping.ByCode;
 
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
-using PPWCode.Vernacular.NHibernate.I.Tests;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 using PPWCode.Vernacular.NHibernate.I.Utilities;

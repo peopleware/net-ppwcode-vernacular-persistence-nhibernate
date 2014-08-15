@@ -18,7 +18,6 @@ using NHibernate.SqlCommand;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Tests;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.Persistence.II;
 
