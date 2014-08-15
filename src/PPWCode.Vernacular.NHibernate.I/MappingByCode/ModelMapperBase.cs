@@ -84,7 +84,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         public HbmMapping GetHbmMapping()
         {
-            ModelMapper.AddMappings(MappingTypes);
+            IEnumerable<Type> sortedMappingTypes = SortMappings(MappingTypes);
+            ModelMapper.AddMappings(sortedMappingTypes);
 
             HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
             hbmMapping.defaultlazy = DefaultLazy;
@@ -101,13 +102,20 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return hbmMapping;
         }
 
+        private IEnumerable<Type> SortMappings(IEnumerable<Type> mappingTypes)
+        {
+            // Should sort topologically
+            return mappingTypes;
+        }
+
         protected virtual IEnumerable<Type> MappingTypes
         {
             get
             {
                 return m_MappingAssemblies
                     .GetAssemblies()
-                    .SelectMany(a => a.GetExportedTypes());
+                    .SelectMany(a => a.GetExportedTypes())
+                    .Where(t => typeof(IConformistHoldersProvider).IsAssignableFrom(t) && !t.IsGenericTypeDefinition);
             }
         }
 

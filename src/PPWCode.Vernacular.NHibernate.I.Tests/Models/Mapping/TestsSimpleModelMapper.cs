@@ -27,6 +27,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         {
         }
 
+        protected override string DefaultAccess
+        {
+            get { return "field.pascalcase-m-underscore"; }
+        }
+
         protected override bool UseCamelCaseUnderScoreForDbObjects
         {
             get { return false; }

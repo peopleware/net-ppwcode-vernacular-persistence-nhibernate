@@ -39,11 +39,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected abstract bool UseCamelCaseUnderScoreForDbObjects { get; }
 
-        protected override string DefaultAccess
-        {
-            get { return "field.pascalcase-m-underscore"; }
-        }
-
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             classCustomizer.DynamicUpdate(true);
@@ -91,7 +86,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(k =>
                                          {
                                              k.Column("Id");
-                                             k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
+                                             if (type.BaseType != null)
+                                             {
+                                                 k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
+                                             }
                                          });
         }
 
