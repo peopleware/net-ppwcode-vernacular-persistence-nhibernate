@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Data;
 
 using HibernatingRhinos.Profiler.Appender.NHibernate;
 
@@ -59,10 +60,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                                 db.Driver<SQLite20Driver>();
                                 db.ConnectionProvider<TestConnectionProvider>();
                                 db.ConnectionString = ConnectionString;
+                                db.IsolationLevel = IsolationLevel.ReadCommitted;
                             })
                         .SetProperty(Environment.CurrentSessionContextClass, "thread_static")
                         .SetProperty(Environment.ShowSql, "true")
-                        .SetProperty(Environment.FormatSql, "true");
+                        .SetProperty(Environment.FormatSql, "true")
+                        .SetProperty(Environment.GenerateStatistics, "true");
 
                     IDictionary<string, string> props = m_Configuration.Properties;
                     if (props.ContainsKey(Environment.ConnectionStringName))
@@ -70,13 +73,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         props.Remove(Environment.ConnectionStringName);
                     }
 
-                    new CivilizedEventListener().Register(m_Configuration);
-
                     IEnumerable<HbmMapping> hbmMappings = GetHbmMappings();
                     foreach (HbmMapping hbmMapping in hbmMappings)
                     {
                         m_Configuration.AddMapping(hbmMapping);
                     }
+
+                    new CivilizedEventListener().Register(m_Configuration);
                 }
 
                 return m_Configuration;
