@@ -87,6 +87,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return m_ModelMapper; }
         }
 
+        protected IModelInspector ModelInspector
+        {
+            get { return ModelMapper.ModelInspector; }
+        }
+
         public HbmMapping GetHbmMapping()
         {
             IEnumerable<Type> mappingTypes =
@@ -97,6 +102,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.AddMappings(mappingTypes);
 
             HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
+
             hbmMapping.defaultlazy = DefaultLazy;
             if (!string.IsNullOrWhiteSpace(DefaultAccess))
             {
@@ -117,6 +123,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             {
                 yield return t;
             }
+
             foreach (Type t in GetSubClassCustomizers(mappingTypes))
             {
                 yield return t;
@@ -167,6 +174,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     idx++;
                 }
             }
+
             if (customizers.Count > 0)
             {
                 throw new ProgrammingError("Unable to sort the mappings.");
@@ -180,6 +188,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             {
                 result.Add(@type, new List<Type>(@type.GetBaseTypes()));
             }
+
             return result;
         }
 
@@ -235,6 +244,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     dictionary.Add(generic, firstTypeArgument);
                 }
             }
+
             return firstTypeArgument;
         }
 
@@ -243,10 +253,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             while (toCheck != null && toCheck != typeof(object))
             {
                 Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur)
+                if (generic == cur && toCheck.GenericTypeArguments.Length > 0)
                 {
                     return toCheck.GenericTypeArguments[0];
                 }
+
                 toCheck = toCheck.BaseType;
             }
             return null;

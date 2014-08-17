@@ -13,10 +13,13 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Impl;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -27,6 +30,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     /// </summary>
     public abstract class SimpleModelMapper : ModelMapperBase
     {
+        private readonly DefaultCandidatePersistentMembersProvider m_MembersProvider;
+
         protected SimpleModelMapper(IMappingAssemblies mappingAssemblies)
             : base(mappingAssemblies)
         {
@@ -35,11 +40,206 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapList += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapIdBag += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapMap += OnBeforeMappingCollectionConvention;
+
+            // Following code is from NHibernate.Mapping.ByCode.ConventionModelMapper class
+            // It set correctly accces, and readonly attributes
+            m_MembersProvider = new DefaultCandidatePersistentMembersProvider();
+
+            ModelMapper.BeforeMapClass += NoPoidGuid;
+            ModelMapper.BeforeMapClass += NoSetterPoidToField;
+
+            ModelMapper.BeforeMapProperty += MemberToFieldAccessor;
+            ModelMapper.BeforeMapProperty += MemberNoSetterToField;
+            ModelMapper.BeforeMapProperty += MemberReadOnlyAccessor;
+
+            ModelMapper.BeforeMapComponent += MemberToFieldAccessor;
+            ModelMapper.BeforeMapComponent += MemberNoSetterToField;
+            ModelMapper.BeforeMapComponent += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapComponent += ComponentParentToFieldAccessor;
+            ModelMapper.BeforeMapComponent += ComponentParentNoSetterToField;
+
+            ModelMapper.BeforeMapBag += MemberToFieldAccessor;
+            ModelMapper.BeforeMapIdBag += MemberToFieldAccessor;
+            ModelMapper.BeforeMapSet += MemberToFieldAccessor;
+            ModelMapper.BeforeMapMap += MemberToFieldAccessor;
+            ModelMapper.BeforeMapList += MemberToFieldAccessor;
+
+            ModelMapper.BeforeMapBag += MemberNoSetterToField;
+            ModelMapper.BeforeMapIdBag += MemberNoSetterToField;
+            ModelMapper.BeforeMapSet += MemberNoSetterToField;
+            ModelMapper.BeforeMapMap += MemberNoSetterToField;
+            ModelMapper.BeforeMapList += MemberNoSetterToField;
+
+            ModelMapper.BeforeMapBag += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapIdBag += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapSet += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapMap += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapList += MemberReadOnlyAccessor;
+
+            ModelMapper.BeforeMapManyToOne += MemberToFieldAccessor;
+            ModelMapper.BeforeMapOneToOne += MemberToFieldAccessor;
+            ModelMapper.BeforeMapAny += MemberToFieldAccessor;
+            ModelMapper.BeforeMapManyToOne += MemberNoSetterToField;
+            ModelMapper.BeforeMapOneToOne += MemberNoSetterToField;
+            ModelMapper.BeforeMapAny += MemberNoSetterToField;
+            ModelMapper.BeforeMapManyToOne += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapOneToOne += MemberReadOnlyAccessor;
+            ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
         protected virtual bool UseCamelCaseUnderScoreForDbObjects
         {
             get { return false; }
+        }
+
+        protected DefaultCandidatePersistentMembersProvider MembersProvider
+        {
+            get { return m_MembersProvider; }
+        }
+
+        protected virtual void NoPoidGuid(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        {
+            MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
+            if (ReferenceEquals(null, poidPropertyOrField))
+            {
+                classCustomizer.Id(null, idm => idm.Generator(Generators.Guid));
+            }
+        }
+
+        protected virtual void NoSetterPoidToField(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        {
+            MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
+            if (MatchNoSetterProperty(poidPropertyOrField))
+            {
+                classCustomizer.Id(idm => idm.Access(Accessor.NoSetter));
+            }
+        }
+
+        protected virtual void MemberToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+        {
+            if (MatchPropertyToField(member.LocalMember))
+            {
+                propertyCustomizer.Access(Accessor.Field);
+            }
+        }
+
+        protected virtual void MemberNoSetterToField(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+        {
+            if (MatchNoSetterProperty(member.LocalMember))
+            {
+                propertyCustomizer.Access(Accessor.NoSetter);
+            }
+        }
+
+        protected virtual void MemberReadOnlyAccessor(IModelInspector modelInspector, PropertyPath member, IAccessorPropertyMapper propertyCustomizer)
+        {
+            if (MatchReadOnlyProperty(member.LocalMember))
+            {
+                propertyCustomizer.Access(Accessor.ReadOnly);
+            }
+        }
+
+        protected virtual void ComponentParentToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+        {
+            Type componentType = member.LocalMember.GetPropertyOrFieldType();
+            IEnumerable<MemberInfo> persistentProperties = MembersProvider
+                .GetComponentMembers(componentType)
+                .Where(p => ModelInspector.IsPersistentProperty(p));
+
+            MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+            if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
+            {
+                componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.Field));
+            }
+        }
+
+        protected virtual void ComponentParentNoSetterToField(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
+        {
+            Type componentType = member.LocalMember.GetPropertyOrFieldType();
+            IEnumerable<MemberInfo> persistentProperties = MembersProvider
+                .GetComponentMembers(componentType)
+                .Where(p => ModelInspector.IsPersistentProperty(p));
+
+            MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
+            if (parentReferenceProperty != null && MatchNoSetterProperty(parentReferenceProperty))
+            {
+                componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.NoSetter));
+            }
+        }
+
+        protected bool MatchReadOnlyProperty(MemberInfo subject)
+        {
+            PropertyInfo property = subject as PropertyInfo;
+            if (property == null)
+            {
+                return false;
+            }
+
+            if (CanReadCantWriteInsideType(property) || CanReadCantWriteInBaseType(property))
+            {
+                return PropertyToField.GetBackFieldInfo(property) == null;
+            }
+
+            return false;
+        }
+
+        protected bool CanReadCantWriteInsideType(PropertyInfo property)
+        {
+            return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
+        }
+
+        protected bool CanReadCantWriteInBaseType(PropertyInfo property)
+        {
+            if (property.DeclaringType == property.ReflectedType)
+            {
+                return false;
+            }
+
+            PropertyInfo rfprop =
+                property.DeclaringType != null
+                    ? property
+                          .DeclaringType
+                          .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                          .SingleOrDefault(pi => pi.Name == property.Name)
+                    : null;
+
+            return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
+        }
+
+        protected bool MatchNoSetterProperty(MemberInfo subject)
+        {
+            PropertyInfo property = subject as PropertyInfo;
+            if (property == null || property.CanWrite || !property.CanRead)
+            {
+                return false;
+            }
+
+            FieldInfo fieldInfo = PropertyToField.GetBackFieldInfo(property);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.FieldType == property.PropertyType;
+            }
+
+            return false;
+        }
+
+        protected bool MatchPropertyToField(MemberInfo subject)
+        {
+            PropertyInfo property = subject as PropertyInfo;
+            if (property == null)
+            {
+                return false;
+            }
+
+            FieldInfo fieldInfo = PropertyToField.GetBackFieldInfo(property);
+            return fieldInfo != null;
+        }
+
+        protected MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, Type propertiesContainerType)
+        {
+            return ModelInspector.IsComponent(propertiesContainerType)
+                       ? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
+                       : null;
         }
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
