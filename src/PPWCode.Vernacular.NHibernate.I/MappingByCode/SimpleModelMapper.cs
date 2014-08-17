@@ -37,12 +37,20 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapMap += OnBeforeMappingCollectionConvention;
         }
 
-        protected abstract bool UseCamelCaseUnderScoreForDbObjects { get; }
+        protected virtual bool UseCamelCaseUnderScoreForDbObjects
+        {
+            get { return false; }
+        }
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             classCustomizer.DynamicUpdate(true);
-            classCustomizer.Id(m => m.Generator(Generators.HighLow));
+            classCustomizer.Id(m =>
+                               {
+                                   m.Column(GetIdentifier("Id"));
+                                   m.Generator(Generators.HighLow);
+                               });
+            classCustomizer.Table(GetIdentifier(type.Name));
         }
 
         protected override void OnBeforeMapProperty(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
@@ -53,11 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 return;
             }
 
-            string memberName = member.ToColumnName();
-            if (UseCamelCaseUnderScoreForDbObjects)
-            {
-                propertyCustomizer.Column(CamelCaseToUnderscore(memberName));
-            }
+            propertyCustomizer.Column(GetIdentifier(member.ToColumnName()));
 
             // Getting type of reflected object
             Type propertyType;
@@ -81,26 +85,33 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             }
         }
 
+        protected override void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
+        {
+            unionSubclassCustomizer.Table(GetIdentifier(type.Name));
+        }
+
         protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
         {
-            joinedSubclassCustomizer.Key(k =>
-                                         {
-                                             k.Column("Id");
-                                             if (type.BaseType != null)
-                                             {
-                                                 k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
-                                             }
-                                         });
+            joinedSubclassCustomizer.Key(
+                k =>
+                {
+                    k.Column(GetIdentifier("Id"));
+                    if (type.BaseType != null)
+                    {
+                        k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
+                    }
+                });
+            joinedSubclassCustomizer.Table(GetIdentifier(type.Name));
         }
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            collectionRelationManyToManyCustomizer.Column(string.Format("{0}Id", member.CollectionElementType().Name));
+            collectionRelationManyToManyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name)));
         }
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.Column(string.Format("{0}Id", member.LocalMember.Name));
+            propertyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.LocalMember.Name)));
             propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.LocalMember.Name));
         }
 
@@ -116,10 +127,15 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
             }
 
-            collectionPropertiesCustomizer.Key(k => k.Column(DetermineKeyColumnName(modelinspector, member)));
+            collectionPropertiesCustomizer.Key(k => k.Column(GetIdentifier(DetermineKeyColumnName(modelinspector, member))));
         }
 
-        private static string CamelCaseToUnderscore(string camelCase)
+        protected virtual string GetIdentifier(string identifier)
+        {
+            return UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
+        }
+
+        public static string CamelCaseToUnderscore(string camelCase)
         {
             const string Rgx = @"([A-Z]+)([A-Z][a-z])";
             const string Rgx2 = @"([a-z\d])([A-Z])";
@@ -129,7 +145,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return result.ToUpper();
         }
 
-        private static string DetermineKeyColumnName(IModelInspector inspector, PropertyPath member)
+        protected string DetermineKeyColumnName(IModelInspector inspector, PropertyPath member)
         {
             MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
             string name = inspector.IsOneToMany(member.LocalMember) && otherSideProperty != null

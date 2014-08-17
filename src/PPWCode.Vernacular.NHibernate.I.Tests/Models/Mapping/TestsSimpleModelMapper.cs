@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
@@ -35,20 +32,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         protected override bool UseCamelCaseUnderScoreForDbObjects
         {
             get { return false; }
-        }
-
-        protected override IEnumerable<Type> MappingTypes
-        {
-            get
-            {
-                yield return typeof(CompanyMapper);
-                yield return typeof(CompanyIdentificationMapper);
-                yield return typeof(FailedCompanyMapper);
-
-                yield return typeof(IctCompanyMapper);
-                yield return typeof(WebBasedIctCompanyMapper);
-                yield return typeof(AllRoundIctCompanyMapper);
-            }
         }
     }
 }
