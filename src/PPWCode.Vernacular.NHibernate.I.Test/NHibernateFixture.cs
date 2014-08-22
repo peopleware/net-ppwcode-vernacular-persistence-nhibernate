@@ -47,14 +47,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         .DataBaseIntegration(
                             db =>
                             {
-                                db.Dialect<SQLiteDialect>();
+                                db.Dialect<SQLiteDialectWithoutSchema>();
                                 db.Driver<SQLite20Driver>();
                             })
                         .Configure()
                         .DataBaseIntegration(
                             db =>
                             {
-                                db.Dialect<SQLiteDialect>();
+                                db.Dialect<SQLiteDialectWithoutSchema>();
                                 db.Driver<SQLite20Driver>();
                                 db.ConnectionProvider<TestConnectionProvider>();
                                 db.ConnectionString = ConnectionString;
