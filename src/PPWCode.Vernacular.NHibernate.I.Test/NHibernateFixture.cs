@@ -34,12 +34,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
     {
-        private const string ConnectionString = "Data Source=:memory:;Version=3;New=True;";
-
         private ISessionFactory m_SessionFactory;
         private Configuration m_Configuration;
 
-        protected Configuration Configuration
+        protected virtual Configuration Configuration
         {
             get
             {
@@ -111,6 +109,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
         }
 
+        protected virtual string ConnectionString
+        {
+            get { return "Data Source=:memory:;Version=3;New=True;"; }
+        }
+
         protected override void OnFixtureSetup()
         {
             base.OnFixtureSetup();
@@ -139,6 +142,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             SetupNHibernateSession();
         }
 
+        protected virtual void SetupNHibernateSession()
+        {
+            TestConnectionProvider.CloseDatabase();
+            BuildSchema();
+            SetupContextualSession();
+        }
+
+        protected virtual void BuildSchema()
+        {
+            SchemaExport schemaExport = new SchemaExport(Configuration);
+            schemaExport.Create(false, true);
+        }
+
+        protected void SetupContextualSession()
+        {
+            ISession session = OpenSession();
+            CurrentSessionContext.Bind(session);
+        }
+
         protected override void OnTeardown()
         {
             TearDownNHibernateSession();
@@ -146,38 +168,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             base.OnTeardown();
         }
 
-        protected void SetupNHibernateSession()
-        {
-            TestConnectionProvider.CloseDatabase();
-            SetupContextualSession();
-            BuildSchema();
-        }
-
-        protected void TearDownNHibernateSession()
+        protected virtual void TearDownNHibernateSession()
         {
             TearDownContextualSession();
             TestConnectionProvider.CloseDatabase();
         }
 
-        private void SetupContextualSession()
-        {
-            ISession session = OpenSession();
-            CurrentSessionContext.Bind(session);
-        }
-
-        private void TearDownContextualSession()
+        protected void TearDownContextualSession()
         {
             ISession session = CurrentSessionContext.Unbind(SessionFactory);
             if (session != null)
             {
                 session.Close();
             }
-        }
-
-        private void BuildSchema()
-        {
-            SchemaExport schemaExport = new SchemaExport(Configuration);
-            schemaExport.Create(false, true);
         }
     }
 }

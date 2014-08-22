@@ -30,9 +30,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             if (s_Connection != null)
             {
                 s_Connection.Dispose();
+                s_Connection = null;
             }
-
-            s_Connection = null;
         }
 
         public override IDbConnection GetConnection()
