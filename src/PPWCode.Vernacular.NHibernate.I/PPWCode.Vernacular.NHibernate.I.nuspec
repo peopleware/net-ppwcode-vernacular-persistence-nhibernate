@@ -17,6 +17,7 @@
 
     <releaseNotes>
       1.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
+      1.0.1 Bugfix release, fixing nuget package dependencies.
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
