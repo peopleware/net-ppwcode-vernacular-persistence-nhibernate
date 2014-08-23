@@ -16,7 +16,7 @@
     <description>$description$</description>
 
     <releaseNotes>
-      1.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
+      2.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
@@ -25,7 +25,7 @@
 
     <!-- explicit dependencies -->
     <dependencies>
-      <dependency id="log4net" version="[2.0.3]" />
+      <dependency id="log4net" version="[1.2.10,2)" />
       <dependency id="NHibernate" version="[3.3,4.0)" />
       <dependency id="NHibernateProfiler.Appender" version="[2,3)" />
       <dependency id="Iesi.Collections" version="[3.3,4.0)" />
