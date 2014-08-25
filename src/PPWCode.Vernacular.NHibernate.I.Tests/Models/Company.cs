@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-
-using Iesi.Collections.Generic;
 
 using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
@@ -42,7 +41,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         private FailedCompany m_FailedCompany;
 
         [DataMember]
-        private ISet<CompanyIdentification> m_Identifications = new HashedSet<CompanyIdentification>();
+        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
 
         public virtual string Name
         {

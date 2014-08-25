@@ -6,8 +6,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE518511-ABA6-4DE4-BBCA-E98FF6BC16B5}"
 	ProjectSection(SolutionItems) = preProject
 		..\LICENSE = ..\LICENSE
-		packages\NHibernate.3.3.4.4000\nhibernate-configuration.xsd = packages\NHibernate.3.3.4.4000\nhibernate-configuration.xsd
-		packages\NHibernate.3.3.4.4000\nhibernate-mapping.xsd = packages\NHibernate.3.3.4.4000\nhibernate-mapping.xsd
+		packages\NHibernate.4.0.0.4000\nhibernate-configuration.xsd = packages\NHibernate.4.0.0.4000\nhibernate-configuration.xsd
+		packages\NHibernate.4.0.0.4000\nhibernate-mapping.xsd = packages\NHibernate.4.0.0.4000\nhibernate-mapping.xsd
 		..\NOTICE = ..\NOTICE
 		PPWCode.Vernacular.NHibernate.I\PPWCode.Vernacular.NHibernate.I.nuspec = PPWCode.Vernacular.NHibernate.I\PPWCode.Vernacular.NHibernate.I.nuspec
 		PPWCode.Vernacular.NHibernate.I.Test\PPWCode.Vernacular.NHibernate.I.Test.nuspec = PPWCode.Vernacular.NHibernate.I.Test\PPWCode.Vernacular.NHibernate.I.Test.nuspec
