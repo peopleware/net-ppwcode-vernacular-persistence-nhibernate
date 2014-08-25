@@ -247,7 +247,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             classCustomizer.DynamicUpdate(true);
             classCustomizer.Id(m =>
                                {
-                                   m.Column(GetIdentifier("Id"));
+                                   m.Column(GetIdentifier(string.Format("{0}Id", type.Name)));
                                    m.Generator(Generators.HighLow);
                                });
             classCustomizer.Table(GetIdentifier(type.Name));
@@ -295,7 +295,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetIdentifier("Id"));
+                    k.Column(GetIdentifier(string.Format("{0}Id", type.Name)));
                     if (type.BaseType != null)
                     {
                         k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
