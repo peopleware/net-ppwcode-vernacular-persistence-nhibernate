@@ -311,13 +311,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.LocalMember.Name)));
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.LocalMember.Name));
+            propertyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.ToColumnName())));
+            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.LocalMember.Name));
+            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
         }
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)
