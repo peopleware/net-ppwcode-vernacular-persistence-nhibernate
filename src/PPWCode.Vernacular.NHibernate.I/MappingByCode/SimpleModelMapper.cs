@@ -26,7 +26,7 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
     /// <summary>
-    ///     Simple ModelMapper
+    ///     Simple ModelMapper.
     /// </summary>
     public abstract class SimpleModelMapper : ModelMapperBase
     {

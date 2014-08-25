@@ -260,6 +260,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
                 toCheck = toCheck.BaseType;
             }
+
             return null;
         }
 
