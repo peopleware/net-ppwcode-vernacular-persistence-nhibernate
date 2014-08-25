@@ -25,12 +25,19 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     {
         protected InsertAuditableVersionedPersistentObjectMapper()
         {
-            Property(x => x.CreatedAt, m => m.Update(false));
+            // Satisfy IInsertAuditable
+            Property(x => x.CreatedAt,
+                     m =>
+                     {
+                         m.Update(false);
+                         m.NotNullable(true);
+                     });
             Property(x => x.CreatedBy,
                      m =>
                      {
                          m.Length(MaxUserNameLength);
                          m.Update(false);
+                         m.NotNullable(true);
                      });
         }
     }
