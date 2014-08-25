@@ -25,6 +25,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     {
         protected UpdateAuditableVersionedPersistentObjectMapper()
         {
+            // Satisfy IInsertAuditable
             Property(x => x.LastModifiedAt, m => m.Insert(false));
             Property(x => x.LastModifiedBy,
                      m =>
