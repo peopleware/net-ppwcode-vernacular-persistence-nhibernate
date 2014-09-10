@@ -35,7 +35,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         private const string ConfigFile = "hibernate.cfg.xml";
         private readonly ILogger m_Logger;
 
-        public NhFasterConfiguration(ILogger logger, IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
+        protected NhFasterConfiguration(ILogger logger, IInterceptor interceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IRegisterEventListener[] registerEventListeners)
             : base(interceptor, nhProperties, mappingAssemblies, registerEventListeners)
         {
             Contract.Requires(logger != null);
@@ -59,37 +59,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
         }
 
-        public string SerializedConfiguration
-        {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin"); }
-        }
-
-        protected abstract string Namespace { get; }
-
-        protected override Configuration Configuration
-        {
-            get
-            {
-                Configuration result = LoadConfigurationFromFile();
-                if (result == null)
-                {
-                    result = base.Configuration;
-                    SaveConfigurationToFile(result);
-                }
-
-                return result;
-            }
-        }
-
-        private void SaveConfigurationToFile(Configuration configuration)
-        {
-            using (FileStream file = File.Open(SerializedConfiguration, FileMode.Create))
-            {
-                BinaryFormatter bf = new BinaryFormatter();
-                bf.Serialize(file, configuration);
-            }
-        }
-
         private Configuration LoadConfigurationFromFile()
         {
             Configuration result = null;
@@ -110,6 +79,37 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
 
             return result;
+        }
+
+        private void SaveConfigurationToFile(Configuration configuration)
+        {
+            using (FileStream file = File.Open(SerializedConfiguration, FileMode.Create))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(file, configuration);
+            }
+        }
+
+        private string SerializedConfiguration
+        {
+            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin"); }
+        }
+
+        protected abstract string Namespace { get; }
+
+        protected override Configuration Configuration
+        {
+            get
+            {
+                Configuration result = LoadConfigurationFromFile();
+                if (result == null)
+                {
+                    result = base.Configuration;
+                    SaveConfigurationToFile(result);
+                }
+
+                return result;
+            }
         }
     }
 }

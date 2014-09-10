@@ -30,7 +30,7 @@
       <dependency id="log4net" version="[1.2.10, 2.0)" />
       <dependency id="NHibernate" version="[3.3,4.0)" />
       <dependency id="NHibernateProfiler.Appender" version="[2,3)" />
-      <dependency id="Iesi.Collections" version="[3.2,4.0)" />
+      <dependency id="Iesi.Collections" version="[3.3,4.0)" />
       <dependency id="NUnit" version="[2.6.3,3.0)" />
       <dependency id="PPWCode.Vernacular.NHibernate.I" version="[1,2)" />
     </dependencies>

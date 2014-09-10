@@ -34,7 +34,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             get
             {
                 Configuration result = new Configuration();
-                result.Configure();
+
+                // Overrule properties if necessary
                 foreach (KeyValuePair<string, string> item in NhProperties.Properties)
                 {
                     if (result.Properties.ContainsKey(item.Key))
@@ -54,10 +55,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     }
                 }
 
+                // Register interceptor / event-listeners
+                result.SetInterceptor(Interceptor);
+                foreach (IRegisterEventListener registerListener in RegisterEventListeners)
+                {
+                    registerListener.Register(result);
+                }
+
+                // map embedded resource of specified assemblies
                 foreach (Assembly assembly in MappingAssemblies.GetAssemblies())
                 {
                     result.AddAssembly(assembly);
                 }
+
+                // finally configure everything
+                result.Configure();
 
                 return result;
             }

@@ -75,11 +75,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     if (m_Configuration == null)
                     {
                         m_Configuration = Configuration;
-                        m_Configuration.SetInterceptor(Interceptor);
-                        foreach (IRegisterEventListener registerListener in RegisterEventListeners)
-                        {
-                            registerListener.Register(m_Configuration);
-                        }
                     }
                 }
             }
