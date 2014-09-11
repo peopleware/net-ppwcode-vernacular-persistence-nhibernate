@@ -170,6 +170,7 @@
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
+    <Compile Include="Utilities\PPWDriverConnectionProvider.cs" />
     <Compile Include="Utilities\GenericWellKnownInstanceType.cs" />
     <Compile Include="Implementations\NhConfiguration.cs" />
     <Compile Include="Implementations\NhConfigurationBase.cs" />
