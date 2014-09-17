@@ -12,6 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+using PPWCode.Vernacular.NHibernate.I.Test;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
+    //public abstract class NHibernateFixtureBase : NHibernateSqlServerFixtureTest
+    //{
+    //    protected override string InitialCatalog
+    //    {
+    //        get { return @"PPWCode.Vernacular.NHibernate.I.Test"; }
+    //    }
+    //}
+
+    public abstract class NHibernateFixtureBase : NHibernateSqlLiteFixture
+    {
+    }
 }

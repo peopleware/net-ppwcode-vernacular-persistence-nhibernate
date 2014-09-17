@@ -31,7 +31,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public abstract class CompanyRepositoryTests : NHibernateFixture
+    public abstract class CompanyRepositoryTests : NHibernateSqlLiteFixture
     {
         protected enum CompanyCreationType
         {

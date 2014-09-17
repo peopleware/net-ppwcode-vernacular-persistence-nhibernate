@@ -12,80 +12,50 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Data;
+using System;
 
 using HibernatingRhinos.Profiler.Appender.NHibernate;
 
 using log4net.Config;
 
+using Moq;
+
 using NHibernate;
 using NHibernate.Cfg;
-using NHibernate.Cfg.MappingSchema;
-using NHibernate.Context;
-using NHibernate.Driver;
 using NHibernate.Tool.hbm2ddl;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
+using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
     public abstract class NHibernateFixture : BaseFixture
     {
         private ISessionFactory m_SessionFactory;
-        private Configuration m_Configuration;
+        private ISession m_Session;
 
-        protected virtual Configuration Configuration
+        protected abstract Configuration Configuration { get; }
+
+        protected virtual bool UseProfiler
         {
-            get
-            {
-                if (m_Configuration == null)
-                {
-                    m_Configuration = new Configuration()
-                        .DataBaseIntegration(
-                            db =>
-                            {
-                                db.Dialect<SQLiteDialectWithoutSchema>();
-                                db.Driver<SQLite20Driver>();
-                            })
-                        .Configure()
-                        .DataBaseIntegration(
-                            db =>
-                            {
-                                db.Dialect<SQLiteDialectWithoutSchema>();
-                                db.Driver<SQLite20Driver>();
-                                db.ConnectionProvider<TestConnectionProvider>();
-                                db.ConnectionString = ConnectionString;
-                                db.IsolationLevel = IsolationLevel.ReadCommitted;
-                            })
-                        .SetProperty(Environment.CurrentSessionContextClass, "thread_static")
-                        .SetProperty(Environment.ShowSql, "true")
-                        .SetProperty(Environment.FormatSql, "true")
-                        .SetProperty(Environment.GenerateStatistics, "true");
-
-                    IDictionary<string, string> props = m_Configuration.Properties;
-                    if (props.ContainsKey(Environment.ConnectionStringName))
-                    {
-                        props.Remove(Environment.ConnectionStringName);
-                    }
-
-                    HbmMapping hbmMapping = GetHbmMapping();
-                    if (hbmMapping != null)
-                    {
-                        m_Configuration.AddMapping(hbmMapping);
-                    }
-
-                    new CivilizedEventListener().Register(m_Configuration);
-                }
-
-                return m_Configuration;
-            }
+            get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
         }
 
-        protected virtual HbmMapping GetHbmMapping()
+        protected virtual bool ShowSql
         {
-            return null;
+            get { return ConfigHelper.GetAppSetting("ShowSql", true); }
+        }
+
+        protected virtual bool FormatSql
+        {
+            get { return ConfigHelper.GetAppSetting("FormatSql", true); }
+        }
+
+        protected virtual bool GenerateStatistics
+        {
+            get { return ConfigHelper.GetAppSetting("GenerateStatistics", true); }
         }
 
         protected virtual ISessionFactory SessionFactory
@@ -95,57 +65,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected virtual ISession OpenSession()
         {
-            return SessionFactory.OpenSession();
+            Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
+            identityProvider.Setup(ip => ip.IdentityName).Returns("Test");
+
+            Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
+            timeProvider.Setup(tp => tp.Now).Returns(DateTime.Now);
+
+            AuditInterceptor<long> sessionLocalInterceptor = new AuditInterceptor<long>(identityProvider.Object, timeProvider.Object);
+            return SessionFactory.OpenSession(sessionLocalInterceptor);
         }
 
-        protected ISession Session
+        protected virtual ISession Session
         {
-            get { return SessionFactory.GetCurrentSession(); }
-        }
-
-        protected virtual bool UseProfiler
-        {
-            get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
-        }
-
-        protected virtual string ConnectionString
-        {
-            get { return "Data Source=:memory:;Version=3;New=True;"; }
-        }
-
-        protected override void OnFixtureSetup()
-        {
-            base.OnFixtureSetup();
-
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Initialize();
-            }
-        }
-
-        protected override void OnFixtureTeardown()
-        {
-            base.OnFixtureTeardown();
-
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Stop();
-            }
-        }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            XmlConfigurator.Configure();
-            SetupNHibernateSession();
-        }
-
-        protected virtual void SetupNHibernateSession()
-        {
-            TestConnectionProvider.CloseDatabase();
-            BuildSchema();
-            SetupContextualSession();
+            get { return m_Session ?? (m_Session = OpenSession()); }
         }
 
         protected virtual void BuildSchema()
@@ -154,32 +86,42 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             schemaExport.Create(false, true);
         }
 
-        protected void SetupContextualSession()
+        protected override void OnFixtureSetup()
         {
-            ISession session = OpenSession();
-            CurrentSessionContext.Bind(session);
+            base.OnFixtureSetup();
+
+            XmlConfigurator.Configure();
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Initialize();
+            }
+        }
+
+        protected override void OnFixtureTeardown()
+        {
+            if (m_SessionFactory != null)
+            {
+                m_SessionFactory.Close();
+                m_SessionFactory = null;
+            }
+
+            if (UseProfiler)
+            {
+                NHibernateProfiler.Stop();
+            }
+
+            base.OnFixtureTeardown();
         }
 
         protected override void OnTeardown()
         {
-            TearDownNHibernateSession();
+            if (m_Session != null)
+            {
+                m_Session.Close();
+                m_Session = null;
+            }
 
             base.OnTeardown();
-        }
-
-        protected virtual void TearDownNHibernateSession()
-        {
-            TearDownContextualSession();
-            TestConnectionProvider.CloseDatabase();
-        }
-
-        protected void TearDownContextualSession()
-        {
-            ISession session = CurrentSessionContext.Unbind(SessionFactory);
-            if (session != null)
-            {
-                session.Close();
-            }
         }
     }
 }
