@@ -17,7 +17,7 @@ using NUnit.Framework;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public class DirtyCheckingExampleTests : CompanyRepositoryTests
     {
@@ -54,7 +54,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
                 }
             }
             */
-            new DirtyChecking(NhConfigurator.Configuration, NhConfigurator.SessionFactory, Assert.Fail, Assert.Inconclusive).Test();
+            new DirtyChecking(Configuration, SessionFactory, Assert.Fail, Assert.Inconclusive).Test();
         }
     }
 }

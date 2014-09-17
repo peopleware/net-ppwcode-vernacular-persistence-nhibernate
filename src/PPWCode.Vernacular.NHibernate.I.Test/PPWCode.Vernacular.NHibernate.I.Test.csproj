@@ -115,14 +115,28 @@
     <CodeContractsBeingOptimisticOnExternal>True</CodeContractsBeingOptimisticOnExternal>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Facilities.Logging">
+      <HintPath>..\packages\Castle.LoggingFacility.3.3.0\lib\net45\Castle.Facilities.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender">
       <HintPath>..\packages\NHibernateProfiler.Appender.2.0.2234.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\packages\Iesi.Collections.3.2.0.1001\lib\Net35\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Iesi.Collections.3.3.3.4001\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.2.1402.2112, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
       <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
@@ -131,7 +145,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="PPWCode.Util.OddsAndEnds.II">
+      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.0.1\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
+    </Reference>
+    <Reference Include="PPWCode.Vernacular.Exceptions.II">
+      <HintPath>..\packages\PPWCode.Vernacular.Exceptions.II.1.0.0\lib\net45\PPWCode.Vernacular.Exceptions.II.dll</HintPath>
+    </Reference>
+    <Reference Include="PPWCode.Vernacular.NHibernate.I">
+      <HintPath>..\packages\PPWCode.Vernacular.NHibernate.I.1.0.2\lib\net45\PPWCode.Vernacular.NHibernate.I.dll</HintPath>
+    </Reference>
+    <Reference Include="PPWCode.Vernacular.Persistence.II">
+      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.1.0.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
+    </Reference>
+    <Reference Include="PPWcode.Vernacular.Semantics.II">
+      <HintPath>..\packages\PPWcode.Vernacular.Semantics.II.1.0.0\lib\net45\PPWcode.Vernacular.Semantics.II.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -146,10 +176,13 @@
     <Compile Include="BaseFixture.cs" />
     <Compile Include="DirtyChecking.cs" />
     <Compile Include="DirtyCheckingInterceptor.cs" />
-    <Compile Include="NHConfigurator.cs" />
     <Compile Include="NHibernateFixture.cs" />
+    <Compile Include="NHibernateSqlLiteFixtureTest.cs" />
+    <Compile Include="NHibernateSqlServerFixtureTest.cs" />
+    <Compile Include="PPWSQLiteDialect.cs" />
     <Compile Include="SQLiteDialectWithoutSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlServerUtils.cs" />
     <Compile Include="TestConnectionProvider.cs" />
   </ItemGroup>
   <ItemGroup>

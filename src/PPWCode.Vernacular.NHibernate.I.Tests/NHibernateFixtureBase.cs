@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
-    public abstract class CompanyRepositoryTests : NHibernateFixtureBase
+    //public abstract class NHibernateFixtureBase : NHibernateSqlServerFixtureTest
+    //{
+    //    protected override string InitialCatalog
+    //    {
+    //        get { return @"PPWCode.Vernacular.NHibernate.I.Test"; }
+    //    }
+    //}
+
+    public abstract class NHibernateFixtureBase : NHibernateSqlLiteFixture
     {
-        protected IRepository<Company, int> Repository { get; private set; }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            Repository = new CompanyRepository(Session);
-        }
     }
 }
