@@ -25,7 +25,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Audit
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
 {
     public class AuditWithHiLoIdentityGeneratorTests : CompanyRepositoryTests
     {
