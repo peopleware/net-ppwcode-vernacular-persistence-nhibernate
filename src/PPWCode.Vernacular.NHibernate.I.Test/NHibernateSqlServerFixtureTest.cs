@@ -102,17 +102,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             return null;
         }
 
-        protected override void OnFixtureSetup()
-        {
-            base.OnFixtureSetup();
-
-            CreateCatalog();
-        }
-
         protected override void OnSetup()
         {
             base.OnSetup();
 
+            CreateCatalog();
             BuildSchema();
         }
 
