@@ -22,12 +22,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
     {
         public CompanyMapper()
         {
-            Property(c => c.Name,
-                     m =>
-                     {
-                         m.Length(128);
-                         m.NotNullable(true);
-                     });
+            Property(c => c.Name);
 
             Set(c => c.Identifications,
                 c =>

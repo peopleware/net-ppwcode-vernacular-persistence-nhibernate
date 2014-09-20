@@ -14,12 +14,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Type;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -264,24 +266,44 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             propertyCustomizer.Column(GetIdentifier(member.ToColumnName()));
 
             // Getting type of reflected object
-            Type propertyType;
+            Type memberType;
             switch (member.LocalMember.MemberType)
             {
                 case MemberTypes.Field:
-                    propertyType = ((FieldInfo)member.LocalMember).FieldType;
+                    memberType = ((FieldInfo)member.LocalMember).FieldType;
                     break;
                 case MemberTypes.Property:
-                    propertyType = ((PropertyInfo)member.LocalMember).PropertyType;
+                    memberType = ((PropertyInfo)member.LocalMember).PropertyType;
                     break;
                 default:
-                    propertyType = null;
+                    memberType = null;
                     break;
             }
 
-            if ((propertyType != null && propertyType.IsPrimitive)
-                || propertyType == typeof(DateTime))
+            bool required =
+                member.LocalMember
+                      .GetCustomAttributes()
+                      .OfType<RequiredAttribute>()
+                      .Any();
+
+            bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
+            propertyCustomizer.NotNullable(notNullable);
+
+            StringLengthAttribute stringLengthAttribute =
+                member.LocalMember
+                      .GetCustomAttributes()
+                      .OfType<StringLengthAttribute>()
+                      .FirstOrDefault();
+            if (stringLengthAttribute != null)
             {
-                propertyCustomizer.NotNullable(true);
+                if (stringLengthAttribute.MaximumLength > 0)
+                {
+                    propertyCustomizer.Length(stringLengthAttribute.MaximumLength);
+                }
+                else
+                {
+                    propertyCustomizer.Type<StringClobType>();
+                }
             }
         }
 
@@ -313,11 +335,24 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             propertyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.ToColumnName())));
             propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
+
+            bool required =
+                member.LocalMember
+                      .GetCustomAttributes()
+                      .OfType<RequiredAttribute>()
+                      .Any();
+            propertyCustomizer.NotNullable(required);
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
         {
             propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
+        }
+
+        protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
+        {
+            string discriminatorValue = CamelCaseToUnderscore(type.Name);
+            subclassCustomizer.DiscriminatorValue(discriminatorValue);
         }
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)

@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
@@ -43,6 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
 
+        [Required, StringLength(128)]
         public virtual string Name
         {
             get { return m_Name; }

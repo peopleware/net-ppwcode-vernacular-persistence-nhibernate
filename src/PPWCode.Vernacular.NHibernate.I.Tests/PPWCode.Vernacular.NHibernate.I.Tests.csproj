@@ -157,6 +157,7 @@
       <HintPath>..\packages\PPWcode.Vernacular.Semantics.II.1.0.0\lib\net45\PPWcode.Vernacular.Semantics.II.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.94.0\lib\net45\System.Data.SQLite.dll</HintPath>

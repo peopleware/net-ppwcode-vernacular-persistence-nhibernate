@@ -20,14 +20,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
     {
         public CompanyIdentificationMapper()
         {
-            Property(ci => ci.Identification,
-                     m =>
-                     {
-                         m.Length(128);
-                         m.NotNullable(true);
-                     });
+            Property(ci => ci.Identification);
             Property(ci => ci.Number);
-            ManyToOne(ci => ci.Company, m => m.NotNullable(true));
+            ManyToOne(ci => ci.Company);
         }
     }
 }

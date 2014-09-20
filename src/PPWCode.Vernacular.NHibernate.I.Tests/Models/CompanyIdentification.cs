@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
@@ -39,6 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private Company m_Company;
 
+        [Required, StringLength(256)]
         public virtual string Identification
         {
             get { return m_Identification; }
@@ -61,6 +63,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
         }
 
+        [Required]
         public virtual Company Company
         {
             get { return m_Company; }
