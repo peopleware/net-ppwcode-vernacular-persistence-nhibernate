@@ -40,7 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        public abstract T Save(T entity);
+        public abstract T Merge(T entity);
 
         public abstract void Delete(T entity);
     }

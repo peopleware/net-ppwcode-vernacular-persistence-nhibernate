@@ -129,19 +129,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     A record is saved in the DB to represent <paramref name="entity" />.
+        ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
         ///     An object is returned that represents the new record.
         /// </summary>
-        /// <param name="entity">The given entity.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         <see cref="GetById" /> returns an object that is "the same" as the result of this method.
-        ///         It has the same id, but the contents can be different, because the DB might be changed in the mean time.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The saved entity.</returns>
-        T Save(T entity);
+        /// <param name="entity">The entity to be saved or updated.</param>
+        /// <returns>The persistent entity.</returns>
+        T Merge(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -233,7 +226,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IPagedList<T>);
         }
 
-        public T Save(T entity)
+        public T Merge(T entity)
         {
             Contract.Requires(entity != null);
             Contract.Ensures(Contract.Result<T>() != null);

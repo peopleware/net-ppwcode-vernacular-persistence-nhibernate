@@ -44,7 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Save(company);
+            Company savedCompany = Repository.Merge(company);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(1, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -77,7 +77,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Save(company);
+            Company savedCompany = Repository.Merge(company);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(2, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -104,7 +104,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Save(company);
+            Company savedCompany = Repository.Merge(company);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(1, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -137,7 +137,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Save(company);
+            Company savedCompany = Repository.Merge(company);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(2, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -155,7 +155,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Remove companyIdentification 1
                 CompanyIdentification companyIdentification =
@@ -185,7 +185,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Remove companyIdentification 1 and 2
                 foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
@@ -213,7 +213,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Remove companyIdentification 1
                 CompanyIdentification companyIdentification =
@@ -243,7 +243,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Remove companyIdentification 1
                 foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
@@ -271,7 +271,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Add FailedCompany
                 FailedCompany failedCompany =
@@ -302,7 +302,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Add FailedCompany
                 // ReSharper disable once ObjectCreationAsStatement
@@ -333,7 +333,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 // 1. Attach company to session
-                mergedCompany = Repository.Save(company);
+                mergedCompany = Repository.Merge(company);
 
                 // 2. Remove FailedCompany
                 FailedCompany failedCompany = mergedCompany.FailedCompany;

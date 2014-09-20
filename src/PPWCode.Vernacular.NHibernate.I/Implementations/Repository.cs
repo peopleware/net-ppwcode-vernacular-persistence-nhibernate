@@ -94,7 +94,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return EnsureNhTransaction(() => FindPagedInternal(pageIndex, pageSize, func));
         }
 
-        public virtual T Save(T entity)
+        public virtual T Merge(T entity)
         {
             return EnsureNhTransaction(() => SaveInternal(entity));
         }
