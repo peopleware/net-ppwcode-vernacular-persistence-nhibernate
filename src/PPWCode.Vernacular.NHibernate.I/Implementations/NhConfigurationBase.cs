@@ -15,7 +15,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-using NHibernate;
 using NHibernate.Cfg;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -83,16 +82,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     if (m_Configuration == null)
                     {
                         m_Configuration = Configuration;
-                        IInterceptor interceptor = NhInterceptor.GetInterceptor();
-                        if (interceptor != null)
-                        {
-                            m_Configuration.SetInterceptor(interceptor);
-                        }
-
-                        foreach (IRegisterEventListener registerListener in RegisterEventListeners)
-                        {
-                            registerListener.Register(m_Configuration);
-                        }
                     }
                 }
             }

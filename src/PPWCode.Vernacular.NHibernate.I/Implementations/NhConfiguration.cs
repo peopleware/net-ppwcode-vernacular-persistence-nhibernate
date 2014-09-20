@@ -15,6 +15,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 
@@ -33,39 +34,57 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             get
             {
-                Configuration configuration = new Configuration();
-                configuration.Configure();
+
+                Configuration result = new Configuration();
+
+                // Overrule properties if necessary
                 foreach (KeyValuePair<string, string> item in NhProperties.Properties)
                 {
-                    if (configuration.Properties.ContainsKey(item.Key))
+                    if (result.Properties.ContainsKey(item.Key))
                     {
                         if (string.IsNullOrWhiteSpace(item.Value))
                         {
-                            configuration.Properties.Remove(item.Key);
+                            result.Properties.Remove(item.Key);
                         }
                         else
                         {
-                            configuration.SetProperty(item.Key, item.Value);
+                            result.SetProperty(item.Key, item.Value);
                         }
                     }
                     else
                     {
-                        configuration.Properties.Add(item);
+                        result.Properties.Add(item);
                     }
+                }
+
+                // Register interceptor / event-listeners
+                IInterceptor interceptor = NhInterceptor.GetInterceptor();
+                if (interceptor != null)
+                {
+                    result.SetInterceptor(interceptor);
+                }
+
+                foreach (IRegisterEventListener registerListener in RegisterEventListeners)
+                {
+                    registerListener.Register(result);
                 }
 
                 HbmMapping hbmMapping = HbmMapping.GetHbmMapping();
                 if (hbmMapping != null)
                 {
-                    configuration.AddMapping(hbmMapping);
+                    result.AddMapping(hbmMapping);
                 }
 
+                // map embedded resource of specified assemblies
                 foreach (Assembly assembly in MappingAssemblies.GetAssemblies())
                 {
-                    configuration.AddAssembly(assembly);
+                    result.AddAssembly(assembly);
                 }
 
-                return configuration;
+                // finally configure everything
+                result.Configure();
+
+                return result;
             }
         }
     }
