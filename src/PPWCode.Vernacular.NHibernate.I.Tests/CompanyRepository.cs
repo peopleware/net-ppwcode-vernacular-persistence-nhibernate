@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Castle.Core.Logging;
-
 using NHibernate;
 
 using PPWCode.Vernacular.NHibernate.I.Implementations;
@@ -24,7 +22,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
     public class CompanyRepository : Repository<Company, int>
     {
         public CompanyRepository(ISession session)
-            : base(new NullLogger(), session)
+            : base(session)
         {
         }
     }

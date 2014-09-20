@@ -156,6 +156,7 @@
     <Reference Include="System.ServiceModel.Activation" />
     <Reference Include="System.ServiceModel.Discovery" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -167,6 +168,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Implementations\ImmutableUserTypeBase.cs" />
+    <Compile Include="Implementations\RepositoryBase.cs" />
     <Compile Include="Interfaces\IHbmMapping.cs" />
     <Compile Include="Interfaces\INhInterceptor.cs" />
     <Compile Include="Interfaces\IRepositoryContractBase.cs" />

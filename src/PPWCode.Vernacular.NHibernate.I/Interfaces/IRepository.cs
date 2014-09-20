@@ -31,43 +31,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     Gets an entity by its id.
         /// </summary>
         /// <param name="id">The given primary key.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="IdNotFoundException{T,TId}" /> is thrown when there is no record with the given
-        ///         <paramref name="id" /> in the DB. For this exception, it applies that
-        ///         <code><see cref="IdNotFoundException{T,TId}" />.<see cref="IdNotFoundException{T,TId}.Id" /> == id</code>.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The entity with the given id.</returns>
+        /// <returns>The entity with the given id or null if not found.</returns>
         T GetById(TId id);
 
         /// <summary>
         ///     Gets an entity by a function.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
-        ///         <paramref name="func" /> in the DB.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The entity that is filtered by the function.</returns>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T Get(Func<ICriteria, ICriteria> func);
 
         /// <summary>
         ///     Gets an entity by a function.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para>
-        ///         An <see cref="NotFoundException" /> is thrown when there is no record with the given
-        ///         <paramref name="func" /> in the DB.
-        ///     </para>
-        /// </remarks>
-        /// <returns>The entity that is filtered by the function.</returns>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
@@ -159,7 +137,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
             Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.EnsuresOnThrow<IdNotFoundException<T, TId>>(true);
 
             return default(T);
         }
@@ -168,11 +145,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
-
-            // The result should match the criteria, but this is not easy to express in contracts
-            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
@@ -181,11 +154,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(func != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
-
-            // The result should match the criteria, but this is not easy to express in contracts
-            // Contract.Ensures(Contract.Result<T>() == null || criteria.Matches(Contract.Result<T>()));
             Contract.Ensures(Contract.Result<T>() != null);
-            Contract.EnsuresOnThrow<NotFoundException>(true, "no object in the DB matches the func");
 
             return default(T);
         }
