@@ -25,7 +25,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private string m_AllRound;
 
-        [Required, StringLength(-1)]
+        [StringLength(-1)]
         public virtual string AllRound
         {
             get { return m_AllRound; }

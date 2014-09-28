@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 
+using NHibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 using NHibernate.Type;
@@ -302,7 +303,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 }
                 else
                 {
-                    propertyCustomizer.Type<StringClobType>();
+                    propertyCustomizer.Type(NHibernateUtil.StringClob);
                 }
             }
         }
