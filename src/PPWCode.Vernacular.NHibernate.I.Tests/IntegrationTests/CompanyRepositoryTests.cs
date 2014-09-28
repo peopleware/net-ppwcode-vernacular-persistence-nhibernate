@@ -31,7 +31,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public abstract class CompanyRepositoryTests : NHibernateSqlLiteFixture
+    public abstract class CompanyRepositoryTests : NHibernateSqlServerFixtureTest
     {
         protected enum CompanyCreationType
         {
@@ -49,6 +49,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         protected const string UserName = "Danny";
 
         protected readonly DateTime Now = DateTime.Now.ToUniversalTime();
+
+        protected override string InitialCatalog
+        {
+            get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
+        }
 
         protected override HbmMapping GetHbmMapping()
         {
