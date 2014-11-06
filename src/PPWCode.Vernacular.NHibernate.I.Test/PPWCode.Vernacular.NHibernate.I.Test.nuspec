@@ -1,69 +1,70 @@
 <?xml version="1.0" ?>
 <package>
-  <metadata minClientVersion="2.8">
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
+    <metadata minClientVersion="2.8">
+        <id>$id$</id>
+        <version>$version$</version>
+        <title>$title$</title>
 
-    <!-- Authors and owners fixed on PeopleWare n.v. -->
-    <authors>PeopleWare n.v.</authors>
-    <owners>PeopleWare n.v.</owners>
+        <!-- Authors and owners fixed on PeopleWare n.v. -->
+        <authors>PeopleWare n.v.</authors>
+        <owners>PeopleWare n.v.</owners>
 
-    <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
-    <projectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</projectUrl>
-    <iconUrl>http://www.ppwcode.org/img/logo.jpg</iconUrl>
+        <licenseUrl>http://opensource.org/licenses/Apache-2.0</licenseUrl>
+        <projectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</projectUrl>
+        <iconUrl>http://www.ppwcode.org/img/logo.jpg</iconUrl>
 
-    <description>$description$</description>
+        <description>$description$</description>
 
-    <releaseNotes>
-1.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
-1.0.1 Bugfix release, fixing nuget package dependencies.
-1.0.2 Bugfix release, Add [Pure] Attribute to static methods of class AssociationContracts, Add PPWDriverConnectionProvider
-1.0.3 Add PPWDriverConnectionProvider / Base classes to allow SqlLite / Sql Server Integration tests
-    </releaseNotes>
+        <releaseNotes>
+            1.0.0 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
+            1.0.1 Bugfix release, fixing nuget package dependencies.
+            1.0.2 Bugfix release, Add [Pure] Attribute to static methods of class AssociationContracts, Add PPWDriverConnectionProvider
+            1.0.3 Add PPWDriverConnectionProvider / Base classes to allow SqlLite / Sql Server Integration tests
+            1.0.4 Upgrade NHibernate 3.4.0.4000 due bug NH-2819
+        </releaseNotes>
 
-    <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
+        <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
 
-    <tags>PPWCode PPWCode.Vernacular PPWCode.Vernacular.NHibernate</tags>
+        <tags>PPWCode PPWCode.Vernacular PPWCode.Vernacular.NHibernate</tags>
 
-    <!-- explicit dependencies -->
-    <dependencies>
-      <dependency id="Castle.Core" version="[3.3.0,)" />
-      <dependency id="Castle.Windsor" version="[3.3.0,)" />
-      <dependency id="Castle.LoggingFacility" version="[3.3.0,)" />
-      <dependency id="log4net" version="[1.2.10, 2.0)" />
-      <dependency id="NHibernate" version="[3.3,4.0)" />
-      <dependency id="NHibernateProfiler.Appender" version="[2,3)" />
-      <dependency id="Iesi.Collections" version="[3.3,4.0)" />
-      <dependency id="NUnit" version="[2.6.3,3.0)" />
-      <dependency id="PPWCode.Vernacular.NHibernate.I" version="[1,2)" />
-      <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1,2)" />
-      <dependency id="PPWCode.Vernacular.Persistence.II" version="[1,2)" />
-      <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />
-      <dependency id="PPWCode.Vernacular.Exceptions.II" version="[1,2)" />
-    </dependencies>
+        <!-- explicit dependencies -->
+        <dependencies>
+            <dependency id="Castle.Core" version="[3.3.0,)" />
+            <dependency id="Castle.Windsor" version="[3.3.0,)" />
+            <dependency id="Castle.LoggingFacility" version="[3.3.0,)" />
+            <dependency id="log4net" version="[1.2.10, 2.0)" />
+            <dependency id="NHibernate" version="[3.4,4.0)" />
+            <dependency id="Iesi.Collections" version="[3.4,4.0)" />
+            <dependency id="NHibernateProfiler.Appender" version="[2,3)" />
+            <dependency id="NUnit" version="[2.6.3,3.0)" />
+            <dependency id="PPWCode.Vernacular.NHibernate.I" version="[1,2)" />
+            <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1,2)" />
+            <dependency id="PPWCode.Vernacular.Persistence.II" version="[1,2)" />
+            <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />
+            <dependency id="PPWCode.Vernacular.Exceptions.II" version="[1,2)" />
+        </dependencies>
 
-    <!-- explicit references -->
-    <references>
-      <reference file="$AssemblyName$.dll" />
-    </references>
+        <!-- explicit references -->
+        <references>
+            <reference file="$AssemblyName$.dll" />
+        </references>
 
-  </metadata>
+    </metadata>
 
-  <!-- explicit file inclusion -->
-  <files>
-    <!-- assemblies -->
-    <file src="$OutputPath$$AssemblyName$.dll" target="lib\net45" />
-    <file src="$OutputPath$$AssemblyName$.pdb" target="lib\net45" />
-    <file src="$OutputPath$$AssemblyName$.xml" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.resources.dll" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.Contracts.dll" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.Contracts.pdb" target="lib\net45" />
+    <!-- explicit file inclusion -->
+    <files>
+        <!-- assemblies -->
+        <file src="$OutputPath$$AssemblyName$.dll" target="lib\net45" />
+        <file src="$OutputPath$$AssemblyName$.pdb" target="lib\net45" />
+        <file src="$OutputPath$$AssemblyName$.xml" target="lib\net45" />
+        <file src="$OutputPath$**\$AssemblyName$.resources.dll" target="lib\net45" />
+        <file src="$OutputPath$**\$AssemblyName$.Contracts.dll" target="lib\net45" />
+        <file src="$OutputPath$**\$AssemblyName$.Contracts.pdb" target="lib\net45" />
 
-    <!-- license information -->
-    <file src="..\..\LICENSE" target="LICENSE" />
-    <file src="..\..\NOTICE" target="NOTICE" />
-    <file src="..\..\README.md" target="README.md" />
-  </files>
+        <!-- license information -->
+        <file src="..\..\LICENSE" target="LICENSE" />
+        <file src="..\..\NOTICE" target="NOTICE" />
+        <file src="..\..\README.md" target="README.md" />
+    </files>
 
 </package>

@@ -129,7 +129,7 @@
     </Reference>
     <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Iesi.Collections.3.3.3.4001\lib\Net35\Iesi.Collections.dll</HintPath>
+      <HintPath>..\packages\Iesi.Collections.3.4.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
@@ -139,7 +139,7 @@
       <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
+      <HintPath>..\packages\NHibernate.3.4.0.4000\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -152,7 +152,7 @@
       <HintPath>..\packages\PPWCode.Vernacular.Exceptions.II.1.0.0\lib\net45\PPWCode.Vernacular.Exceptions.II.dll</HintPath>
     </Reference>
     <Reference Include="PPWCode.Vernacular.NHibernate.I">
-      <HintPath>..\packages\PPWCode.Vernacular.NHibernate.I.1.0.2\lib\net45\PPWCode.Vernacular.NHibernate.I.dll</HintPath>
+      <HintPath>..\packages\PPWCode.Vernacular.NHibernate.I.1.0.4\lib\net45\PPWCode.Vernacular.NHibernate.I.dll</HintPath>
     </Reference>
     <Reference Include="PPWCode.Vernacular.Persistence.II">
       <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.1.0.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
