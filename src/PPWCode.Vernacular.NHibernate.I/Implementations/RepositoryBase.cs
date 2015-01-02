@@ -35,7 +35,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         where TId : IEquatable<TId>
     {
         private readonly ISession m_Session;
-        private ILogger m_Logger = new NullLogger();
+        private ILogger m_Logger = NullLogger.Instance;
 
         protected RepositoryBase(ISession session)
         {
