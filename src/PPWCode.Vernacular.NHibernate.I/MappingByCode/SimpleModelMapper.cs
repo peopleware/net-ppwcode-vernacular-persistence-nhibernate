@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ using System.Text.RegularExpressions;
 using NHibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
-using NHibernate.Type;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -30,6 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
     /// <summary>
     ///     Simple ModelMapper.
+    ///     This code is based on <see cref="ConventionModelMapper" />
     /// </summary>
     public abstract class SimpleModelMapper : ModelMapperBase
     {
@@ -44,8 +44,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapIdBag += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapMap += OnBeforeMappingCollectionConvention;
 
-            // Following code is from NHibernate.Mapping.ByCode.ConventionModelMapper class
-            // It set correctly accces, and readonly attributes
             m_MembersProvider = new DefaultCandidatePersistentMembersProvider();
 
             ModelMapper.BeforeMapClass += NoPoidGuid;
@@ -100,9 +98,22 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return m_MembersProvider; }
         }
 
+        protected virtual bool DeclaredPolymorphicMatch(MemberInfo member, Func<MemberInfo, bool> declaredMatch)
+        {
+            return declaredMatch(member)
+                         || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
+                         || member.GetPropertyFromInterfaces().Any(declaredMatch);
+        }
+
+        protected virtual MemberInfo PoidPropertyOrField(IModelInspector modelInspector, Type type)
+        {
+            IEnumerable<MemberInfo> poidCandidates = MembersProvider.GetEntityMembersForPoid(type);
+            return poidCandidates.FirstOrDefault(mi => DeclaredPolymorphicMatch(mi, modelInspector.IsPersistentId));
+        }
+
         protected virtual void NoPoidGuid(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
+            MemberInfo poidPropertyOrField = PoidPropertyOrField(modelInspector, type);
             if (ReferenceEquals(null, poidPropertyOrField))
             {
                 classCustomizer.Id(null, idm => idm.Generator(Generators.Guid));
@@ -111,10 +122,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual void NoSetterPoidToField(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            MemberInfo poidPropertyOrField = MembersProvider.GetEntityMembersForPoid(type).FirstOrDefault(modelInspector.IsPersistentId);
-            if (MatchNoSetterProperty(poidPropertyOrField))
+            MemberInfo poidPropertyOrField = PoidPropertyOrField(modelInspector, type);
+            if (poidPropertyOrField != null && MatchNoSetterProperty(poidPropertyOrField))
             {
-                classCustomizer.Id(idm => idm.Access(Accessor.NoSetter));
+                classCustomizer.Id(poidPropertyOrField, idm => idm.Access(Accessor.NoSetter));
             }
         }
 
