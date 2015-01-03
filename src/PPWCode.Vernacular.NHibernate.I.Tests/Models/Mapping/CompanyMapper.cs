@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,11 +25,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
             Property(c => c.Name);
 
             Set(c => c.Identifications,
-                c =>
-                {
-                    c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
-                    c.Inverse(true);
-                },
+                c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
                 r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
 
             OneToOne(c => c.FailedCompany, m => m.Cascade(Cascade.All));

@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -277,26 +278,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             propertyCustomizer.Column(GetIdentifier(member.ToColumnName()));
 
-            // Getting type of reflected object
-            Type memberType;
-            switch (member.LocalMember.MemberType)
-            {
-                case MemberTypes.Field:
-                    memberType = ((FieldInfo)member.LocalMember).FieldType;
-                    break;
-                case MemberTypes.Property:
-                    memberType = ((PropertyInfo)member.LocalMember).PropertyType;
-                    break;
-                default:
-                    memberType = null;
-                    break;
-            }
-
             bool required =
                 member.LocalMember
                       .GetCustomAttributes()
                       .OfType<RequiredAttribute>()
                       .Any();
+
+            // Getting type of reflected object
+            Type memberType = member.MemberType();
 
             bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
             propertyCustomizer.NotNullable(notNullable);
@@ -372,6 +361,25 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (modelinspector.IsManyToMany(member.LocalMember))
             {
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
+            }
+
+            if (modelinspector.IsSet(member.LocalMember))
+            {
+                // If otherside has many-to-one, make it inverse, if not specify foreign key on Key element
+                MemberInfo oneToManyProperty = member.OneToManyOtherSideProperty();
+                IEnumerable<MemberInfo> candidatesManyToOne =
+                    MembersProvider
+                        .GetRootEntityMembers(oneToManyProperty.DeclaringType)
+                        .Where(modelinspector.IsManyToOne);
+                if (candidatesManyToOne.Any(mi => mi.MemberType() == member.LocalMember.DeclaringType))
+                {
+                    collectionPropertiesCustomizer.Inverse(true);
+                }
+                else
+                {
+                    Contract.Assert(oneToManyProperty.DeclaringType != null, "otherSideProperty.DeclaringType != null");
+                    collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", oneToManyProperty.DeclaringType.Name, oneToManyProperty.Name)));
+                }
             }
 
             collectionPropertiesCustomizer.Key(k => k.Column(GetIdentifier(DetermineKeyColumnName(modelinspector, member))));

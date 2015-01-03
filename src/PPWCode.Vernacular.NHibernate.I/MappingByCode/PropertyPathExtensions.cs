@@ -46,6 +46,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return string.Join(manyToManyIntermediateTableInfix, member.ManyToManySidesNames().OrderBy(x => x));
         }
 
+        public static Type MemberType(this PropertyPath member)
+        {
+            return member.LocalMember.MemberType();
+        }
+
         private static IEnumerable<string> ManyToManySidesNames(this PropertyPath member)
         {
             yield return member.Owner().Name;
