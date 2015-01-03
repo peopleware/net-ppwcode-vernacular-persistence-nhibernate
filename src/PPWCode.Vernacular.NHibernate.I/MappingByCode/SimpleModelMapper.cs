@@ -101,8 +101,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual bool DeclaredPolymorphicMatch(MemberInfo member, Func<MemberInfo, bool> declaredMatch)
         {
             return declaredMatch(member)
-                         || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
-                         || member.GetPropertyFromInterfaces().Any(declaredMatch);
+                   || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
+                   || member.GetPropertyFromInterfaces().Any(declaredMatch);
         }
 
         protected virtual MemberInfo PoidPropertyOrField(IModelInspector modelInspector, Type type)
