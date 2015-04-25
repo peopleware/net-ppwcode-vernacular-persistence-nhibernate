@@ -107,7 +107,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
             if (UseProfiler)
             {
-                NHibernateProfiler.Stop();
+                NHibernateProfiler.Shutdown();
             }
 
             base.OnFixtureTeardown();
