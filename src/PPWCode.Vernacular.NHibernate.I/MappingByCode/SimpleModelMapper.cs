@@ -94,6 +94,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return false; }
         }
 
+        protected virtual bool DynamicUpdate
+        {
+            get { return false; }
+        }
+
         protected DefaultCandidatePersistentMembersProvider MembersProvider
         {
             get { return m_MembersProvider; }
@@ -259,7 +264,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            classCustomizer.DynamicUpdate(true);
+            classCustomizer.DynamicUpdate(DynamicUpdate);
             classCustomizer.Id(m =>
                                {
                                    m.Column(GetIdentifier(string.Format("{0}Id", type.Name)));
