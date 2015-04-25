@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             get
             {
-
                 Configuration result = new Configuration();
 
                 // Overrule properties if necessary
