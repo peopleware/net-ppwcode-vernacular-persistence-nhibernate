@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,21 +27,23 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             // Satisfy IInsertAuditable
             Property(x => x.CreatedAt, m => m.Update(false));
-            Property(x => x.CreatedBy,
-                     m =>
-                     {
-                         m.Length(MaxUserNameLength);
-                         m.Update(false);
-                     });
+            Property(
+                x => x.CreatedBy,
+                m =>
+                {
+                    m.Length(MaxUserNameLength);
+                    m.Update(false);
+                });
 
             // Satisfy IUpdateAuditable
             Property(x => x.LastModifiedAt, m => m.Insert(false));
-            Property(x => x.LastModifiedBy,
-                     m =>
-                     {
-                         m.Length(MaxUserNameLength);
-                         m.Insert(false);
-                     });
+            Property(
+                x => x.LastModifiedBy,
+                m =>
+                {
+                    m.Length(MaxUserNameLength);
+                    m.Insert(false);
+                });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,17 +57,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
         }
 
+        [Pure]
         private bool IsConfigurationFileValid
         {
             get
             {
                 Assembly callingAssembly = Assembly.GetCallingAssembly();
-                DateTime maxDate = new[] { callingAssembly }
-                    .Union(MappingAssemblies.GetAssemblies())
-                    .Select(a => new FileInfo(a.Location))
-                    .Max(fi => fi.LastWriteTime);
+                DateTime maxDate =
+                    new[] { callingAssembly }
+                        .Union(MappingAssemblies.GetAssemblies())
+                        .Select(a => new FileInfo(a.Location))
+                        .Max(fi => fi.LastWriteTime);
                 FileInfo serializedConfigInfo = new FileInfo(SerializedConfiguration);
                 FileInfo nHibernateConfigFileInfo = new FileInfo(ConfigFile);
+
                 return serializedConfigInfo.LastWriteTime >= maxDate
                        && serializedConfigInfo.LastWriteTime >= nHibernateConfigFileInfo.LastWriteTime;
             }
