@@ -54,7 +54,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         public ILogger Logger
         {
-            get { return m_Logger; }
+            get
+            {
+                Contract.Ensures(Contract.Result<ILogger>() != null);
+
+                return m_Logger;
+            }
             set
             {
                 Contract.Requires(value != null);
@@ -66,7 +71,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         public ISession Session
         {
-            get { return m_Session; }
+            get
+            {
+                Contract.Ensures(Contract.Result<ISession>() != null);
+
+                return m_Session;
+            }
         }
 
         protected virtual void Execute(string requestDescription, Action action)

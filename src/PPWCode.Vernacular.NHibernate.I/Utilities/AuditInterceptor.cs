@@ -40,19 +40,38 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         {
             Contract.Requires(identityProvider != null);
             Contract.Requires(timeProvider != null);
+            Contract.Ensures(IdentityProvider == identityProvider);
+            Contract.Ensures(TimeProvider == timeProvider);
 
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(IdentityProvider != null);
+            Contract.Invariant(TimeProvider != null);
+        }
+
         private IIdentityProvider IdentityProvider
         {
-            get { return m_IdentityProvider; }
+            get
+            {
+                Contract.Ensures(Contract.Result<IIdentityProvider>() != null);
+
+                return m_IdentityProvider;
+            }
         }
 
         private ITimeProvider TimeProvider
         {
-            get { return m_TimeProvider; }
+            get
+            {
+                Contract.Ensures(Contract.Result<ITimeProvider>() != null);
+
+                return m_TimeProvider;
+            }
         }
 
         private ConcurrentDictionary<Property, int> IndexCache

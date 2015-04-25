@@ -47,7 +47,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         public ILogger Logger
         {
-            get { return m_Logger; }
+            get
+            {
+                Contract.Ensures(Contract.Result<ILogger>() != null);
+
+                return m_Logger;
+            }
             set
             {
                 Contract.Requires(value != null);
@@ -78,6 +83,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         private Configuration LoadConfigurationFromFile()
         {
+            Contract.Ensures(!IsConfigurationFileValid || Contract.Result<Configuration>() != null);
+
             Configuration result = null;
             if (IsConfigurationFileValid)
             {

@@ -37,6 +37,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             Contract.Requires(sessionFactory != null);
             Contract.Requires(failCallback != null);
             Contract.Requires(inconclusiveCallback != null);
+            Contract.Ensures(Configuration == configuration);
+            Contract.Ensures(SessionFactory == sessionFactory);
+            Contract.Ensures(FailCallback == failCallback);
+            Contract.Ensures(InconclusiveCallback == inconclusiveCallback);
 
             m_Configuration = configuration;
             m_SessionFactory = sessionFactory;
@@ -44,11 +48,61 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             m_InconclusiveCallback = inconclusiveCallback;
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Configuration != null);
+            Contract.Invariant(FailCallback != null);
+            Contract.Invariant(InconclusiveCallback != null);
+            Contract.Invariant(SessionFactory != null);
+        }
+
+        protected Configuration Configuration
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<Configuration>() != null);
+
+                return m_Configuration;
+            }
+        }
+
+        protected Action<string> FailCallback
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<Action<string>>() != null);
+
+                return m_FailCallback;
+            }
+        }
+
+        protected Action<string> InconclusiveCallback
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<Action<string>>() != null);
+
+                return m_InconclusiveCallback;
+            }
+        }
+
+        protected ISessionFactory SessionFactory
+        {
+            get
+            {
+                Contract.Ensures(Contract.Result<ISessionFactory>() != null);
+
+                return m_SessionFactory;
+            }
+        }
+
         public void Test()
         {
-            IEnumerable<string> mappedEntityNames = m_Configuration
-                .ClassMappings
-                .Select(m => m.EntityName);
+            IEnumerable<string> mappedEntityNames =
+                Configuration
+                    .ClassMappings
+                    .Select(m => m.EntityName);
 
             foreach (string entityName in mappedEntityNames)
             {
@@ -67,7 +121,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             if (id == null)
             {
                 string msg = string.Format("No instances of {0} in database.", entityName);
-                m_InconclusiveCallback.Invoke(msg);
+                InconclusiveCallback.Invoke(msg);
+
                 return;
             }
 
@@ -79,7 +134,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             List<string> ghosts = new List<string>();
             DirtyCheckingInterceptor interceptor = new DirtyCheckingInterceptor(ghosts);
 
-            using (ISession session = m_SessionFactory.OpenSession(interceptor))
+            using (ISession session = SessionFactory.OpenSession(interceptor))
             {
                 using (ITransaction tx = session.BeginTransaction())
                 {
@@ -91,14 +146,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
             if (ghosts.Any())
             {
-                m_FailCallback.Invoke(string.Join(Environment.NewLine, ghosts.ToArray()));
+                FailCallback.Invoke(string.Join(Environment.NewLine, ghosts.ToArray()));
             }
         }
 
         private object FindEntityId(string entityName)
         {
             object id;
-            using (ISession session = m_SessionFactory.OpenSession())
+            using (ISession session = SessionFactory.OpenSession())
             {
                 string idQueryString = string.Format("SELECT e.id FROM {0} e", entityName);
 
