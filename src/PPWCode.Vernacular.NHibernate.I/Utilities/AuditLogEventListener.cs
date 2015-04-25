@@ -31,13 +31,13 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public abstract class AuditLogEventListener<T, U> :
+    public abstract class AuditLogEventListener<TEntity, TAuditEntity> :
         IRegisterEventListener,
         IPostUpdateEventListener,
         IPostInsertEventListener,
         IPostDeleteEventListener
-        where T : IEquatable<T>
-        where U : AuditLog<T>, new()
+        where TEntity : IEquatable<TEntity>
+        where TAuditEntity : AuditLog<TEntity>, new()
     {
         private static readonly ConcurrentDictionary<Type, AuditLogItem> s_DomainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
@@ -114,7 +114,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                             entityName));
                 }
 
-                List<U> auditLogs = new List<U>();
+                List<TAuditEntity> auditLogs = new List<TAuditEntity>();
                 int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
                 foreach (int dirtyFieldIndex in fieldIndices)
                 {
@@ -130,7 +130,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                             if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                             {
                                 auditLogs.Add(
-                                    new U
+                                    new TAuditEntity
                                     {
                                         EntryType = "U",
                                         EntityName = entityName,
@@ -163,7 +163,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 DateTime now = TimeProvider.Now.ToUniversalTime();
                 string entityName = @event.Entity.GetType().Name;
 
-                List<U> auditLogs = new List<U>();
+                List<TAuditEntity> auditLogs = new List<TAuditEntity>();
                 int length = @event.State.Count();
                 for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
                 {
@@ -176,7 +176,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                         {
                             auditLogs.Add(
-                                new U
+                                new TAuditEntity
                                 {
                                     EntryType = "I",
                                     EntityName = entityName,
@@ -210,7 +210,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
                 ISession session = @event.Session.GetSession(EntityMode.Poco);
                 session.Save(
-                    new U
+                    new TAuditEntity
                     {
                         EntryType = "D",
                         EntityName = entityName,
@@ -247,7 +247,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         @type =>
                         {
                             result = new AuditLogItem();
-                            if (@type != typeof(U))
+                            if (@type != typeof(TAuditEntity))
                             {
                                 AuditLogAttribute auditLogAttribute =
                                     @type
