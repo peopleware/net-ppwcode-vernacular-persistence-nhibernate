@@ -161,7 +161,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public IList<T> Find(Func<ICriteria, ICriteria> func)
         {
-            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
@@ -169,7 +168,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            Contract.Requires(func != null);
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
@@ -177,7 +175,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
-            Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
@@ -187,7 +184,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            Contract.Requires(func != null);
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);

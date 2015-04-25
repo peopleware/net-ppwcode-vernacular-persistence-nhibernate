@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using NHibernate;
 using NHibernate.Criterion;
 
@@ -71,6 +75,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         }
 
         [Test]
+        public void Can_Find_All_Companies()
+        {
+            IList<Company> companies = Repository.Find((Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>>)null);
+
+            Assert.IsNotNull(companies);
+            Assert.IsFalse(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)));
+        }
+
+        [Test]
         public void Can_FindPaged_Company()
         {
             IPagedList<Company> pagedList = Repository.FindPaged(
@@ -78,6 +91,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 20,
                 qry => qry.Where(c => c.Name == "Peopleware NV")
                           .OrderBy(c => c.Name).Asc());
+
+            Assert.IsNotNull(pagedList);
+            Assert.IsFalse(pagedList.HasPreviousPage);
+            Assert.IsFalse(pagedList.HasNextPage);
+            Assert.AreEqual(1, pagedList.Items.Count);
+            Assert.AreEqual(1, pagedList.TotalCount);
+            Assert.AreEqual(1, pagedList.TotalPages);
+        }
+
+        [Test]
+        public void Can_Page_All_Companies()
+        {
+            IPagedList<Company> pagedList =
+                Repository.FindPaged(1, 20, (Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>>)null);
 
             Assert.IsNotNull(pagedList);
             Assert.IsFalse(pagedList.HasPreviousPage);

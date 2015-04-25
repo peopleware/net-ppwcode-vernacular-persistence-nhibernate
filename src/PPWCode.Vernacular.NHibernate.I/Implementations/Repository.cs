@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,56 +90,52 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual T GetInternal(Func<ICriteria, ICriteria> func)
         {
-            ICriteria criteria = CreateCriteria();
-            ICriteria qry = func(criteria);
-            T result = qry.UniqueResult<T>();
+            T result = func(CreateCriteria()).UniqueResult<T>();
 
             return result;
         }
 
         protected virtual T GetInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            IQueryOver<T, T> queryOver = CreateQueryOver();
-            IQueryOver<T> qry = func(queryOver);
-            T result = qry.SingleOrDefault();
+            T result = func(CreateQueryOver()).SingleOrDefault();
 
             return result;
         }
 
         protected virtual IList<T> FindInternal(Func<ICriteria, ICriteria> func)
         {
-            ICriteria criteria = CreateCriteria();
-            ICriteria qry = func(criteria);
-            IList<T> result = qry.List<T>();
+            ICriteria criteria = func != null ? func(CreateCriteria()) : CreateCriteria();
+            IList<T> result = criteria.List<T>();
 
             return result;
         }
 
         protected virtual IList<T> FindInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            IQueryOver<T, T> queryOver = CreateQueryOver();
-            IQueryOver<T> qry = func(queryOver);
-            IList<T> result = qry.List<T>();
+            IQueryOver<T> queryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
+            IList<T> result = queryOver.List<T>();
 
             return result;
         }
 
         protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func)
         {
-            ICriteria qryRowCount = func(CreateCriteria());
-            qryRowCount.ClearOrders();
+            ICriteria rowCountCriteria = func != null ? func(CreateCriteria()) : CreateCriteria();
+            rowCountCriteria.ClearOrders();
+            IFutureValue<int> rowCount =
+                rowCountCriteria
+                    .SetFirstResult(0)
+                    .SetMaxResults(RowSelection.NoValue)
+                    .SetProjection(Projections.RowCount())
+                    .FutureValue<int>();
 
-            IFutureValue<int> rowCount = qryRowCount
-                .SetFirstResult(0)
-                .SetMaxResults(RowSelection.NoValue)
-                .SetProjection(Projections.RowCount())
-                .FutureValue<int>();
-
-            IList<T> qryResult = func(CreateCriteria())
-                .SetFirstResult((pageIndex - 1) * pageSize)
-                .SetMaxResults(pageSize)
-                .Future<T>()
-                .ToList<T>();
+            ICriteria pagingCriteria = func != null ? func(CreateCriteria()) : CreateCriteria();
+            IList<T> qryResult =
+                pagingCriteria
+                    .SetFirstResult((pageIndex - 1) * pageSize)
+                    .SetMaxResults(pageSize)
+                    .Future<T>()
+                    .ToList<T>();
 
             PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
 
@@ -148,17 +144,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            IQueryOver<T> queryOver = func(CreateQueryOver());
+            IQueryOver<T> rowCountQueryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
+            IFutureValue<int> rowCount =
+                rowCountQueryOver
+                    .ToRowCountQuery()
+                    .FutureValue<int>();
 
-            IFutureValue<int> rowCount = queryOver
-                .ToRowCountQuery()
-                .FutureValue<int>();
-
-            IList<T> qryResult = queryOver
-                .Skip((pageIndex - 1) * pageSize)
-                .Take(pageSize)
-                .Future<T>()
-                .ToList<T>();
+            IQueryOver<T> pagingQueryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
+            IList<T> qryResult =
+                pagingQueryOver
+                    .Skip((pageIndex - 1) * pageSize)
+                    .Take(pageSize)
+                    .Future<T>()
+                    .ToList<T>();
 
             PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
 
