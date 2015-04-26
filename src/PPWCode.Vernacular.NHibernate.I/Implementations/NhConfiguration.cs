@@ -36,6 +36,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             {
                 Configuration result = new Configuration();
 
+                result.Configure();
+
                 // Overrule properties if necessary
                 foreach (KeyValuePair<string, string> item in NhProperties.Properties)
                 {
@@ -79,9 +81,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 {
                     result.AddAssembly(assembly);
                 }
-
-                // finally configure everything
-                result.Configure();
 
                 return result;
             }
