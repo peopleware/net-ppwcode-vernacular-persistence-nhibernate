@@ -34,7 +34,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     /// </summary>
     public abstract class SimpleModelMapper : ModelMapperBase
     {
+        private readonly object m_Locker = new object();
         private readonly DefaultCandidatePersistentMembersProvider m_MembersProvider;
+        private volatile bool m_ModelMetaDatasByTypeCached;
+        private IDictionary<Type, ModelMetaData> m_ModelMetaDatasByTypeCache;
 
         protected SimpleModelMapper(IMappingAssemblies mappingAssemblies)
             : base(mappingAssemblies)
@@ -89,7 +92,17 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
+        protected virtual IEnumerable<ModelMetaData> ModelMetaDatas
+        {
+            get { yield break; }
+        }
+
         protected virtual bool UseCamelCaseUnderScoreForDbObjects
+        {
+            get { return false; }
+        }
+
+        protected virtual bool DynamicInsert
         {
             get { return false; }
         }
@@ -97,6 +110,187 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual bool DynamicUpdate
         {
             get { return false; }
+        }
+
+        protected virtual IDictionary<Type, ModelMetaData> ModelMetaDatasByType
+        {
+            get
+            {
+                if (!m_ModelMetaDatasByTypeCached)
+                {
+                    lock (m_Locker)
+                    {
+                        if (!m_ModelMetaDatasByTypeCached)
+                        {
+                            m_ModelMetaDatasByTypeCache = ModelMetaDatas.ToDictionary(m => m.Type);
+                            m_ModelMetaDatasByTypeCached = true;
+                        }
+                    }
+                }
+
+                return m_ModelMetaDatasByTypeCache;
+            }
+        }
+
+        protected virtual PrimaryKeyTypeEnum PrimaryKeyType
+        {
+            get { return PrimaryKeyTypeEnum.TYPE_ID; }
+        }
+
+        protected virtual string GetTableName(IModelInspector modelInspector, Type type)
+        {
+            ModelMetaData modelMetaData;
+            string tableName = null;
+            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            {
+                tableName = modelMetaData.TableName;
+            }
+
+            string result = tableName ?? GetIdentifier(type.Name);
+            return result;
+        }
+
+        protected virtual string GetColumnName(IModelInspector modelInspector, PropertyPath member)
+        {
+            string defaultColumnName = member.ToColumnName();
+            string columnPrefix = null;
+            string columnName = null;
+
+            Type currentType = member.LocalMember.ReflectedType;
+            bool walkToParent = modelInspector.IsTablePerClassHierarchy(currentType);
+            while (currentType != null && currentType != typeof(object))
+            {
+                ModelMetaData modelMetaData;
+                if (ModelMetaDatasByType.TryGetValue(currentType, out modelMetaData))
+                {
+                    columnPrefix = modelMetaData.ColumnPrefix;
+                    modelMetaData.ColumnNames.TryGetValue(defaultColumnName, out columnName);
+                    break;
+                }
+
+                currentType = walkToParent ? currentType.BaseType : null;
+            }
+
+            string result = string.Concat(columnPrefix, columnName ?? GetIdentifier(defaultColumnName));
+            return result;
+        }
+
+        protected virtual string GetKeyColumnName(IModelInspector modelInspector, PropertyPath member)
+        {
+            MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
+            Type type = modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
+                            ? otherSideProperty.MemberType()
+                            : member.MemberType();
+            return GetKeyColumnName(modelInspector, type, true);
+        }
+
+        protected virtual string GetKeyColumnName(IModelInspector modelInspector, Type type, bool foreignKey)
+        {
+            ModelMetaData modelMetaData;
+            string columnPrefix = null;
+            string tableName = null;
+            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            {
+                tableName = modelMetaData.TableName;
+                columnPrefix = modelMetaData.ColumnPrefix;
+            }
+
+            string result;
+            PrimaryKeyTypeEnum primaryKeyType = foreignKey ? PrimaryKeyTypeEnum.TYPE_ID : PrimaryKeyType;
+            switch (primaryKeyType)
+            {
+                case PrimaryKeyTypeEnum.ID:
+                    result = string.Concat(columnPrefix, GetIdentifier(@"Id"));
+                    break;
+
+                case PrimaryKeyTypeEnum.TYPE_ID:
+                    if (string.IsNullOrWhiteSpace(tableName))
+                    {
+                        result = string.Concat(columnPrefix, GetIdentifier(string.Concat(type.Name, @"Id")));
+                    }
+                    else
+                    {
+                        result = UseCamelCaseUnderScoreForDbObjects
+                                     ? string.Concat(columnPrefix, tableName, tableName.EndsWith(@"_") ? @"ID" : @"_ID")
+                                     : string.Concat(columnPrefix, tableName, @"Id");
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return result;
+        }
+
+        protected virtual IEnumerable<MemberInfo> VersionProperties(IModelInspector modelInspector, Type type)
+        {
+            if (type == null)
+            {
+                yield break;
+            }
+
+            Type currentType = type;
+            while (currentType != null && currentType != typeof(object))
+            {
+                PropertyInfo[] properties = currentType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                foreach (PropertyInfo property in properties.Where(modelInspector.IsVersion))
+                {
+                    yield return property;
+                }
+
+                currentType = currentType.BaseType;
+            }
+
+            IEnumerable<PropertyInfo> versionProperties =
+                type
+                    .GetInterfaces()
+                    .SelectMany(@interface => @interface.GetProperties().Where(modelInspector.IsVersion));
+            foreach (PropertyInfo property in versionProperties)
+            {
+                yield return property;
+            }
+        }
+
+        public virtual string GetDiscriminatorColumnName(IModelInspector modelInspector, Type type)
+        {
+            string defaultColumnName = @"Discriminator";
+            string columnPrefix = null;
+            string dicriminatorColumnName = null;
+            ModelMetaData modelMetaData;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            {
+                columnPrefix = modelMetaData.ColumnPrefix;
+                dicriminatorColumnName = modelMetaData.Discriminator;
+            }
+
+            string result = string.Concat(columnPrefix, dicriminatorColumnName ?? GetIdentifier(defaultColumnName));
+            return result;
+        }
+
+        public virtual object GetDiscriminatorValue(IModelInspector modelInspector, Type type)
+        {
+            return CamelCaseToUnderscore(type.Name);
+        }
+
+        public virtual string GetVersionColumnName(IModelInspector modelInspector, Type type)
+        {
+            string defaultColumnName = @"PersistenceVersion";
+            string columnPrefix = null;
+            string versionColumnName = null;
+            ModelMetaData modelMetaData;
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            {
+                columnPrefix = modelMetaData.ColumnPrefix;
+                versionColumnName = modelMetaData.Version;
+            }
+
+            string result = string.Concat(columnPrefix, versionColumnName ?? GetIdentifier(defaultColumnName));
+            return result;
         }
 
         protected DefaultCandidatePersistentMembersProvider MembersProvider
@@ -264,24 +458,40 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
+            classCustomizer.DynamicInsert(DynamicInsert);
             classCustomizer.DynamicUpdate(DynamicUpdate);
-            classCustomizer.Id(m =>
-                               {
-                                   m.Column(GetIdentifier(string.Format("{0}Id", type.Name)));
-                                   m.Generator(Generators.HighLow);
-                               });
-            classCustomizer.Table(GetIdentifier(type.Name));
+
+            classCustomizer.Table(GetTableName(modelInspector, type));
+
+            classCustomizer.Id(
+                m =>
+                {
+                    m.Column(GetKeyColumnName(modelInspector, type, false));
+                    m.Generator(Generators.HighLow);
+                });
+
+            if (modelInspector.IsTablePerClassHierarchy(type))
+            {
+                classCustomizer.Discriminator(m => m.Column(GetDiscriminatorColumnName(modelInspector, type)));
+                classCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
+            }
+
+            MemberInfo[] versionProperties = VersionProperties(modelInspector, type).ToArray();
+            if (versionProperties.Length == 1)
+            {
+                classCustomizer.Version(versionProperties[0], m => m.Column(GetVersionColumnName(modelInspector, type)));
+            }
         }
 
         protected override void OnBeforeMapProperty(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
         {
-            Type declaringType = member.LocalMember.DeclaringType;
-            if (declaringType == null)
+            Type reflectedType = member.LocalMember.ReflectedType;
+            if (reflectedType == null)
             {
                 return;
             }
 
-            propertyCustomizer.Column(GetIdentifier(member.ToColumnName()));
+            propertyCustomizer.Column(GetColumnName(modelInspector, member));
 
             bool required =
                 member.LocalMember
@@ -289,7 +499,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                       .OfType<RequiredAttribute>()
                       .Any();
 
-            // Getting type of reflected object
+            // Getting tableType of reflected object
             Type memberType = member.MemberType();
 
             bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
@@ -315,7 +525,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
         {
-            unionSubclassCustomizer.Table(GetIdentifier(type.Name));
+            unionSubclassCustomizer.Table(GetTableName(modelInspector, type));
         }
 
         protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
@@ -323,13 +533,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetIdentifier(string.Format("{0}Id", type.Name)));
+                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false));
                     if (type.BaseType != null)
                     {
                         k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
                     }
                 });
-            joinedSubclassCustomizer.Table(GetIdentifier(type.Name));
+
+            joinedSubclassCustomizer.Table(GetTableName(modelInspector, type));
         }
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
@@ -339,8 +550,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.ToColumnName())));
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
+            string foreignKeyColumnName = GetKeyColumnName(modelInspector, member);
+            propertyCustomizer.Column(foreignKeyColumnName);
+            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, foreignKeyColumnName));
 
             bool required =
                 member.LocalMember
@@ -357,8 +569,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
         {
-            string discriminatorValue = CamelCaseToUnderscore(type.Name);
-            subclassCustomizer.DiscriminatorValue(discriminatorValue);
+            subclassCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
         }
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)
@@ -387,7 +598,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 }
             }
 
-            collectionPropertiesCustomizer.Key(k => k.Column(GetIdentifier(DetermineKeyColumnName(modelinspector, member))));
+            collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member)));
         }
 
         protected virtual string GetIdentifier(string identifier)
@@ -405,13 +616,68 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return result.ToUpper();
         }
 
-        protected string DetermineKeyColumnName(IModelInspector inspector, PropertyPath member)
+        public enum PrimaryKeyTypeEnum
         {
-            MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
-            string name = inspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
-                              ? otherSideProperty.Name
-                              : member.Owner().Name;
-            return string.Format("{0}Id", name);
+            ID,
+            TYPE_ID,
+        }
+
+        public class ModelMetaData
+        {
+            private readonly string m_ColumnPrefix;
+            private readonly IDictionary<string, string> m_ColumnNames;
+            private readonly Type m_Type;
+            private readonly string m_TableName;
+            private readonly string m_Discriminator;
+            private readonly string m_Version;
+
+            public ModelMetaData(Type type, string tableName, string discriminator, string version, string columnPrefix, IDictionary<string, string> columnNames)
+            {
+                Contract.Requires(type != null);
+                Contract.Requires(columnNames != null);
+                Contract.Ensures(Type == type);
+                Contract.Ensures(TableName == tableName);
+                Contract.Ensures(Discriminator == discriminator);
+                Contract.Ensures(Version == version);
+                Contract.Ensures(ColumnPrefix == columnPrefix);
+
+                m_Type = type;
+                m_TableName = tableName;
+                m_Discriminator = discriminator;
+                m_Version = version;
+                m_ColumnPrefix = columnPrefix;
+                m_ColumnNames = columnNames;
+            }
+
+            public string TableName
+            {
+                get { return m_TableName; }
+            }
+
+            public string ColumnPrefix
+            {
+                get { return m_ColumnPrefix; }
+            }
+
+            public IDictionary<string, string> ColumnNames
+            {
+                get { return m_ColumnNames; }
+            }
+
+            public Type Type
+            {
+                get { return m_Type; }
+            }
+
+            public string Discriminator
+            {
+                get { return m_Discriminator; }
+            }
+
+            public string Version
+            {
+                get { return m_Version; }
+            }
         }
     }
 }
