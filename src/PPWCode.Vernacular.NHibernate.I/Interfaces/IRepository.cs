@@ -118,10 +118,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
         /// </summary>
         /// <param name="entity">The given entity.</param>
-        /// <remarks>
-        ///     <h3>Extra post conditions</h3>
-        ///     <para><see cref="GetById" /> throws an <see cref="IdNotFoundException{T,TId}" />.</para>
-        /// </remarks>
         void Delete(T entity);
     }
 
