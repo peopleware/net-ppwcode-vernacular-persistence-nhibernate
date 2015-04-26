@@ -23,9 +23,9 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
-    public abstract class NhConfiguration : NhConfigurationBase
+    public class NhConfiguration : NhConfigurationBase
     {
-        protected NhConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
+        public NhConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
             : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
         {
         }
