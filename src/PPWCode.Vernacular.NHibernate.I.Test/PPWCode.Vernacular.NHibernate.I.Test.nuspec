@@ -26,13 +26,13 @@
     <!-- explicit dependencies -->
     <dependencies>
       <dependency id="log4net" version="[1.2.10,2)" />
-      <dependency id="NHibernate" version="[4,5)" />
-      <dependency id="NHibernateProfiler.Appender" version="[2,3)" />
-      <dependency id="Iesi.Collections" version="[4,5)" />
+      <dependency id="NHibernate" version="[4.0.3,5)" />
+      <dependency id="Iesi.Collections" version="[4.0.1,5)" />
+      <dependency id="NHibernateProfiler.Appender" />
       <dependency id="NUnit" version="[2.6.3,3.0)" />
       <dependency id="Moq" version="[4,5)" />
       <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1,2)" />
-      <dependency id="PPWCode.Vernacular.Persistence.II" version="[1,2)" />
+      <dependency id="PPWCode.Vernacular.Persistence.II" version="[1.0.2,2)" />
       <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.Exceptions.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.NHibernate.I" version="[2,3)" />
