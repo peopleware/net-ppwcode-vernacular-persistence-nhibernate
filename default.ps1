@@ -317,7 +317,7 @@ Task Test -description 'Run the unit tests using NUnit console test runner.' -de
         
         # find unit test dlls
         Chatter 'Searching test projects.' 2
-        $testprojects = Get-ChildItem -Directory -Path 'src' | Where-Object { $_.Name -ne 'packages' } | Get-ChildItem -Filter '*Test*.csproj' -Recurse
+        $testprojects = Get-ChildItem -Directory -Path 'src' | Where-Object { $_.Name -ne 'packages' } | Get-ChildItem -Filter '*Tests.csproj' -Recurse
         $testdlls = $testprojects | ForEach-Object { Get-ChildItem -Path "scratch\bin\$($_.BaseName)-*" -Filter "$($_.BaseName).dll" -Recurse | Select-Object -First 1 }
         
         # execute runner, one run for each unit test
