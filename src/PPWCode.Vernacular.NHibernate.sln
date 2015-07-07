@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.I", "I\PPWCode.Vernacular.NHibernate.I.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE518511-ABA6-4DE4-BBCA-E98FF6BC16B5}"
+	ProjectSection(SolutionItems) = preProject
+		..\LICENSE = ..\LICENSE
+		packages\NHibernate.3.4.0.4000\nhibernate-configuration.xsd = packages\NHibernate.3.4.0.4000\nhibernate-configuration.xsd
+		packages\NHibernate.3.4.0.4000\nhibernate-mapping.xsd = packages\NHibernate.3.4.0.4000\nhibernate-mapping.xsd
+		..\NOTICE = ..\NOTICE
+		I\PPWCode.Vernacular.NHibernate.I.nuspec = I\PPWCode.Vernacular.NHibernate.I.nuspec
+		I.Test\PPWCode.Vernacular.NHibernate.I.Test.nuspec = I.Test\PPWCode.Vernacular.NHibernate.I.Test.nuspec
+		..\README.md = ..\README.md
+		Solution Items\SolutionInfo.cs = Solution Items\SolutionInfo.cs
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.I.Tests", "I.Tests\PPWCode.Vernacular.NHibernate.I.Tests.csproj", "{753CD3CA-A0A7-4340-A492-580942B74E83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.I.Test", "I.Test\PPWCode.Vernacular.NHibernate.I.Test.csproj", "{BD66B970-0474-468D-A95B-C42DDAE75717}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{5298160C-E339-40DA-8E26-8B0DA9411E1E}"
+	ProjectSection(SolutionItems) = preProject
+		..\default.ps1 = ..\default.ps1
+		..\init-psake.ps1 = ..\init-psake.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CBFD3A09-C921-40CA-99D4-C7E17140845F}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{83256CEB-BA1A-4614-9ACA-653049FFBDAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83256CEB-BA1A-4614-9ACA-653049FFBDAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83256CEB-BA1A-4614-9ACA-653049FFBDAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83256CEB-BA1A-4614-9ACA-653049FFBDAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{753CD3CA-A0A7-4340-A492-580942B74E83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{753CD3CA-A0A7-4340-A492-580942B74E83}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{753CD3CA-A0A7-4340-A492-580942B74E83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{753CD3CA-A0A7-4340-A492-580942B74E83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD66B970-0474-468D-A95B-C42DDAE75717}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD66B970-0474-468D-A95B-C42DDAE75717}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD66B970-0474-468D-A95B-C42DDAE75717}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD66B970-0474-468D-A95B-C42DDAE75717}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
