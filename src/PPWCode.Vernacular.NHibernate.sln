@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.I", "I\PPWCode.Vernacular.NHibernate.I.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BE518511-ABA6-4DE4-BBCA-E98FF6BC16B5}"
