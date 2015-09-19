@@ -14,6 +14,8 @@
 
 using System;
 
+using NHibernate;
+
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
@@ -25,7 +27,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     {
         protected InsertAuditablePersistentObjectMapper()
         {
-            Property(x => x.CreatedAt, m => m.Update(false));
+            Property(
+                x => x.CreatedAt,
+                m =>
+                {
+                    m.Type(NHibernateUtil.UtcDateTime);
+                    m.Update(false);
+                });
             Property(
                 x => x.CreatedBy,
                 m =>

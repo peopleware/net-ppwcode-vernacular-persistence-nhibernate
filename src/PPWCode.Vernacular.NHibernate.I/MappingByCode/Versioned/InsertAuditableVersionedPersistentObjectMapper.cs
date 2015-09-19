@@ -14,6 +14,8 @@
 
 using System;
 
+using NHibernate;
+
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
@@ -30,6 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 x => x.CreatedAt,
                 m =>
                 {
+                    m.Type(NHibernateUtil.UtcDateTime);
                     m.Update(false);
                     m.NotNullable(true);
                 });

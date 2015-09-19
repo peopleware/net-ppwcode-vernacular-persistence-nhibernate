@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 using System;
 
 using NHibernate;
+using NHibernate.Type;
 
 using PPWCode.Vernacular.Persistence.II;
 
@@ -32,7 +33,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             Property(x => x.PropertyName, m => m.NotNullable(true));
             Property(x => x.OldValue, m => m.Type(NHibernateUtil.StringClob));
             Property(x => x.NewValue, m => m.Type(NHibernateUtil.StringClob));
-            Property(x => x.CreatedAt, m => m.NotNullable(true));
+            Property(
+                x => x.CreatedAt,
+                m =>
+                {
+                    m.Type(NHibernateUtil.UtcDateTime);
+                    m.NotNullable(true);
+                });
             Property(x => x.CreatedBy, m => m.NotNullable(true));
         }
     }
