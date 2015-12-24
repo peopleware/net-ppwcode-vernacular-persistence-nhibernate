@@ -24,6 +24,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private string m_WebBased;
 
+        public WebBasedIctCompany(int id, int persistenceVersion)
+            : base(id, persistenceVersion)
+        {
+        }
+
+        public WebBasedIctCompany(int id)
+            : base(id)
+        {
+        }
+
+        public WebBasedIctCompany()
+        {
+        }
+
         public virtual string WebBased
         {
             get { return m_WebBased; }

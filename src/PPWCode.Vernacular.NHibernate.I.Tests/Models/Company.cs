@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [Serializable, DataContract(IsReference = true)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
+        public Company(int id, int persistenceVersion)
+            : base(id, persistenceVersion)
+        {
+        }
+
+        public Company(int id)
+            : base(id)
+        {
+        }
+
+        public Company()
+        {
+        }
+
         [ContractInvariantMethod]
         private void ObjectInvariant()
         {

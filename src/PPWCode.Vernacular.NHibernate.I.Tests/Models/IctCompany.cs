@@ -20,5 +20,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [DataContract(IsReference = true), Serializable]
     public class IctCompany : Company
     {
+        public IctCompany(int id, int persistenceVersion)
+            : base(id, persistenceVersion)
+        {
+        }
+
+        public IctCompany(int id)
+            : base(id)
+        {
+        }
+
+        public IctCompany()
+        {
+        }
     }
 }

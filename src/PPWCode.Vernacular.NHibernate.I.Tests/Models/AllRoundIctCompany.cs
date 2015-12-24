@@ -25,6 +25,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private string m_AllRound;
 
+        public AllRoundIctCompany(int id, int persistenceVersion)
+            : base(id, persistenceVersion)
+        {
+        }
+
+        public AllRoundIctCompany(int id)
+            : base(id)
+        {
+        }
+
+        public AllRoundIctCompany()
+        {
+        }
+
         [StringLength(-1)]
         public virtual string AllRound
         {
