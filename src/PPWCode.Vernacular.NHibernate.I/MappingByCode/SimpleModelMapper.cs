@@ -560,6 +560,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                       .OfType<RequiredAttribute>()
                       .Any();
             propertyCustomizer.NotNullable(required);
+            propertyCustomizer.Index(string.Format("IX_FK_{0}_{1}", member.Owner().Name, foreignKeyColumnName));
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
