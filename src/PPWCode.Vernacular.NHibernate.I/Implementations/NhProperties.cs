@@ -14,15 +14,17 @@
 
 using System.Collections.Generic;
 
+using NHibernate.Cfg;
+
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public class NhProperties : INhProperties
     {
-        public IEnumerable<KeyValuePair<string, string>> Properties
+        public IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration)
         {
-            get { yield break; }
+            yield break;
         }
     }
 }

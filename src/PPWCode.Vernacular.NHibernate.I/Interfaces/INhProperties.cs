@@ -15,26 +15,25 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
+using NHibernate.Cfg;
+
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
     [ContractClass(typeof(INhPropertiesContract))]
     public interface INhProperties
     {
-        IEnumerable<KeyValuePair<string, string>> Properties { get; }
+        IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration);
     }
 
     // ReSharper disable once InconsistentNaming
     [ContractClassFor(typeof(INhProperties))]
     public abstract class INhPropertiesContract : INhProperties
     {
-        public IEnumerable<KeyValuePair<string, string>> Properties
+        public IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration)
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
+            Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
 
-                return default(IEnumerable<KeyValuePair<string, string>>);
-            }
+            return default(IEnumerable<KeyValuePair<string, string>>);
         }
     }
 }
