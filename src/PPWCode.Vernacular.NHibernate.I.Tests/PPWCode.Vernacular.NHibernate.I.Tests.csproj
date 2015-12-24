@@ -183,6 +183,7 @@
     <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
     <Compile Include="IntegrationTests\CompanyBaseTests.cs" />
     <Compile Include="IntegrationTests\CompanyCriteriaTests.cs" />
+    <Compile Include="IntegrationTests\CompanyDeleteTests.cs" />
     <Compile Include="IntegrationTests\CompanyQueryOverTests.cs" />
     <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />
     <Compile Include="IntegrationTests\CompanyBiDirectionalityTests.cs" />

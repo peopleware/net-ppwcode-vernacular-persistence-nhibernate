@@ -174,7 +174,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             if (!entity.IsTransient)
             {
-                Session.Delete(entity);
+                // Check if entity exists
+                T fetchedEntity = Session.Get<T>(entity.Id);
+                if (fetchedEntity != null)
+                {
+                    // Handle stale objects
+                    Session.Merge(entity);
+                    // finally delete none-transient not stale existing entity
+                    Session.Delete(fetchedEntity);
+                }
             }
         }
 
