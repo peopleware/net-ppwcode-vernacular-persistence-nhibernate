@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
 
 using NHibernate;
 
-using PPWCode.Vernacular.NHibernate.I.Implementations;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
-    public class FailedCompanyRepository : Repository<FailedCompany, int>
+    public class FailedCompanyRepository : TestRepository<FailedCompany>
     {
         public FailedCompanyRepository(ISession session)
             : base(session)

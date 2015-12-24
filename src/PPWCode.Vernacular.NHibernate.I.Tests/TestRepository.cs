@@ -12,17 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Data;
+
 using NHibernate;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Implementations;
+using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
-    public class CompanyRepository : TestRepository<Company>
+    public abstract class TestRepository<T> : Repository<T, int>
+        where T : class, IIdentity<int>
     {
-        public CompanyRepository(ISession session)
+        protected TestRepository(ISession session)
             : base(session)
         {
+        }
+
+        protected override IsolationLevel IsolationLevel
+        {
+            get { return IsolationLevel.ReadCommitted; }
         }
     }
 }

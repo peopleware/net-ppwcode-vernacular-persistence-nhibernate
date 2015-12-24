@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,6 +79,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
         }
 
+        protected abstract IsolationLevel IsolationLevel { get; }
+
         protected virtual void Execute(string requestDescription, Action action)
         {
             Contract.Requires(!string.IsNullOrEmpty(requestDescription));
@@ -133,7 +135,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
 
             TResult result;
-            using (ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted))
+            using (ITransaction transaction = Session.BeginTransaction(IsolationLevel))
             {
                 result = func.Invoke();
                 transaction.Commit();
