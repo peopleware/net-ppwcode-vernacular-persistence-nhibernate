@@ -135,7 +135,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     .SetFirstResult((pageIndex - 1) * pageSize)
                     .SetMaxResults(pageSize)
                     .Future<T>()
-                    .ToList<T>();
+                    .ToList();
 
             PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
 
@@ -156,7 +156,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     .Skip((pageIndex - 1) * pageSize)
                     .Take(pageSize)
                     .Future<T>()
-                    .ToList<T>();
+                    .ToList();
 
             PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
 

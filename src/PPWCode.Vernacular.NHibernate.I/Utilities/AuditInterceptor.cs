@@ -82,12 +82,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         private void Set(Type entityType, string[] propertyNames, object[] state, string propertyName, object value)
         {
             int index = IndexCache.GetOrAdd(new Property(entityType, propertyName), k => Array.IndexOf(propertyNames, propertyName));
-            if (index == -1)
+            if (index >= 0)
             {
-                return;
+                state[index] = value;
             }
-
-            state[index] = value;
         }
 
         private bool SetAuditInfo(object entity, object[] currentState, string[] propertyNames, bool onSave)

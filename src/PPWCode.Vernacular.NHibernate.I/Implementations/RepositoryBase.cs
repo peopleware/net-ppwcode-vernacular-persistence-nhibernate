@@ -166,7 +166,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 RepositorySqlException repositorySqlException =
                     new RepositorySqlException(message, genericAdoException.InnerException)
                     {
-                        SqlString = genericAdoException.SqlString,
+                        SqlString = genericAdoException.SqlString
                     };
                 SqlException sqlException = genericAdoException.InnerException as SqlException;
                 if (sqlException != null)
