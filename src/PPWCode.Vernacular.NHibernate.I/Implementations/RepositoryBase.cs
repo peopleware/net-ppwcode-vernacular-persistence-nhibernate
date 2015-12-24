@@ -60,6 +60,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
                 return m_Logger;
             }
+
             set
             {
                 Contract.Requires(value != null);

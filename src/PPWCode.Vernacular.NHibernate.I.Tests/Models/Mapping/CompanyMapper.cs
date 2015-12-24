@@ -24,7 +24,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         {
             Property(c => c.Name);
 
-            Set(c => c.Identifications,
+            Set(
+                c => c.Identifications,
                 c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
                 r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
 

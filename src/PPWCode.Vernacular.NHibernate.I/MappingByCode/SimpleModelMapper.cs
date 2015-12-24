@@ -214,6 +214,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                                      ? string.Concat(columnPrefix, tableName, tableName.EndsWith(@"_") ? @"ID" : @"_ID")
                                      : string.Concat(columnPrefix, tableName, @"Id");
                     }
+
                     break;
 
                 default:
