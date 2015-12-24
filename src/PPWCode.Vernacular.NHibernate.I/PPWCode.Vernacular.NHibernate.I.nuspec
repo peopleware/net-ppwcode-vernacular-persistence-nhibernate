@@ -25,10 +25,10 @@
 
     <!-- explicit dependencies -->
     <dependencies>
-      <dependency id="Castle.Core" version="[3.3,)" />
-      <dependency id="Castle.Windsor" version="[3.3,)" />
-      <dependency id="Castle.LoggingFacility" version="[3.3,)" />
-      <dependency id="NHibernate" version="[4.0.3,5)" />
+      <dependency id="Castle.Core" version="[3.3,4)" />
+      <dependency id="Castle.Windsor" version="[3.3,4)" />
+      <dependency id="Castle.LoggingFacility" version="[3.3,4)" />
+      <dependency id="NHibernate" version="[4.0.4,5)" />
       <dependency id="Iesi.Collections" version="[4.0.1,5)" />
       <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.Persistence.II" version="[1.0.2,2)" />
