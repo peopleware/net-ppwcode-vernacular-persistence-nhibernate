@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,42 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         protected IRepository<FailedCompany, int> FailedCompanyRepository { get; private set; }
 
+        protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
+        {
+            T result;
+            ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
+                result = func();
+                transaction.Commit();
+                transaction.Dispose();
+            }
+            catch
+            {
+                transaction.Rollback();
+                transaction.Dispose();
+                throw;
+            }
+
+            if (clearSession)
+            {
+                Session.Clear();
+            }
+
+            return result;
+        }
+
+        protected void RunInsideTransaction(Action action, bool clearSession)
+        {
+            RunInsideTransaction(
+                () =>
+                {
+                    action();
+                    return 0;
+                },
+                clearSession);
+        }
+
         protected Company CreateCompany(CompanyCreationType companyCreationType)
         {
             Company company =
@@ -110,14 +146,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 };
             }
 
-            Company savedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                savedCompany = Repository.Merge(company);
-                trans.Commit();
-            }
-
-            Session.Clear();
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
 
             Assert.AreNotSame(company, savedCompany);
             Assert.AreEqual(1, savedCompany.PersistenceVersion);
@@ -137,14 +166,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Company = company
             };
 
-            Company savedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                savedCompany = Repository.Merge(company);
-                trans.Commit();
-            }
-
-            Session.Clear();
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
 
             Assert.AreNotSame(company, savedCompany);
             Assert.IsNotNull(savedCompany.FailedCompany);

@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2015 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data;
 using System.Linq;
-
-using NHibernate;
 
 using NUnit.Framework;
 
@@ -44,7 +41,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Merge(company);
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(1, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -77,7 +74,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Merge(company);
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(2, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -104,7 +101,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Merge(company);
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(1, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -137,7 +134,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 Assert.IsTrue(identification.IsTransient);
             }
 
-            Company savedCompany = Repository.Merge(company);
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
             Assert.AreEqual(2, savedCompany.PersistenceVersion);
             Assert.AreEqual(2, savedCompany.Identifications.Count);
             foreach (CompanyIdentification identification in savedCompany.Identifications)
@@ -151,28 +148,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Remove companyIdentification 1
-                CompanyIdentification companyIdentification =
-                    mergedCompany
-                        .Identifications
-                        .SingleOrDefault(i => i.Identification == "1");
-                Assert.IsNotNull(companyIdentification);
-                companyIdentification.Company = null;
+                        CompanyIdentification companyIdentification =
+                            mergedCompany
+                                .Identifications
+                                .SingleOrDefault(i => i.Identification == "1");
+                        Assert.IsNotNull(companyIdentification);
+                        companyIdentification.Company = null;
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.AreEqual(1, selectedCompany.Identifications.Count);
         }
 
@@ -181,26 +174,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Remove companyIdentification 1 and 2
-                foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
-                {
-                    identification.Company = null;
-                }
+                        foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
+                        {
+                            identification.Company = null;
+                        }
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsFalse(selectedCompany.Identifications.Any());
         }
 
@@ -209,28 +198,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Remove companyIdentification 1
-                CompanyIdentification companyIdentification =
-                    mergedCompany
-                        .Identifications
-                        .SingleOrDefault(i => i.Identification == "1");
-                Assert.IsNotNull(companyIdentification);
-                mergedCompany.RemoveIdentification(companyIdentification);
+                        CompanyIdentification companyIdentification =
+                            mergedCompany
+                                .Identifications
+                                .SingleOrDefault(i => i.Identification == "1");
+                        Assert.IsNotNull(companyIdentification);
+                        mergedCompany.RemoveIdentification(companyIdentification);
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.AreEqual(1, selectedCompany.Identifications.Count);
         }
 
@@ -239,26 +224,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Remove companyIdentification 1
-                foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
-                {
-                    mergedCompany.RemoveIdentification(identification);
-                }
+                        foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
+                        {
+                            mergedCompany.RemoveIdentification(identification);
+                        }
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsFalse(selectedCompany.Identifications.Any());
         }
 
@@ -267,28 +248,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
-
-                // 2. Add FailedCompany
-                FailedCompany failedCompany =
-                    new FailedCompany
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
                     {
-                        FailingDate = Now
-                    };
-                mergedCompany.FailedCompany = failedCompany;
+                        Company mergedCompany = Repository.Merge(company);
 
-                trans.Commit();
-            }
+                        FailedCompany failedCompany =
+                            new FailedCompany
+                            {
+                                FailingDate = Now
+                            };
+                        mergedCompany.FailedCompany = failedCompany;
 
-            // 4. Clear session
-            Session.Clear();
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsNotNull(selectedCompany.FailedCompany);
             Assert.IsTrue(selectedCompany.IsFailed);
         }
@@ -298,28 +275,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Add FailedCompany
-                // ReSharper disable once ObjectCreationAsStatement
-                new FailedCompany
-                {
-                    FailingDate = Now,
-                    Company = mergedCompany
-                };
+                        // ReSharper disable once ObjectCreationAsStatement
+                        new FailedCompany
+                        {
+                            FailingDate = Now,
+                            Company = mergedCompany
+                        };
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsNotNull(selectedCompany.FailedCompany);
             Assert.IsTrue(selectedCompany.IsFailed);
         }
@@ -329,28 +302,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = CreateFailedCompany(CompanyCreationType.NO_CHILDREN);
 
-            Company mergedCompany;
-            using (ITransaction trans = Session.BeginTransaction(IsolationLevel.ReadCommitted))
-            {
-                // 1. Attach company to session
-                mergedCompany = Repository.Merge(company);
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
 
-                // 2. Remove FailedCompany
-                FailedCompany failedCompany = mergedCompany.FailedCompany;
-                mergedCompany.FailedCompany = null;
+                        FailedCompany failedCompany = mergedCompany.FailedCompany;
+                        mergedCompany.FailedCompany = null;
 
-                // Due cascading delete isn't supported for one-to-one relation, 
-                // see https://nhibernate.jira.com/browse/NH-1262
-                FailedCompanyRepository.Delete(failedCompany);
+                        // Due cascading delete isn't supported for one-to-one relation, 
+                        // see https://nhibernate.jira.com/browse/NH-1262
+                        FailedCompanyRepository.Delete(failedCompany);
 
-                trans.Commit();
-            }
+                        return mergedCompany;
+                    },
+                    true);
 
-            // 4. Clear session
-            Session.Clear();
-
-            // 5. Check Db status
-            Company selectedCompany = Repository.GetById(mergedCompany.Id);
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsNull(selectedCompany.FailedCompany);
             Assert.IsFalse(selectedCompany.IsFailed);
         }
