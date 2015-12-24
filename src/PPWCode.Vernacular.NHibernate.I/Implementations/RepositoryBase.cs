@@ -135,10 +135,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             }
 
             TResult result;
-            using (ITransaction transaction = Session.BeginTransaction(IsolationLevel))
+            ITransaction transaction = Session.BeginTransaction(IsolationLevel);
+            try
             {
                 result = func.Invoke();
                 transaction.Commit();
+                transaction.Dispose();
+            }
+            catch
+            {
+                transaction.Rollback();
+                transaction.Dispose();
+                throw;
             }
 
             return result;
