@@ -461,7 +461,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             classCustomizer.DynamicInsert(DynamicInsert);
             classCustomizer.DynamicUpdate(DynamicUpdate);
-
             classCustomizer.Table(GetTableName(modelInspector, type));
 
             classCustomizer.Id(
@@ -579,9 +578,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (modelinspector.IsManyToMany(member.LocalMember))
             {
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true)));
             }
-
-            if (modelinspector.IsSet(member.LocalMember))
+            else if (modelinspector.IsSet(member.LocalMember))
             {
                 // If otherside has many-to-one, make it inverse, if not specify foreign key on Key element
                 MemberInfo oneToManyProperty = member.OneToManyOtherSideProperty();
@@ -598,9 +597,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     Contract.Assert(oneToManyProperty.DeclaringType != null, "otherSideProperty.DeclaringType != null");
                     collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", oneToManyProperty.DeclaringType.Name, oneToManyProperty.Name)));
                 }
-            }
 
-            collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member)));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member)));
+            }
         }
 
         protected virtual string GetIdentifier(string identifier)

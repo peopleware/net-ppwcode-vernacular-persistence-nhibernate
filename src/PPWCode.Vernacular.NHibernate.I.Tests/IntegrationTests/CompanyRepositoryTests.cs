@@ -79,11 +79,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
             Repository = new CompanyRepository(Session);
             FailedCompanyRepository = new FailedCompanyRepository(Session);
+            UserRepository = new UserRepository(Session);
+            RoleRepository = new RoleRepository(Session);
         }
 
         protected IRepository<Company, int> Repository { get; private set; }
-
         protected IRepository<FailedCompany, int> FailedCompanyRepository { get; private set; }
+        protected IRepository<User, int> UserRepository { get; private set; }
+        protected IRepository<Role, int> RoleRepository { get; private set; }
 
         protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
         {

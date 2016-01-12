@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
+using NHibernate.Mapping.ByCode;
+
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
@@ -22,6 +26,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         public TestsSimpleModelMapper(IMappingAssemblies mappingAssemblies)
             : base(mappingAssemblies)
         {
+        }
+
+        protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        {
+            base.OnBeforeMapClass(modelInspector, type, classCustomizer);
+
+            classCustomizer.Schema(@"dbo");
+        }
+
+        protected override string GetTableName(IModelInspector modelInspector, Type type)
+        {
+            return string.Format("`{0}`", base.GetTableName(modelInspector, type));
+        }
+
+        protected override string GetColumnName(IModelInspector modelInspector, PropertyPath member)
+        {
+            return string.Format("`{0}`", base.GetColumnName(modelInspector, member));
+        }
+
+        public override string GetDiscriminatorColumnName(IModelInspector modelInspector, Type type)
+        {
+            return string.Format("`{0}`", base.GetDiscriminatorColumnName(modelInspector, type));
         }
     }
 }

@@ -189,6 +189,7 @@
     <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />
     <Compile Include="IntegrationTests\CompanyBiDirectionalityTests.cs" />
     <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
+    <Compile Include="IntegrationTests\UserTests.cs" />
     <Compile Include="Models\AllRoundIctCompany.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\CompanyIdentification.cs" />
@@ -199,12 +200,18 @@
     <Compile Include="Models\FailedCompany.cs" />
     <Compile Include="Models\Mapping\FailedCompanyMapper.cs" />
     <Compile Include="Models\Mapping\IctCompanyMapper.cs" />
+    <Compile Include="Models\Mapping\RoleMapper.cs" />
     <Compile Include="Models\Mapping\TestsMappingAssemblies.cs" />
+    <Compile Include="Models\Mapping\UserMapper.cs" />
     <Compile Include="Models\Mapping\WebBasedIctCompanyMapper.cs" />
+    <Compile Include="Models\Role.cs" />
+    <Compile Include="Models\User.cs" />
     <Compile Include="Models\WebBasedIctCompany.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Mapping\TestsSimpleModelMapper.cs" />
+    <Compile Include="RoleRepository.cs" />
     <Compile Include="TestRepository.cs" />
+    <Compile Include="UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
