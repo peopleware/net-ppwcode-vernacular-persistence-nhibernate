@@ -590,8 +590,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            string columnName = ConditionalQuoteIdentifier(GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name)));
-            collectionRelationManyToManyCustomizer.Column(columnName);
+            string columnName = GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name));
+            string tableName = member.ManyToManyIntermediateTableName("To");
+            string foreignKeyName = string.Format("FK_{0}_{1}", tableName, columnName);
+            // TODO how to put an index on the second FK??
+            //string indexName = string.Format("IX_FK_{0}_{1}", tableName, columnName);
+
+            collectionRelationManyToManyCustomizer.Column(ConditionalQuoteIdentifier(columnName));
+            collectionRelationManyToManyCustomizer.ForeignKey(foreignKeyName);
         }
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
