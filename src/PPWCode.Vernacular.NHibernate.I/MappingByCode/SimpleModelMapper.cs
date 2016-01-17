@@ -112,6 +112,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return false; }
         }
 
+        protected virtual int? BatchSize
+        {
+            get { return null; }
+        }
+
         protected virtual IDictionary<Type, ModelMetaData> ModelMetaDatasByType
         {
             get
@@ -461,6 +466,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             classCustomizer.DynamicInsert(DynamicInsert);
             classCustomizer.DynamicUpdate(DynamicUpdate);
+
+            if (BatchSize != null && BatchSize.Value > 0)
+            {
+                classCustomizer.BatchSize(BatchSize.Value);
+            }
+
             classCustomizer.Table(GetTableName(modelInspector, type));
 
             classCustomizer.Id(
@@ -599,6 +610,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 }
 
                 collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member)));
+            }
+
+            if (BatchSize != null && BatchSize.Value > 0)
+            {
+                collectionPropertiesCustomizer.Fetch(CollectionFetchMode.Select);
+                collectionPropertiesCustomizer.BatchSize(BatchSize.Value);
             }
         }
 
