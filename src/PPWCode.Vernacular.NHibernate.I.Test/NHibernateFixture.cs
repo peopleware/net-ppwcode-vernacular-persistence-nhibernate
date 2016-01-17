@@ -97,7 +97,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected virtual void BuildSchema()
         {
             SchemaExport schemaExport = new SchemaExport(Configuration);
-            if (SuppressProfilingWhileCreatingSchema)
+            if (UseProfiler && SuppressProfilingWhileCreatingSchema)
             {
                 using (ProfilerIntegration.IgnoreAll())
                 {

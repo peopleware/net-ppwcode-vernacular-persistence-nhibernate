@@ -175,7 +175,6 @@
     <Compile Include="NHibernateSqlLiteFixtureTest.cs" />
     <Compile Include="NHibernateSqlServerFixture.cs" />
     <Compile Include="PPWSQLiteDialect.cs" />
-    <Compile Include="SQLiteDialectWithoutSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerUtils.cs" />
     <Compile Include="TestConnectionProvider.cs" />
