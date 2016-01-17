@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -113,6 +113,16 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         }
 
         protected virtual int? BatchSize
+        {
+            get { return null; }
+        }
+
+        protected virtual string DefaultSchemaName
+        {
+            get { return null; }
+        }
+
+        protected virtual string DefaultCatalogName
         {
             get { return null; }
         }
@@ -472,6 +482,16 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 classCustomizer.BatchSize(BatchSize.Value);
             }
 
+            if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+            {
+                classCustomizer.Schema(DefaultCatalogName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+            {
+                classCustomizer.Schema(DefaultSchemaName);
+            }
+
             classCustomizer.Table(GetTableName(modelInspector, type));
 
             classCustomizer.Id(
@@ -637,7 +657,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         public enum PrimaryKeyTypeEnum
         {
             ID,
-            TYPE_ID,
+            TYPE_ID
         }
 
         public class ModelMetaData
