@@ -179,6 +179,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="IntegrationTests\BaseUserTests.cs" />
+    <Compile Include="Models\Gender.cs" />
     <Compile Include="Repositories\CompanyRepository.cs" />
     <Compile Include="ConventionMappingTests.cs" />
     <Compile Include="Repositories\FailedCompanyRepository.cs" />

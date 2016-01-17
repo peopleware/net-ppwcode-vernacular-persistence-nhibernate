@@ -23,6 +23,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     {
         private readonly ISet<Role> m_Roles = new HashSet<Role>();
         private string m_Name;
+        private Gender? m_Gender;
 
         public User(int id, int persistenceVersion)
             : base(id, persistenceVersion)
@@ -43,6 +44,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
             get { return m_Name; }
             set { m_Name = value; }
+        }
+
+        [Required]
+        public virtual Gender? Gender
+        {
+            get { return m_Gender; }
+            set { m_Gender = value; }
         }
 
         public virtual ISet<Role> Roles

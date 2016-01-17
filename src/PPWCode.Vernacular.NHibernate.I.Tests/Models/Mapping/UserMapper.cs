@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using NHibernate.Mapping.ByCode;
+using NHibernate.Type;
 
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
@@ -23,6 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         public UserMapper()
         {
             Property(u => u.Name);
+            Property(u => u.Gender, m => m.Type<EnumStringType<Gender>>());
             Set(
                 u => u.Roles,
                 m => m.Cascade(Cascade.None),
