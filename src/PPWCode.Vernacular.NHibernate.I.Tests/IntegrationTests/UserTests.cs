@@ -25,11 +25,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
     {
         private RoleRepository m_RoleRepository;
 
-        protected override bool UseProfiler
-        {
-            get { return true; }
-        }
-
         protected RoleRepository RoleRepository
         {
             get { return m_RoleRepository; }
