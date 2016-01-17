@@ -127,6 +127,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return null; }
         }
 
+        protected virtual bool QuoteIdentifiers
+        {
+            get { return false; }
+        }
+
         protected virtual IDictionary<Type, ModelMetaData> ModelMetaDatasByType
         {
             get
@@ -161,7 +166,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 tableName = modelMetaData.TableName;
             }
 
-            string result = tableName ?? GetIdentifier(type.Name);
+            string result = ConditionalQuoteIdentifier(tableName ?? GetIdentifier(type.Name));
+
             return result;
         }
 
@@ -186,20 +192,21 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 currentType = walkToParent ? currentType.BaseType : null;
             }
 
-            string result = string.Concat(columnPrefix, columnName ?? GetIdentifier(defaultColumnName));
+            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, columnName ?? GetIdentifier(defaultColumnName)));
+
             return result;
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, PropertyPath member)
+        protected virtual string GetKeyColumnName(IModelInspector modelInspector, PropertyPath member, bool quoteIdentifiers)
         {
             MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
             Type type = modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
                             ? otherSideProperty.MemberType()
                             : member.MemberType();
-            return GetKeyColumnName(modelInspector, type, true);
+            return GetKeyColumnName(modelInspector, type, true, quoteIdentifiers);
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, Type type, bool foreignKey)
+        protected virtual string GetKeyColumnName(IModelInspector modelInspector, Type type, bool foreignKey, bool quoteIdentifiers)
         {
             ModelMetaData modelMetaData;
             string columnPrefix = null;
@@ -234,6 +241,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+
+            if (quoteIdentifiers)
+            {
+                result = QuoteIdentifier(result);
             }
 
             return result;
@@ -282,7 +294,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 dicriminatorColumnName = modelMetaData.Discriminator;
             }
 
-            string result = string.Concat(columnPrefix, dicriminatorColumnName ?? GetIdentifier(defaultColumnName));
+            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, dicriminatorColumnName ?? GetIdentifier(defaultColumnName)));
+
             return result;
         }
 
@@ -305,7 +318,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 versionColumnName = modelMetaData.Version;
             }
 
-            string result = string.Concat(columnPrefix, versionColumnName ?? GetIdentifier(defaultColumnName));
+            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, versionColumnName ?? GetIdentifier(defaultColumnName)));
+
             return result;
         }
 
@@ -484,12 +498,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
             {
-                classCustomizer.Schema(DefaultCatalogName);
+                classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultCatalogName));
             }
 
             if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
             {
-                classCustomizer.Schema(DefaultSchemaName);
+                classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName));
             }
 
             classCustomizer.Table(GetTableName(modelInspector, type));
@@ -497,7 +511,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             classCustomizer.Id(
                 m =>
                 {
-                    m.Column(GetKeyColumnName(modelInspector, type, false));
+                    m.Column(GetKeyColumnName(modelInspector, type, false, true));
                     m.Generator(Generators.HighLow);
                 });
 
@@ -564,7 +578,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false));
+                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false, true));
                     if (type.BaseType != null)
                     {
                         k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
@@ -576,13 +590,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            collectionRelationManyToManyCustomizer.Column(GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name)));
+            string columnName = ConditionalQuoteIdentifier(GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name)));
+            collectionRelationManyToManyCustomizer.Column(columnName);
         }
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            string foreignKeyColumnName = GetKeyColumnName(modelInspector, member);
-            propertyCustomizer.Column(foreignKeyColumnName);
+            string foreignKeyColumnName = GetKeyColumnName(modelInspector, member, false);
+            propertyCustomizer.Column(ConditionalQuoteIdentifier(foreignKeyColumnName));
             propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, foreignKeyColumnName));
 
             bool required =
@@ -609,7 +624,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (modelinspector.IsManyToMany(member.LocalMember))
             {
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true)));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true, true)));
             }
             else if (modelinspector.IsSet(member.LocalMember))
             {
@@ -629,7 +644,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", oneToManyProperty.DeclaringType.Name, oneToManyProperty.Name)));
                 }
 
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member)));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, true)));
             }
 
             if (BatchSize != null && BatchSize.Value > 0)
@@ -642,6 +657,16 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual string GetIdentifier(string identifier)
         {
             return UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
+        }
+
+        protected virtual string ConditionalQuoteIdentifier(string identifier)
+        {
+            return QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
+        }
+
+        protected virtual string QuoteIdentifier(string identifier)
+        {
+            return string.Format("`{0}`", identifier);
         }
 
         public static string CamelCaseToUnderscore(string camelCase)

@@ -12,10 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
-using NHibernate.Mapping.ByCode;
-
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
@@ -28,26 +24,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         {
         }
 
-        protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        protected override string DefaultSchemaName
         {
-            base.OnBeforeMapClass(modelInspector, type, classCustomizer);
-
-            classCustomizer.Schema(@"dbo");
+            get { return @"dbo"; }
         }
 
-        protected override string GetTableName(IModelInspector modelInspector, Type type)
+        protected override bool QuoteIdentifiers
         {
-            return string.Format("`{0}`", base.GetTableName(modelInspector, type));
-        }
-
-        protected override string GetColumnName(IModelInspector modelInspector, PropertyPath member)
-        {
-            return string.Format("`{0}`", base.GetColumnName(modelInspector, member));
-        }
-
-        public override string GetDiscriminatorColumnName(IModelInspector modelInspector, Type type)
-        {
-            return string.Format("`{0}`", base.GetDiscriminatorColumnName(modelInspector, type));
+            get { return true; }
         }
     }
 }
