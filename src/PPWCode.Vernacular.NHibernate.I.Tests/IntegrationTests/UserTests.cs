@@ -17,14 +17,36 @@ using System.Linq;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public class UserTests : CompanyRepositoryTests
+    public class UserTests : BaseUserTests
     {
+        private RoleRepository m_RoleRepository;
+
         protected override bool UseProfiler
         {
             get { return true; }
+        }
+
+        protected RoleRepository RoleRepository
+        {
+            get { return m_RoleRepository; }
+        }
+
+        protected override void OnSetup()
+        {
+            base.OnSetup();
+
+            m_RoleRepository = new RoleRepository(Session);
+        }
+
+        protected override void OnTeardown()
+        {
+            m_RoleRepository = null;
+
+            base.OnTeardown();
         }
 
         [Test]
@@ -35,7 +57,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 {
                     Name = @"Ruben"
                 };
-            RunInsideTransaction(() => UserRepository.Merge(user), true);
+            RunInsideTransaction(() => Repository.Merge(user), true);
 
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
         }
@@ -58,7 +80,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                     Name = @"Ruben"
                 };
             user.AddRole(savedRole);
-            RunInsideTransaction(() => UserRepository.Merge(user), true);
+            RunInsideTransaction(() => Repository.Merge(user), true);
 
             // A company with 2 children are deleted
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
@@ -93,7 +115,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             user.AddRole(savedRole1);
             user.AddRole(savedRole2);
 
-            RunInsideTransaction(() => UserRepository.Merge(user), true);
+            RunInsideTransaction(() => Repository.Merge(user), true);
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
@@ -136,7 +158,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             user.AddRole(savedRole2);
             user.AddRole(savedRole3);
 
-            RunInsideTransaction(() => UserRepository.Merge(user), true);
+            RunInsideTransaction(() => Repository.Merge(user), true);
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(4));
         }
 
@@ -182,9 +204,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             RunInsideTransaction(
                 () =>
                 {
-                    var savedUser = UserRepository.Merge(user);
+                    User savedUser = Repository.Merge(user);
                     savedUser.RemoveRole(savedUser.Roles.Single(r => r.Name == "Developer"));
-                    UserRepository.Merge(savedUser);
+                    Repository.Merge(savedUser);
                 }, true);
         }
     }

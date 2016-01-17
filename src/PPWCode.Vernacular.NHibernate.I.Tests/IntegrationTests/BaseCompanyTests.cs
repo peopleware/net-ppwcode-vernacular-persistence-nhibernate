@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,26 +13,19 @@
 // limitations under the License.
 
 using System;
-using System.Data;
-
-using Moq;
-
-using NHibernate;
-using NHibernate.Cfg.MappingSchema;
 
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
-using PPWCode.Vernacular.NHibernate.I.Utilities;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public abstract class CompanyRepositoryTests : NHibernateSqlServerFixtureTest
+    public abstract class BaseCompanyTests : BaseRepositoryTests<Company>
     {
+        private Company m_CreatedCompany;
+
         protected enum CompanyCreationType
         {
             /// <summary>
@@ -46,82 +39,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             WITH_2_CHILDREN
         }
 
-        protected const string UserName = "Danny";
-
-        protected readonly DateTime Now = DateTime.Now.ToUniversalTime();
-
-        protected override string InitialCatalog
+        protected Company CreatedCompany
         {
-            get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
-        }
-
-        protected override HbmMapping GetHbmMapping()
-        {
-            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            return mapper.GetHbmMapping();
-        }
-
-        protected override ISession OpenSession()
-        {
-            Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
-            identityProvider.Setup(ip => ip.IdentityName).Returns(UserName);
-
-            Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
-            timeProvider.Setup(tp => tp.Now).Returns(Now);
-
-            AuditInterceptor<int> sessionLocalInterceptor = new AuditInterceptor<int>(identityProvider.Object, timeProvider.Object);
-            return SessionFactory.OpenSession(sessionLocalInterceptor);
+            get { return m_CreatedCompany; }
         }
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            Repository = new CompanyRepository(Session);
-            FailedCompanyRepository = new FailedCompanyRepository(Session);
-            UserRepository = new UserRepository(Session);
-            RoleRepository = new RoleRepository(Session);
+            m_CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+            SessionFactory.Statistics.Clear();
         }
 
-        protected IRepository<Company, int> Repository { get; private set; }
-        protected IRepository<FailedCompany, int> FailedCompanyRepository { get; private set; }
-        protected IRepository<User, int> UserRepository { get; private set; }
-        protected IRepository<Role, int> RoleRepository { get; private set; }
-
-        protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
+        protected override void OnTeardown()
         {
-            T result;
-            ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted);
-            try
-            {
-                result = func();
-                transaction.Commit();
-                transaction.Dispose();
-            }
-            catch
-            {
-                transaction.Rollback();
-                transaction.Dispose();
-                throw;
-            }
+            m_CreatedCompany = null;
 
-            if (clearSession)
-            {
-                Session.Clear();
-            }
-
-            return result;
+            base.OnTeardown();
         }
 
-        protected void RunInsideTransaction(Action action, bool clearSession)
+        protected override Func<IRepository<Company, int>> RepositoryFactory
         {
-            RunInsideTransaction(
-                () =>
-                {
-                    action();
-                    return 0;
-                },
-                clearSession);
+            get { return () => new CompanyRepository(Session); }
         }
 
         protected Company CreateCompany(CompanyCreationType companyCreationType)

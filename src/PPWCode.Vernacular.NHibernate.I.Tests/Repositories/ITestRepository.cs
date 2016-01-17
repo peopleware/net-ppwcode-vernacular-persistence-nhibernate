@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NHibernate;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
+using PPWCode.Vernacular.Persistence.II;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
-    public class FailedCompanyRepository : TestRepository<FailedCompany>
+    public interface ITestRepository<T> : IRepository<T, int>
+        where T : class, IIdentity<int>
     {
-        public FailedCompanyRepository(ISession session)
-            : base(session)
-        {
-        }
     }
 }

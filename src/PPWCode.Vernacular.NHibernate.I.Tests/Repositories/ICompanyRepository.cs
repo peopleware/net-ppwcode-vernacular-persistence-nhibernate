@@ -1,4 +1,4 @@
-﻿// Copyright 2016 by PeopleWare n.v..
+// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,18 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Reflection;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
-    public class TestsMappingAssemblies : IMappingAssemblies
+    public interface ICompanyRepository : ITestRepository<Company>
     {
-        public IEnumerable<Assembly> GetAssemblies()
-        {
-            yield return typeof(Company).Assembly;
-        }
     }
 }

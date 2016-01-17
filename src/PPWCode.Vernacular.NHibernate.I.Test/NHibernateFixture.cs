@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Data;
 
+using HibernatingRhinos.Profiler.Appender;
 using HibernatingRhinos.Profiler.Appender.NHibernate;
 
 using log4net.Config;
@@ -31,16 +33,24 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class NHibernateFixture : BaseFixture
+    public abstract class NHibernateFixture<TId> : BaseFixture
+        where TId : IEquatable<TId>
     {
         private ISessionFactory m_SessionFactory;
         private ISession m_Session;
 
         protected abstract Configuration Configuration { get; }
+        protected abstract string IdentityName { get; }
+        protected abstract DateTime Now { get; }
 
         protected virtual bool UseProfiler
         {
             get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
+        }
+
+        protected virtual bool SuppressProfilingWhileCreatingSchema
+        {
+            get { return ConfigHelper.GetAppSetting("SuppressProfilingWhileCreatingSchema", true); }
         }
 
         protected virtual bool ShowSql
@@ -66,12 +76,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected virtual ISession OpenSession()
         {
             Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
-            identityProvider.Setup(ip => ip.IdentityName).Returns("Test");
+            identityProvider
+                .Setup(ip => ip.IdentityName)
+                .Returns(IdentityName);
 
             Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
-            timeProvider.Setup(tp => tp.Now).Returns(DateTime.Now);
+            timeProvider
+                .Setup(tp => tp.Now)
+                .Returns(Now);
 
-            AuditInterceptor<long> sessionLocalInterceptor = new AuditInterceptor<long>(identityProvider.Object, timeProvider.Object);
+            AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object);
             return SessionFactory.OpenSession(sessionLocalInterceptor);
         }
 
@@ -83,7 +97,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected virtual void BuildSchema()
         {
             SchemaExport schemaExport = new SchemaExport(Configuration);
-            schemaExport.Create(false, true);
+            if (SuppressProfilingWhileCreatingSchema)
+            {
+                using (ProfilerIntegration.IgnoreAll())
+                {
+                    schemaExport.Create(false, true);
+                }
+            }
+            else
+            {
+                schemaExport.Create(false, true);
+            }
         }
 
         protected override void OnFixtureSetup()
@@ -122,6 +146,44 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             base.OnTeardown();
+        }
+
+        protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
+        {
+            T result;
+            ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted);
+            try
+            {
+                result = func();
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
+            finally
+            {
+                transaction.Dispose();
+            }
+
+            if (clearSession)
+            {
+                Session.Clear();
+            }
+
+            return result;
+        }
+
+        protected void RunInsideTransaction(Action action, bool clearSession)
+        {
+            RunInsideTransaction(
+                () =>
+                {
+                    action();
+                    return 0;
+                },
+                clearSession);
         }
     }
 }

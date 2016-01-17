@@ -178,15 +178,16 @@
     <Compile Include="..\Solution Items\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="CompanyRepository.cs" />
+    <Compile Include="IntegrationTests\BaseUserTests.cs" />
+    <Compile Include="Repositories\CompanyRepository.cs" />
     <Compile Include="ConventionMappingTests.cs" />
-    <Compile Include="FailedCompanyRepository.cs" />
+    <Compile Include="Repositories\FailedCompanyRepository.cs" />
     <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
-    <Compile Include="IntegrationTests\CompanyBaseTests.cs" />
+    <Compile Include="IntegrationTests\BaseRepositoryTests.cs" />
     <Compile Include="IntegrationTests\CompanyCriteriaTests.cs" />
     <Compile Include="IntegrationTests\CompanyDeleteTests.cs" />
     <Compile Include="IntegrationTests\CompanyQueryOverTests.cs" />
-    <Compile Include="IntegrationTests\CompanyRepositoryTests.cs" />
+    <Compile Include="IntegrationTests\BaseCompanyTests.cs" />
     <Compile Include="IntegrationTests\CompanyBiDirectionalityTests.cs" />
     <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
     <Compile Include="IntegrationTests\UserTests.cs" />
@@ -209,9 +210,14 @@
     <Compile Include="Models\WebBasedIctCompany.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Mapping\TestsSimpleModelMapper.cs" />
-    <Compile Include="RoleRepository.cs" />
-    <Compile Include="TestRepository.cs" />
-    <Compile Include="UserRepository.cs" />
+    <Compile Include="Repositories\ICompanyRepository.cs" />
+    <Compile Include="Repositories\IFailedCompanyRepository.cs" />
+    <Compile Include="Repositories\IRoleRepository.cs" />
+    <Compile Include="Repositories\ITestRepository.cs" />
+    <Compile Include="Repositories\IUserRepository.cs" />
+    <Compile Include="Repositories\RoleRepository.cs" />
+    <Compile Include="Repositories\TestRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

@@ -12,18 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Reflection;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
-    public class TestsMappingAssemblies : IMappingAssemblies
+    public interface IFailedCompanyRepository : ITestRepository<FailedCompany>
     {
-        public IEnumerable<Assembly> GetAssemblies()
-        {
-            yield return typeof(Company).Assembly;
-        }
     }
 }

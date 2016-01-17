@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,25 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NHibernate;
+
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
-    public class CompanyBaseTests : CompanyRepositoryTests
+    public class RoleRepository
+        : TestRepository<Role>,
+          IRoleRepository
     {
-        private Company m_CreatedCompany;
-
-        public Company CreatedCompany
+        public RoleRepository(ISession session)
+            : base(session)
         {
-            get { return m_CreatedCompany; }
-        }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            m_CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
-            SessionFactory.Statistics.Clear();
         }
     }
 }

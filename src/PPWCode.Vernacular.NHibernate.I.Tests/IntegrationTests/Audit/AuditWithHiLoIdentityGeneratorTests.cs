@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
 {
     // ReSharper disable InconsistentNaming
-    public class AuditWithHiLoIdentityGeneratorTests : CompanyRepositoryTests
+    public class AuditWithHiLoIdentityGeneratorTests : BaseCompanyTests
     {
         [Test]
         public void Created_Audit_Fields_Should_be_Set_After_Save()
         {
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
-            Assert.AreEqual(UserName, company.CreatedBy);
+            Assert.AreEqual(IdentityName, company.CreatedBy);
             Assert.AreEqual(Now, company.CreatedAt);
         }
 
@@ -35,12 +35,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
         {
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
-            Assert.AreEqual(UserName, company.CreatedBy);
+            Assert.AreEqual(IdentityName, company.CreatedBy);
             Assert.AreEqual(Now, company.CreatedAt);
 
             foreach (CompanyIdentification companyIdentification in company.Identifications)
             {
-                Assert.AreEqual(UserName, companyIdentification.CreatedBy);
+                Assert.AreEqual(IdentityName, companyIdentification.CreatedBy);
                 Assert.AreEqual(Now, companyIdentification.CreatedAt);
             }
         }

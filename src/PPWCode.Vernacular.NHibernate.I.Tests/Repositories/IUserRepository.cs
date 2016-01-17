@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NHibernate;
-
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests
+namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
-    public class UserRepository : TestRepository<User>
+    public interface IUserRepository : ITestRepository<User>
     {
-        public UserRepository(ISession session)
-            : base(session)
-        {
-        }
     }
 }

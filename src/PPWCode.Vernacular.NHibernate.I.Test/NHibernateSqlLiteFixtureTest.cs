@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -24,9 +25,12 @@ using NHibernate.Driver;
 
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 
+using Environment = NHibernate.Cfg.Environment;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class NHibernateSqlLiteFixture : NHibernateFixture
+    public abstract class NHibernateSqlLiteFixture<TId> : NHibernateFixture<TId>
+        where TId : IEquatable<TId>
     {
         private Configuration m_Configuration;
         private string m_DatabasePath;

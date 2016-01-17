@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ using PPWCode.Vernacular.Persistence.II;
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     // ReSharper disable InconsistentNaming
-    public class CompanyDeleteTests : CompanyBaseTests
+    public class CompanyDeleteTests : BaseCompanyTests
     {
         [Test]
         public void Can_Delete_A_Company()

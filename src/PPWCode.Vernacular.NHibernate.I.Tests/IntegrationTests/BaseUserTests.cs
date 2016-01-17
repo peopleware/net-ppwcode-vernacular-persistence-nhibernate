@@ -12,18 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Reflection;
+using System;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public class TestsMappingAssemblies : IMappingAssemblies
+    public abstract class BaseUserTests : BaseRepositoryTests<User>
     {
-        public IEnumerable<Assembly> GetAssemblies()
+        protected override void OnSetup()
         {
-            yield return typeof(Company).Assembly;
+            base.OnSetup();
+
+            SessionFactory.Statistics.Clear();
+        }
+
+        protected override Func<IRepository<User, int>> RepositoryFactory
+        {
+            get { return () => new UserRepository(Session); }
         }
     }
 }

@@ -168,11 +168,12 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="BaseFixture.cs" />
+    <Compile Include="BaseRepositoryFixture.cs" />
     <Compile Include="DirtyChecking.cs" />
     <Compile Include="DirtyCheckingInterceptor.cs" />
     <Compile Include="NHibernateFixture.cs" />
     <Compile Include="NHibernateSqlLiteFixtureTest.cs" />
-    <Compile Include="NHibernateSqlServerFixtureTest.cs" />
+    <Compile Include="NHibernateSqlServerFixture.cs" />
     <Compile Include="PPWSQLiteDialect.cs" />
     <Compile Include="SQLiteDialectWithoutSchema.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

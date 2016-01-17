@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ using PPWCode.Vernacular.NHibernate.I.Test;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public class DirtyCheckingExampleTests : CompanyBaseTests
+    public class DirtyCheckingExampleTests : BaseCompanyTests
     {
         [Test]
         public void DirtyCheckingTest()

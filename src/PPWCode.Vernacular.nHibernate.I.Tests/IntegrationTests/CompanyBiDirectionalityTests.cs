@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@ using System.Linq;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     // ReSharper disable InconsistentNaming
-    public class CompanyBiDirectionalityTests : CompanyRepositoryTests
+    public class CompanyBiDirectionalityTests : BaseCompanyTests
     {
         [Test]
         public void Check_BiDirectionality_Add_Child_To_Parent()
@@ -313,7 +314,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
                         // Due cascading delete isn't supported for one-to-one relation, 
                         // see https://nhibernate.jira.com/browse/NH-1262
-                        FailedCompanyRepository.Delete(failedCompany);
+                        Session.Delete(failedCompany);
 
                         return mergedCompany;
                     },
