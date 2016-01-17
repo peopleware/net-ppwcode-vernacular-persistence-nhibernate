@@ -25,6 +25,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         {
             Property(u => u.Name);
             Property(u => u.Gender, m => m.Type<EnumStringType<Gender>>());
+            Property(u => u.HasBlueEyes, m => m.Type<YesNoType>());
             Set(
                 u => u.Roles,
                 m => m.Cascade(Cascade.None),

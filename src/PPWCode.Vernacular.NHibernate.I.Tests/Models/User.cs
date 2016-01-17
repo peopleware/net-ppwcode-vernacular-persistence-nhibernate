@@ -24,6 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         private readonly ISet<Role> m_Roles = new HashSet<Role>();
         private string m_Name;
         private Gender? m_Gender;
+        private bool m_HasBlueEyes;
 
         public User(int id, int persistenceVersion)
             : base(id, persistenceVersion)
@@ -51,6 +52,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
             get { return m_Gender; }
             set { m_Gender = value; }
+        }
+
+        public virtual bool HasBlueEyes
+        {
+            get { return m_HasBlueEyes; }
+            set { m_HasBlueEyes = value; }
         }
 
         public virtual ISet<Role> Roles
