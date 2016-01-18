@@ -259,7 +259,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 string msg =
                     entity != null
                         ? string.Format(@"Request {0} for class {1}, entity={2} finished", requestDescription, typeof(T).Name, entity)
-                        : string.Format(@"Request {0} for class {1} finised", requestDescription, typeof(T).Name);
+                        : string.Format(@"Request {0} for class {1} finished", requestDescription, typeof(T).Name);
                 Logger.Info(msg);
             }
 
