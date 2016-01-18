@@ -498,7 +498,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
             {
-                classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultCatalogName));
+                classCustomizer.Catalog(ConditionalQuoteIdentifier(DefaultCatalogName));
             }
 
             if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
