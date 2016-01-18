@@ -30,6 +30,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             get { return m_RoleRepository; }
         }
 
+        protected IUserRepository UserRepository
+        {
+            get { return (IUserRepository)Repository; }
+        }
+
         protected override void OnSetup()
         {
             base.OnSetup();
@@ -147,6 +152,32 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                     savedUser.RemoveRole(savedUser.Roles.Single(r => r.Name == "Developer"));
                     Repository.Merge(savedUser);
                 }, true);
+        }
+
+        [Test]
+        public void FindUserByName()
+        {
+            User ruben =
+                new User
+                {
+                    Name = "Ruben",
+                    Gender = Gender.MALE
+                };
+            User danny =
+                new User
+                {
+                    Name = "Danny",
+                    Gender = Gender.FEMALE
+                };
+            RunInsideTransaction(() => UserRepository.Merge(ruben), true);
+            RunInsideTransaction(() => UserRepository.Merge(danny), true);
+
+            User foundRuben = RunInsideTransaction(() => UserRepository.GetUserByName("Ruben"), true);
+            Assert.That(foundRuben, Is.Not.Null);
+            Assert.That(foundRuben.Name, Is.EqualTo("Ruben"));
+
+            User jef = RunInsideTransaction(() => UserRepository.GetUserByName("Jef"), true);
+            Assert.That(jef, Is.Null);
         }
     }
 }

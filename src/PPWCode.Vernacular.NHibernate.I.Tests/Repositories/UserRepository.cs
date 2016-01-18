@@ -26,5 +26,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
             : base(session)
         {
         }
+
+        public User GetUserByName(string name)
+        {
+            return Get(qry => qry.Where(u => u.Name == name));
+        }
     }
 }

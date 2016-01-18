@@ -18,5 +18,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
 {
     public interface IUserRepository : ITestRepository<User>
     {
+        User GetUserByName(string name);
     }
 }

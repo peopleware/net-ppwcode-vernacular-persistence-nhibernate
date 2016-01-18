@@ -130,9 +130,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
     {
         public T GetById(TId id)
         {
-            Contract.Ensures(Contract.Result<T>() != null);
-            Contract.Ensures(EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
+            Contract.Ensures(Contract.Result<T>() == null || EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, id));
+            Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
 
             return default(T);
         }
@@ -140,8 +139,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public T Get(Func<ICriteria, ICriteria> func)
         {
             Contract.Requires(func != null);
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.Ensures(Contract.Result<T>() != null);
+
+            Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
 
             return default(T);
         }
@@ -149,8 +148,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
             Contract.Requires(func != null);
-            Contract.Ensures(!Contract.Result<T>().IsTransient);
-            Contract.Ensures(Contract.Result<T>() != null);
+
+            Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
 
             return default(T);
         }
@@ -173,6 +172,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
+
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
 
             return default(IPagedList<T>);
@@ -182,6 +182,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(pageIndex > 0);
             Contract.Requires(pageSize > 0);
+
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
 
             return default(IPagedList<T>);
@@ -190,6 +191,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public T Merge(T entity)
         {
             Contract.Requires(entity != null);
+
             Contract.Ensures(Contract.Result<T>() != null);
             Contract.Ensures(!Contract.Result<T>().IsTransient);
             Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
