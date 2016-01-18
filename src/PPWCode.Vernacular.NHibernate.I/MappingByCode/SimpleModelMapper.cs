@@ -511,7 +511,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             classCustomizer.Id(
                 m =>
                 {
-                    m.Column(GetKeyColumnName(modelInspector, type, false, true));
+                    m.Column(GetKeyColumnName(modelInspector, type, false, QuoteIdentifiers));
                     m.Generator(Generators.HighLow);
                 });
 
@@ -578,7 +578,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false, true));
+                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false, QuoteIdentifiers));
                     if (type.BaseType != null)
                     {
                         k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
@@ -630,7 +630,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (modelinspector.IsManyToMany(member.LocalMember))
             {
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true, true)));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true, QuoteIdentifiers)));
             }
             else if (modelinspector.IsSet(member.LocalMember))
             {
@@ -650,7 +650,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", oneToManyProperty.DeclaringType.Name, oneToManyProperty.Name)));
                 }
 
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, true)));
+                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, QuoteIdentifiers)));
             }
 
             if (BatchSize != null && BatchSize.Value > 0)
