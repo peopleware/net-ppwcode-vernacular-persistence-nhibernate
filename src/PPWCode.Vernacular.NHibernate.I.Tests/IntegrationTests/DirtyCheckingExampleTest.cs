@@ -20,7 +20,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public class DirtyCheckingExampleTests : BaseCompanyTests
     {
-        [Test]
+        [Test, Explicit]
         public void DirtyCheckingTest()
         {
             /* Set Number to null (but Number is defined as int) */
