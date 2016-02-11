@@ -185,7 +185,6 @@
     <Compile Include="Repositories\FailedCompanyRepository.cs" />
     <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
     <Compile Include="IntegrationTests\BaseRepositoryTests.cs" />
-    <Compile Include="IntegrationTests\CompanyCriteriaTests.cs" />
     <Compile Include="IntegrationTests\CompanyDeleteTests.cs" />
     <Compile Include="IntegrationTests\CompanyQueryOverTests.cs" />
     <Compile Include="IntegrationTests\BaseCompanyTests.cs" />
