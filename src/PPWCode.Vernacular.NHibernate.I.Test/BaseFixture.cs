@@ -19,13 +19,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
     [TestFixture]
     public abstract class BaseFixture
     {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void FixtureSetup()
         {
             OnFixtureSetup();
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void FixtureTeardown()
         {
             OnFixtureTeardown();
