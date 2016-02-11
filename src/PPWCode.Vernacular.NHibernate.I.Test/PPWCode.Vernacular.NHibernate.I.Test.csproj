@@ -117,7 +117,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HibernatingRhinos.Profiler.Appender, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0774796e73ebf640, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernateProfiler.Appender.3.0.3051.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
+      <HintPath>..\packages\NHibernateProfiler.Appender.3.0.3091.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Iesi.Collections">
@@ -135,12 +135,12 @@
       <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=3.0.5813.39031, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.0.1\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PPWCode.Util.OddsAndEnds.II, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.2.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
+      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.3.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PPWCode.Vernacular.Exceptions.II, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -172,9 +172,9 @@
     <Compile Include="DirtyChecking.cs" />
     <Compile Include="DirtyCheckingInterceptor.cs" />
     <Compile Include="NHibernateFixture.cs" />
-    <Compile Include="NHibernateSqlLiteFixtureTest.cs" />
     <Compile Include="NHibernateSqlServerFixture.cs" />
-    <Compile Include="PPWSQLiteDialect.cs" />
+    <Compile Include="NHibernateSqlServerOneTimeSetUpFixture.cs" />
+    <Compile Include="NHibernateSqlServerSetUpFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerUtils.cs" />
     <Compile Include="TestConnectionProvider.cs" />

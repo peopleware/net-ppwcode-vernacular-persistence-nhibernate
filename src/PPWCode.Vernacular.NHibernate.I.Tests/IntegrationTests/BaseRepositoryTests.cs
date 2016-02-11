@@ -26,9 +26,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
     public abstract class BaseRepositoryTests<T> : BaseRepositoryFixture<T, int>
         where T : class, IIdentity<int>
     {
-        protected override string InitialCatalog
+        protected override string CatalogName
         {
             get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
+        }
+
+        protected override string ConnectionString
+        {
+            get { return FixedConnectionString; }
         }
 
         protected override HbmMapping GetHbmMapping()

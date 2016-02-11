@@ -16,9 +16,6 @@ using System;
 using System.Data;
 
 using HibernatingRhinos.Profiler.Appender;
-using HibernatingRhinos.Profiler.Appender.NHibernate;
-
-using log4net.Config;
 
 using Moq;
 
@@ -110,42 +107,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        protected override void OnFixtureSetup()
-        {
-            base.OnFixtureSetup();
-
-            XmlConfigurator.Configure();
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Initialize();
-            }
-        }
-
-        protected override void OnFixtureTeardown()
+        protected virtual void CloseSessionFactory()
         {
             if (m_SessionFactory != null)
             {
                 m_SessionFactory.Close();
                 m_SessionFactory = null;
             }
-
-            if (UseProfiler)
-            {
-                NHibernateProfiler.Shutdown();
-            }
-
-            base.OnFixtureTeardown();
         }
 
-        protected override void OnTeardown()
+        protected virtual void CloseSession()
         {
             if (m_Session != null)
             {
                 m_Session.Close();
                 m_Session = null;
             }
-
-            base.OnTeardown();
         }
 
         protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)

@@ -98,7 +98,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PPWCode.Util.OddsAndEnds.II, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.2.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
+      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.3.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PPWCode.Vernacular.Exceptions.II">

@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
@@ -33,23 +34,48 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         where TId : IEquatable<TId>
     {
         private Configuration m_Configuration;
+        private string m_ConnectionString;
 
-        protected abstract string InitialCatalog { get; }
+        protected abstract string CatalogName { get; }
 
         protected virtual string ConnectionString
         {
-            get { return ConfigHelper.GetConnectionString(InitialCatalog) ?? DefaultConnectionString; }
+            get
+            {
+                if (m_ConnectionString == null)
+                {
+                    m_ConnectionString = RandomizedConnectionString;
+                }
+
+                return m_ConnectionString;
+            }
         }
 
-        protected virtual string DefaultConnectionString
+        protected virtual string RandomizedConnectionString
         {
             get
             {
-                SqlConnectionStringBuilder builder =
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(FixedConnectionString);
+                long ticks = DateTime.Now.Ticks;
+                builder.InitialCatalog = string.Format("{0}.{1}", builder.InitialCatalog, ticks.ToString(CultureInfo.InvariantCulture));
+                return builder.ToString();
+            }
+        }
+
+        protected virtual string FixedConnectionString
+        {
+            get { return ConfigHelper.GetConnectionString(CatalogName) ?? DefaultFixedConnectionString; }
+        }
+
+        protected virtual string DefaultFixedConnectionString
+        {
+            get
+            {
+                SqlConnectionStringBuilder builder = 
                     new SqlConnectionStringBuilder
                     {
                         DataSource = "localhost",
-                        InitialCatalog = InitialCatalog,
+                        InitialCatalog = CatalogName,
                         IntegratedSecurity = true
                     };
                 return builder.ToString();
@@ -101,23 +127,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
+        protected virtual void ResetConfiguration()
+        {
+            m_Configuration = null;
+            m_ConnectionString = null;
+        }
+
         protected virtual HbmMapping GetHbmMapping()
         {
             return null;
-        }
-
-        protected override void OnFixtureSetup()
-        {
-            base.OnFixtureSetup();
-
-            CreateCatalog();
-        }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            BuildSchema();
         }
 
         protected virtual void CreateCatalog()
@@ -129,6 +147,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             SqlServerUtils.CreateCatalog(builder.DataSource, builder.InitialCatalog, true);
+        }
+
+        protected virtual void DropCatalog()
+        {
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(ConnectionString);
+            if (SqlServerUtils.CatalogExists(builder.DataSource, builder.InitialCatalog))
+            {
+                SqlServerUtils.DropCatalog(builder.DataSource, builder.InitialCatalog);
+            }
         }
     }
 }

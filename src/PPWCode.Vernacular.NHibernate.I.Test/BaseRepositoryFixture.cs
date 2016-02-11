@@ -19,7 +19,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class BaseRepositoryFixture<T, TId> : NHibernateSqlServerFixture<TId>
+    public abstract class BaseRepositoryFixture<T, TId> : NHibernateSqlServerSetUpFixture<TId>
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
