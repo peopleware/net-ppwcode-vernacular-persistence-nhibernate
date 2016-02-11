@@ -19,7 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
 {
-    public class UserMapper : AuditableVersionedPeristentObjectMapper<User, int, int>
+    public class UserMapper : AuditableVersionedPersistentObjectMapper<User, int, int>
     {
         public UserMapper()
         {

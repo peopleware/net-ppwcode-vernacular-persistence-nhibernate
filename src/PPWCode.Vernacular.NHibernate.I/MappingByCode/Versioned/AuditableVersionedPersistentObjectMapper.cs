@@ -20,12 +20,12 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public abstract class AuditableVersionedPeristentObjectMapper<T, TId, TVersion>
+    public abstract class AuditableVersionedPersistentObjectMapper<T, TId, TVersion>
         : VersionedPersistentObjectMapper<T, TId, TVersion>
         where T : class, IVersionedPersistentObject<TId, TVersion>, IAuditable
         where TId : IEquatable<TId>
     {
-        protected AuditableVersionedPeristentObjectMapper()
+        protected AuditableVersionedPersistentObjectMapper()
         {
             // Satisfy IInsertAuditable
             Property(

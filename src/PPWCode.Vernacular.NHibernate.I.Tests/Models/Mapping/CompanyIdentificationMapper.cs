@@ -16,7 +16,7 @@ using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
 {
-    public class CompanyIdentificationMapper : AuditablePeristentObjectMapper<CompanyIdentification, int>
+    public class CompanyIdentificationMapper : AuditablePersistentObjectMapper<CompanyIdentification, int>
     {
         public CompanyIdentificationMapper()
         {
