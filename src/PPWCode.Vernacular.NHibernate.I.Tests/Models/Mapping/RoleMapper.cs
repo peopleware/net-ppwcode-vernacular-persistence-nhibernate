@@ -18,7 +18,7 @@ using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
 {
-    public class RoleMapper : AuditableVersionedPeristentObjectMapper<Role, int, int>
+    public class RoleMapper : AuditableVersionedPersistentObjectMapper<Role, int, int>
     {
         public RoleMapper()
         {

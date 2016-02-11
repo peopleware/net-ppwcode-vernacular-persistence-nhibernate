@@ -140,13 +140,13 @@
     <Compile Include="MappingByCode\MemberInfoExtensions.cs" />
     <Compile Include="MappingByCode\ModelMapperBase.cs" />
     <Compile Include="MappingByCode\PropertyPathExtensions.cs" />
-    <Compile Include="MappingByCode\NoneVersioned\AuditablePeristentObjectMapper.cs" />
+    <Compile Include="MappingByCode\NoneVersioned\AuditablePersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\AuditLogMapping.cs" />
     <Compile Include="MappingByCode\NoneVersioned\InsertAuditablePersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\NoneVersioned\UpdateAuditablePersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\PersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\SimpleModelMapper.cs" />
-    <Compile Include="MappingByCode\Versioned\AuditableVersionedPeristentObjectMapper.cs" />
+    <Compile Include="MappingByCode\Versioned\AuditableVersionedPersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\Versioned\InsertAuditableVersionedPersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\Versioned\UpdateAuditableVersionedPersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\Versioned\VersionedPersistentObjectMapper.cs" />
