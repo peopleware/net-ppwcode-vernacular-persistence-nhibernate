@@ -172,9 +172,7 @@
     <Compile Include="DirtyChecking.cs" />
     <Compile Include="DirtyCheckingInterceptor.cs" />
     <Compile Include="NHibernateFixture.cs" />
-    <Compile Include="NHibernateSqlLiteFixtureTest.cs" />
     <Compile Include="NHibernateSqlServerFixture.cs" />
-    <Compile Include="PPWSQLiteDialect.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlServerUtils.cs" />
     <Compile Include="TestConnectionProvider.cs" />
