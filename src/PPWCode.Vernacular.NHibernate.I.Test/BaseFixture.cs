@@ -43,20 +43,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             OnTeardown();
         }
 
-        protected virtual void OnFixtureSetup()
-        {
-        }
+        /// <summary>
+        ///     Override this method for setup code that needs to run once for the class, independently of the tests.
+        /// </summary>
+        protected abstract void OnFixtureSetup();
 
-        protected virtual void OnFixtureTeardown()
-        {
-        }
+        /// <summary>
+        ///     Override this method for teardown code that needs to run once for the class, independently of the tests.
+        /// </summary>
+        protected abstract void OnFixtureTeardown();
 
-        protected virtual void OnSetup()
-        {
-        }
+        /// <summary>
+        ///     Override this method for setup code that needs to run for each test separately.
+        /// </summary>
+        protected abstract void OnSetup();
 
-        protected virtual void OnTeardown()
-        {
-        }
+        /// <summary>
+        ///     Override this method for teardown code that needs to run for each test separately.
+        /// </summary>
+        protected abstract void OnTeardown();
     }
 }
