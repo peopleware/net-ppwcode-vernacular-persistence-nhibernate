@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,8 +33,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         {
             Company company = Repository.Get(qry => qry.Where(c => c.Name == "Peopleware NV"));
 
-            Assert.IsNotNull(company);
-            Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
+        }
+
+        [Test]
+        public void Can_Get_Company_with_use_of_an_root_alias()
+        {
+            Company rootAlias = null;
+            Company company = Repository.Get(() => rootAlias, qry => qry.Where(() => rootAlias.Name == "Peopleware NV"));
+
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
+        }
+
+        [Test]
+        public void Can_Find_Company_with_use_of_an_root_alias()
+        {
+            Company rootAlias = null;
+            IList<Company> resultSet = Repository.Find(() => rootAlias, qry => qry.Where(() => rootAlias.Name == "Peopleware NV"));
+
+            Assert.That(resultSet, Is.Not.Null);
+            Assert.That(resultSet.Count, Is.EqualTo(1));
+            Assert.That(NHibernateUtil.IsInitialized(resultSet.First().Identifications), Is.False);
         }
 
         [Test]
@@ -45,8 +65,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 qry => qry.Where(c => c.Name == "Peopleware NV")
                           .Fetch(c => c.Identifications).Eager);
 
-            Assert.IsNotNull(company);
-            Assert.IsTrue(NHibernateUtil.IsInitialized(company.Identifications));
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.True);
         }
 
         [Test]
@@ -58,8 +78,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                          .Select(Projections.Id());
             Company company = Repository.Get(qry => qry.WithSubquery.WhereExists(detachedQuery));
 
-            Assert.IsNotNull(company);
-            Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
         }
 
         [Test]
@@ -70,17 +90,36 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 qry => qry.Inner.JoinAlias(c => c.Identifications, () => ci)
                           .Where(() => ci.Identification == "1"));
 
-            Assert.IsNotNull(company);
-            Assert.IsFalse(NHibernateUtil.IsInitialized(company.Identifications));
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
         }
 
         [Test]
         public void Can_Find_All_Companies()
         {
-            IList<Company> companies = Repository.Find((Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>>)null);
+            IList<Company> companies = Repository.FindAll();
 
-            Assert.IsNotNull(companies);
-            Assert.IsFalse(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)));
+            Assert.That(companies, Is.Not.Null);
+            Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
+        }
+
+        [Test]
+        public void Can_FindPaged_Company_with_use_of_an_root_alias()
+        {
+            Company rootAlias = null;
+            IPagedList<Company> pagedList = Repository.FindPaged(
+                1,
+                20,
+                () => rootAlias,
+                qry => qry.Where(() => rootAlias.Name == "Peopleware NV")
+                          .OrderBy(() => rootAlias.Name).Asc());
+
+            Assert.That(pagedList, Is.Not.Null);
+            Assert.That(pagedList.HasPreviousPage, Is.False);
+            Assert.That(pagedList.HasNextPage, Is.False);
+            Assert.That(pagedList.Items.Count, Is.EqualTo(1));
+            Assert.That(pagedList.TotalCount, Is.EqualTo(1));
+            Assert.That(pagedList.TotalPages, Is.EqualTo(1));
         }
 
         [Test]
@@ -92,26 +131,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                 qry => qry.Where(c => c.Name == "Peopleware NV")
                           .OrderBy(c => c.Name).Asc());
 
-            Assert.IsNotNull(pagedList);
-            Assert.IsFalse(pagedList.HasPreviousPage);
-            Assert.IsFalse(pagedList.HasNextPage);
-            Assert.AreEqual(1, pagedList.Items.Count);
-            Assert.AreEqual(1, pagedList.TotalCount);
-            Assert.AreEqual(1, pagedList.TotalPages);
+            Assert.That(pagedList, Is.Not.Null);
+            Assert.That(pagedList.HasPreviousPage, Is.False);
+            Assert.That(pagedList.HasNextPage, Is.False);
+            Assert.That(pagedList.Items.Count, Is.EqualTo(1));
+            Assert.That(pagedList.TotalCount, Is.EqualTo(1));
+            Assert.That(pagedList.TotalPages, Is.EqualTo(1));
         }
 
         [Test]
         public void Can_Page_All_Companies()
         {
             IPagedList<Company> pagedList =
-                Repository.FindPaged(1, 20, (Func<IQueryOver<Company, Company>, IQueryOver<Company, Company>>)null);
+                Repository.FindPaged(1, 20, null);
 
-            Assert.IsNotNull(pagedList);
-            Assert.IsFalse(pagedList.HasPreviousPage);
-            Assert.IsFalse(pagedList.HasNextPage);
-            Assert.AreEqual(1, pagedList.Items.Count);
-            Assert.AreEqual(1, pagedList.TotalCount);
-            Assert.AreEqual(1, pagedList.TotalPages);
+            Assert.That(pagedList, Is.Not.Null);
+            Assert.That(pagedList.HasPreviousPage, Is.False);
+            Assert.That(pagedList.HasNextPage, Is.False);
+            Assert.That(pagedList.Items.Count, Is.EqualTo(1));
+            Assert.That(pagedList.TotalCount, Is.EqualTo(1));
+            Assert.That(pagedList.TotalPages, Is.EqualTo(1));
         }
     }
 }

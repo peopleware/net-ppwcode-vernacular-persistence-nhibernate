@@ -1,4 +1,4 @@
-// Copyright 2014 by PeopleWare n.v..
+// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 using NHibernate;
 
@@ -28,17 +29,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
     {
         public abstract T GetById(TId id);
 
-        public abstract T Get(Func<ICriteria, ICriteria> func);
-
         public abstract T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        public abstract IList<T> Find(Func<ICriteria, ICriteria> func);
+        public abstract T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        public abstract IList<T> FindAll();
 
         public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
-        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<ICriteria, ICriteria> func);
+        public abstract IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         public abstract T Merge(T entity);
 
