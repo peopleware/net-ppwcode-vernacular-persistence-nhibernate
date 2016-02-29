@@ -16,7 +16,8 @@
     <description>$description$</description>
 
     <releaseNotes>
-      2.0.0 Improved design + support mapping by code
+2.0.0 Improved design + support mapping by code
+2.0.1 Fix release config (create contract assembly + emit xml documentation
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
