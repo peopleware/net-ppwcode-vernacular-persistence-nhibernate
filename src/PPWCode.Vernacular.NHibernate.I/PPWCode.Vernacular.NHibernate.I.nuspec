@@ -16,7 +16,7 @@
     <description>$description$</description>
 
     <releaseNotes>
-      1.0.1 Initial release PPWCode.Vernacular.NHibernate.I, built against .NET 4.5.
+      2.0.0 Improved design + support mapping by code
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
