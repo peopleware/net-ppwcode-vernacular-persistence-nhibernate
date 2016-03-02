@@ -1,4 +1,4 @@
-// Copyright 2014 by PeopleWare n.v..
+// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ using System.Reflection;
 
 [assembly: AssemblyCompany("Peopleware n.v.")]
 [assembly: AssemblyProduct("PPWCode Vernacular NHibernate")]
-[assembly: AssemblyCopyright("Copyright © PeopleWare n.v. 2014")]
+[assembly: AssemblyCopyright("Copyright © PeopleWare n.v. 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyVersion("2.0.0")]
