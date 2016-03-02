@@ -22,6 +22,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         : PersistentObjectMapper<T, TId>
         where T : class, IVersionedPersistentObject<TId, TVersion>
         where TId : IEquatable<TId>
+        where TVersion : IEquatable<TVersion>
     {
         protected VersionedPersistentObjectMapper()
         {

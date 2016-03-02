@@ -148,7 +148,7 @@
       <HintPath>..\packages\PPWCode.Vernacular.Exceptions.II.1.0.0\lib\net45\PPWCode.Vernacular.Exceptions.II.dll</HintPath>
     </Reference>
     <Reference Include="PPWCode.Vernacular.Persistence.II">
-      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.1.0.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
+      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.1.1.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
     </Reference>
     <Reference Include="PPWcode.Vernacular.Semantics.II">
       <HintPath>..\packages\PPWcode.Vernacular.Semantics.II.1.0.0\lib\net45\PPWcode.Vernacular.Semantics.II.dll</HintPath>
