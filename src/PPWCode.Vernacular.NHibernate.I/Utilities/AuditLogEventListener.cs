@@ -31,13 +31,13 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public abstract class AuditLogEventListener<TEntity, TAuditEntity> :
+    public abstract class AuditLogEventListener<TId, TAuditEntity> :
         IRegisterEventListener,
         IPostUpdateEventListener,
         IPostInsertEventListener,
         IPostDeleteEventListener
-        where TEntity : IEquatable<TEntity>
-        where TAuditEntity : AuditLog<TEntity>, new()
+        where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
         private static readonly ConcurrentDictionary<Type, AuditLogItem> s_DomainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
@@ -150,6 +150,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
                     auditLogs.ForEach(o => session.Save(o));
+                    session.Flush();
                 }
             }
         }
@@ -195,6 +196,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
                     auditLogs.ForEach(o => session.Save(o));
+                    session.Flush();
                 }
             }
         }
@@ -218,13 +220,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         CreatedBy = identityName,
                         CreatedAt = now,
                     });
+                session.Flush();
             }
         }
 
         protected static string GetStringValueFromStateArray(object[] stateArray, int position)
         {
             object value = stateArray[position];
-            return value == null ? "<null>" : value.ToString();
+            return value == null ? null : value.ToString();
         }
 
         protected class AuditLogItem

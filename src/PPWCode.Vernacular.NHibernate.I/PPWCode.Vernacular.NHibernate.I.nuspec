@@ -19,6 +19,9 @@
 2.0.0 Improved design + support mapping by code
 2.0.1 Fix release config (create contract assembly + emit xml documentation
 2.0.2 Upgrade dependency on PPWCode.Vernacular.Persistence.II
+2.0.3 - use null instead of &quot;&lt;null&gt;&quot; string while creating AuditLog entities.
+      - rename generic param TEntity to TId in AuditLog.
+      - fix bug, audit entities didn't get into the db.
     </releaseNotes>
 
     <copyright>Copyright 2016 by PeopleWare n.v.</copyright>
