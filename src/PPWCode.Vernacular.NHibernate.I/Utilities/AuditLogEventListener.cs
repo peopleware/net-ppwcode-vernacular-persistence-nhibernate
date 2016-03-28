@@ -31,13 +31,13 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public abstract class AuditLogEventListener<TEntity, TAuditEntity> :
+    public abstract class AuditLogEventListener<TId, TAuditEntity> :
         IRegisterEventListener,
         IPostUpdateEventListener,
         IPostInsertEventListener,
         IPostDeleteEventListener
-        where TEntity : IEquatable<TEntity>
-        where TAuditEntity : AuditLog<TEntity>, new()
+        where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
         private static readonly ConcurrentDictionary<Type, AuditLogItem> s_DomainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
