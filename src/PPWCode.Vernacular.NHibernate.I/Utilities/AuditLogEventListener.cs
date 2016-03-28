@@ -224,7 +224,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         protected static string GetStringValueFromStateArray(object[] stateArray, int position)
         {
             object value = stateArray[position];
-            return value == null ? "<null>" : value.ToString();
+            return value == null ? null : value.ToString();
         }
 
         protected class AuditLogItem
