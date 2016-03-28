@@ -150,6 +150,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
                     auditLogs.ForEach(o => session.Save(o));
+                    session.Flush();
                 }
             }
         }
@@ -195,6 +196,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 {
                     ISession session = @event.Session.GetSession(EntityMode.Poco);
                     auditLogs.ForEach(o => session.Save(o));
+                    session.Flush();
                 }
             }
         }
@@ -218,6 +220,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         CreatedBy = identityName,
                         CreatedAt = now,
                     });
+                session.Flush();
             }
         }
 
