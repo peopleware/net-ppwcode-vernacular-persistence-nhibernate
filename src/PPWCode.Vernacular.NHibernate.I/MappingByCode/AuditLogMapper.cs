@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2016 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,22 +15,21 @@
 using System;
 
 using NHibernate;
-using NHibernate.Type;
 
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public abstract class AuditLogMapping<T, TId> : PersistentObjectMapper<T, TId>
+    public abstract class AuditLogMapper<T, TId> : PersistentObjectMapper<T, TId>
         where T : AuditLog<TId>
         where TId : IEquatable<TId>
     {
-        protected AuditLogMapping()
+        protected AuditLogMapper()
         {
             Property(x => x.EntryType, m => m.NotNullable(true));
             Property(x => x.EntityName, m => m.NotNullable(true));
             Property(x => x.EntityId, m => m.NotNullable(true));
-            Property(x => x.PropertyName, m => m.NotNullable(true));
+            Property(x => x.PropertyName);
             Property(x => x.OldValue, m => m.Type(NHibernateUtil.StringClob));
             Property(x => x.NewValue, m => m.Type(NHibernateUtil.StringClob));
             Property(
