@@ -22,6 +22,7 @@
 2.0.3 - use null instead of &quot;&lt;null&gt;&quot; string while creating AuditLog entities.
       - rename generic param TEntity to TId in AuditLog.
       - fix bug, audit entities didn't get into the db.
+2.0.4 Fix bug in the AuditLogMapper (PropertyName is null for delete log)
     </releaseNotes>
 
     <copyright>Copyright 2014 by PeopleWare n.v.</copyright>
