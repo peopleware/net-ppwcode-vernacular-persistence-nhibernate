@@ -184,7 +184,7 @@
     <Compile Include="MappingByCode\ModelMapperBase.cs" />
     <Compile Include="MappingByCode\PropertyPathExtensions.cs" />
     <Compile Include="MappingByCode\NoneVersioned\AuditablePersistentObjectMapper.cs" />
-    <Compile Include="MappingByCode\AuditLogMapping.cs" />
+    <Compile Include="MappingByCode\AuditLogMapper.cs" />
     <Compile Include="MappingByCode\NoneVersioned\InsertAuditablePersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\NoneVersioned\UpdateAuditablePersistentObjectMapper.cs" />
     <Compile Include="MappingByCode\PersistentObjectMapper.cs" />
