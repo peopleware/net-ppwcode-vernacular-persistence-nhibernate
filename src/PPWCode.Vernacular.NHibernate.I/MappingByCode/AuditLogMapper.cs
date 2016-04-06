@@ -29,7 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             Property(x => x.EntryType, m => m.NotNullable(true));
             Property(x => x.EntityName, m => m.NotNullable(true));
             Property(x => x.EntityId, m => m.NotNullable(true));
-            Property(x => x.PropertyName, m => m.NotNullable(true));
+            Property(x => x.PropertyName);
             Property(x => x.OldValue, m => m.Type(NHibernateUtil.StringClob));
             Property(x => x.NewValue, m => m.Type(NHibernateUtil.StringClob));
             Property(
