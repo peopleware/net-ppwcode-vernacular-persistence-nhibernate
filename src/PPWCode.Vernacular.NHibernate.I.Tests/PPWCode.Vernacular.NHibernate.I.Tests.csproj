@@ -179,7 +179,20 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="IntegrationTests\BaseUserTests.cs" />
+    <Compile Include="IntegrationTests\EnumTranslationTests.cs" />
+    <Compile Include="Models\Enums\EnumTranslation.cs" />
+    <Compile Include="Models\Mapping\Enums\GenderEnumTranslationMapper.cs" />
+    <Compile Include="Models\Mapping\Enums\GenericGenderEnumTranslationMapper.cs" />
+    <Compile Include="Models\Mapping\Enums\GenericSalutationEnumTranslationMapper.cs" />
+    <Compile Include="Models\Mapping\Enums\SalutationEnumTranslationMapper.cs" />
+    <Compile Include="Models\Mapping\Enums\GenericEnumTranslationMapper.cs" />
+    <Compile Include="Models\Mapping\Enums\EnumTranslationMapper.cs" />
     <Compile Include="Models\Gender.cs" />
+    <Compile Include="Models\Enums\GenderEnum.cs" />
+    <Compile Include="Models\Enums\GenderEnumTranslation.cs" />
+    <Compile Include="Models\Enums\GenericEnumTranslation.cs" />
+    <Compile Include="Models\Enums\SalutationEnum.cs" />
+    <Compile Include="Models\Enums\SalutationEnumTranslation.cs" />
     <Compile Include="Repositories\CompanyRepository.cs" />
     <Compile Include="ConventionMappingTests.cs" />
     <Compile Include="Repositories\FailedCompanyRepository.cs" />
@@ -210,8 +223,10 @@
     <Compile Include="Models\WebBasedIctCompany.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Mapping\TestsSimpleModelMapper.cs" />
+    <Compile Include="Repositories\Enums\GenericEnumTranslationRepository.cs" />
     <Compile Include="Repositories\ICompanyRepository.cs" />
     <Compile Include="Repositories\IFailedCompanyRepository.cs" />
+    <Compile Include="Repositories\Enums\IGenericEnumTranslationRepository.cs" />
     <Compile Include="Repositories\IRoleRepository.cs" />
     <Compile Include="Repositories\ITestRepository.cs" />
     <Compile Include="Repositories\IUserRepository.cs" />
