@@ -180,6 +180,7 @@
     <Compile Include="Interfaces\IHbmMapping.cs" />
     <Compile Include="Interfaces\INhInterceptor.cs" />
     <Compile Include="Interfaces\IRepositoryContractBase.cs" />
+    <Compile Include="MappingByCode\ModelMapper.cs" />
     <Compile Include="MappingByCode\MemberInfoExtensions.cs" />
     <Compile Include="MappingByCode\ModelMapperBase.cs" />
     <Compile Include="MappingByCode\PropertyPathExtensions.cs" />
