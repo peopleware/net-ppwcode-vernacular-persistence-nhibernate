@@ -19,9 +19,7 @@ using System.Linq;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
-using NHibernate.Mapping.ByCode.Impl.CustomizersImpl;
 
-using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
@@ -30,9 +28,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     {
         private readonly IMappingAssemblies m_MappingAssemblies;
         private readonly ModelMapper m_ModelMapper;
-
-        private readonly IDictionary<Type, IDictionary<Type, Type>> m_ClassCustomizersCache =
-            new Dictionary<Type, IDictionary<Type, Type>>();
 
         protected ModelMapperBase(IMappingAssemblies mappingAssemblies)
         {
@@ -95,10 +90,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         public HbmMapping GetHbmMapping()
         {
             IEnumerable<Type> mappingTypes =
-                MappingTypes ?? SortMappings(m_MappingAssemblies
-                                                 .GetAssemblies()
-                                                 .SelectMany(a => a.GetExportedTypes())
-                                                 .Where(t => typeof(IConformistHoldersProvider).IsAssignableFrom(t) && !t.IsGenericTypeDefinition));
+                MappingTypes
+                ?? m_MappingAssemblies
+                    .GetAssemblies()
+                    .SelectMany(a => a.GetExportedTypes());
             ModelMapper.AddMappings(mappingTypes);
 
             HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -115,153 +110,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             }
 
             return hbmMapping;
-        }
-
-        private IEnumerable<Type> SortMappings(IEnumerable<Type> mappingTypes)
-        {
-            foreach (Type t in GetClassOrComponentCustomizers(mappingTypes))
-            {
-                yield return t;
-            }
-
-            foreach (Type t in GetSubClassCustomizers(mappingTypes))
-            {
-                yield return t;
-            }
-        }
-
-        private IEnumerable<Type> GetClassOrComponentCustomizers(IEnumerable<Type> mappingTypes)
-        {
-            return mappingTypes
-                .Where(t => IsClassCustomizer(t) || IsComponentCustomizer(t));
-        }
-
-        private IEnumerable<Type> GetSubClassCustomizers(IEnumerable<Type> mappingTypes)
-        {
-            IEnumerable<Tuple<Type, Type>> subClassCustomizers = mappingTypes
-                .Where(IsSubClassCustomizer)
-                .Select(t => Tuple.Create(t, GetFirstTypeArgumentOfOpenGeneric(t, typeof(SubclassCustomizer<>))));
-
-            IEnumerable<Tuple<Type, Type>> joinedSubClassCustomizers = mappingTypes
-                .Where(IsJoinedSubClassCustomizer)
-                .Select(t => Tuple.Create(t, GetFirstTypeArgumentOfOpenGeneric(t, typeof(JoinedSubclassCustomizer<>))));
-
-            IEnumerable<Tuple<Type, Type>> unionSubClassCustomizers = mappingTypes
-                .Where(IsUnionSubClassCustomizer)
-                .Select(t => Tuple.Create(t, GetFirstTypeArgumentOfOpenGeneric(t, typeof(UnionSubclassCustomizer<>))));
-
-            IList<Tuple<Type, Type>> customizers = subClassCustomizers
-                .Concat(joinedSubClassCustomizers)
-                .Concat(unionSubClassCustomizers)
-                .ToList();
-
-            IDictionary<Type, IList<Type>> baseTypeCache = CalcBaseTypes(customizers.Select(t => t.Item2));
-            int idx = 0;
-            while (customizers.Count > 0 && idx < customizers.Count)
-            {
-                Tuple<Type, Type> customizer = customizers[idx];
-                IList<Type> baseTypes;
-                bool hasBaseClass = baseTypeCache.TryGetValue(customizer.Item2, out baseTypes) && baseTypes.Any(baseTypeCache.ContainsKey);
-                if (!hasBaseClass)
-                {
-                    yield return customizer.Item1;
-                    baseTypeCache.Remove(customizer.Item2);
-                    customizers.RemoveAt(idx);
-                    idx = 0;
-                }
-                else
-                {
-                    idx++;
-                }
-            }
-
-            if (customizers.Count > 0)
-            {
-                throw new ProgrammingError("Unable to sort the mappings.");
-            }
-        }
-
-        private IDictionary<Type, IList<Type>> CalcBaseTypes(IEnumerable<Type> types)
-        {
-            IDictionary<Type, IList<Type>> result = new Dictionary<Type, IList<Type>>();
-            foreach (Type @type in types.Distinct())
-            {
-                result.Add(@type, new List<Type>(@type.GetBaseTypes()));
-            }
-
-            return result;
-        }
-
-        private bool IsComponentCustomizer(Type type)
-        {
-            return IsSubclassOfOpenGeneric(type, typeof(ComponentCustomizer<>));
-        }
-
-        private bool IsClassCustomizer(Type type)
-        {
-            return IsSubclassOfOpenGeneric(type, typeof(ClassCustomizer<>));
-        }
-
-        private bool IsSubClassCustomizer(Type type)
-        {
-            return IsSubclassOfOpenGeneric(type, typeof(SubclassCustomizer<>));
-        }
-
-        private bool IsJoinedSubClassCustomizer(Type type)
-        {
-            return IsSubclassOfOpenGeneric(type, typeof(JoinedSubclassCustomizer<>));
-        }
-
-        private bool IsUnionSubClassCustomizer(Type type)
-        {
-            return IsSubclassOfOpenGeneric(type, typeof(UnionSubclassCustomizer<>));
-        }
-
-        private bool IsSubclassOfOpenGeneric(Type toCheck, Type generic)
-        {
-            return GetFirstTypeArgumentOfOpenGeneric(toCheck, generic) != null;
-        }
-
-        private Type GetFirstTypeArgumentOfOpenGeneric(Type toCheck, Type generic)
-        {
-            Type firstTypeArgument;
-            IDictionary<Type, Type> dictionary;
-            if (!m_ClassCustomizersCache.TryGetValue(toCheck, out dictionary))
-            {
-                firstTypeArgument = GetFirstTypeArgumentOfOpenGenericInternal(toCheck, generic);
-                dictionary =
-                    new Dictionary<Type, Type>
-                    {
-                        { generic, firstTypeArgument }
-                    };
-                m_ClassCustomizersCache.Add(toCheck, dictionary);
-            }
-            else
-            {
-                if (!dictionary.TryGetValue(generic, out firstTypeArgument))
-                {
-                    firstTypeArgument = GetFirstTypeArgumentOfOpenGenericInternal(toCheck, generic);
-                    dictionary.Add(generic, firstTypeArgument);
-                }
-            }
-
-            return firstTypeArgument;
-        }
-
-        private Type GetFirstTypeArgumentOfOpenGenericInternal(Type toCheck, Type generic)
-        {
-            while (toCheck != null && toCheck != typeof(object))
-            {
-                Type cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
-                if (generic == cur && toCheck.GenericTypeArguments.Length > 0)
-                {
-                    return toCheck.GenericTypeArguments[0];
-                }
-
-                toCheck = toCheck.BaseType;
-            }
-
-            return null;
         }
 
         protected virtual IEnumerable<Type> MappingTypes
