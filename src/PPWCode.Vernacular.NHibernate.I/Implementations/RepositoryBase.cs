@@ -141,13 +141,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             {
                 result = func.Invoke();
                 transaction.Commit();
-                transaction.Dispose();
             }
             catch
             {
                 transaction.Rollback();
-                transaction.Dispose();
                 throw;
+            }
+            finally
+            {
+                transaction.Dispose();
             }
 
             return result;
