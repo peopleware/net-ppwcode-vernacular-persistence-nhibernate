@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     DataSource = dataSource,
                     InitialCatalog = catalog ?? @"master",
                     IntegratedSecurity = true,
-                    Pooling = pooling,
+                    Pooling = pooling
                 };
             return builder.ConnectionString;
         }
@@ -118,8 +118,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     string serverName = items[0];
                     string instanceName = items.Length == 1 ? string.Empty : items[1];
                     result = table.AsEnumerable()
-                        .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
-                                  && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
+                                  .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
+                                            && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
 
@@ -172,7 +172,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             IList<string> commands =
                 new List<string>
                 {
-                    string.Format(@"create database [{0}]", catalog),
+                    string.Format(@"create database [{0}]", catalog)
                 };
             if (simpleMode)
             {
