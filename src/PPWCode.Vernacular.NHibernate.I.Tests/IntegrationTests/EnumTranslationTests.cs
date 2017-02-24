@@ -1,4 +1,4 @@
-﻿// Copyright 2016 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@ using System;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 using PPWCode.Vernacular.NHibernate.I.Tests.Repositories.Enums;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
@@ -33,18 +31,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         public IGenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum> GenderEnumTranslationRepository
         {
-            get
-            {
-                return new GenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum>(Session);
-            }
+            get { return new GenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum>(Session); }
         }
 
         public IGenericEnumTranslationRepository<SalutationEnumTranslation, SalutationEnum> SalutationEnumTranslationRepository
         {
-            get
-            {
-                return new GenericEnumTranslationRepository<SalutationEnumTranslation, SalutationEnum>(Session);
-            }
+            get { return new GenericEnumTranslationRepository<SalutationEnumTranslation, SalutationEnum>(Session); }
         }
 
         /// <summary>
@@ -78,7 +70,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                     translation = GenderEnumTranslationRepository.Translate(GenderEnum.MALE, "nl");
                 }, true);
 
-
             // test
             Console.WriteLine("Translation is: {0}", translation);
             Console.WriteLine("Teardown done.");
@@ -87,12 +78,37 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
         [Test]
         public void TestMore()
         {
-            GenderEnumTranslation getMale = new GenderEnumTranslation { Code = GenderEnum.MALE, TranslationNl = "Man", TranslationFr = "Homme" };
-            GenderEnumTranslation getFemale = new GenderEnumTranslation { Code = GenderEnum.FEMALE, TranslationNl = "Vrouw", TranslationFr = "Femme" };
+            GenderEnumTranslation getMale = new GenderEnumTranslation
+                                            {
+                                                Code = GenderEnum.MALE,
+                                                TranslationNl = "Man",
+                                                TranslationFr = "Homme"
+                                            };
+            GenderEnumTranslation getFemale = new GenderEnumTranslation
+                                              {
+                                                  Code = GenderEnum.FEMALE,
+                                                  TranslationNl = "Vrouw",
+                                                  TranslationFr = "Femme"
+                                              };
 
-            SalutationEnumTranslation setMr = new SalutationEnumTranslation{ Code = SalutationEnum.MR, TranslationNl = "Meneer", TranslationFr = "Monsieur" };
-            SalutationEnumTranslation setMrs = new SalutationEnumTranslation{ Code = SalutationEnum.MRS, TranslationNl = "Mevrouw", TranslationFr = "Madamme" };
-            SalutationEnumTranslation setMs = new SalutationEnumTranslation{ Code = SalutationEnum.MS, TranslationNl = "Juffrouw", TranslationFr = "Mademoiselle" };
+            SalutationEnumTranslation setMr = new SalutationEnumTranslation
+                                              {
+                                                  Code = SalutationEnum.MR,
+                                                  TranslationNl = "Meneer",
+                                                  TranslationFr = "Monsieur"
+                                              };
+            SalutationEnumTranslation setMrs = new SalutationEnumTranslation
+                                               {
+                                                   Code = SalutationEnum.MRS,
+                                                   TranslationNl = "Mevrouw",
+                                                   TranslationFr = "Madamme"
+                                               };
+            SalutationEnumTranslation setMs = new SalutationEnumTranslation
+                                              {
+                                                  Code = SalutationEnum.MS,
+                                                  TranslationNl = "Juffrouw",
+                                                  TranslationFr = "Mademoiselle"
+                                              };
 
             RunInsideTransaction(
                 () =>

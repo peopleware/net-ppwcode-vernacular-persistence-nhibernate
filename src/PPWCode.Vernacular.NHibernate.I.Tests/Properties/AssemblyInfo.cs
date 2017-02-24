@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-
 [assembly: AssemblyTitle("PPWCode.Vernacular.NHibernate.I.Tests")]
 [assembly: AssemblyDescription("Unit tests for PPWCode.Vernacular.NHibernate.I")]
 [assembly: AssemblyConfiguration("")]
