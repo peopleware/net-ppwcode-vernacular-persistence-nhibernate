@@ -627,7 +627,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)
         {
-            if (modelinspector.IsManyToMany(member.LocalMember))
+            if (modelinspector.IsManyToManyItem(member.LocalMember))
             {
                 collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
                 collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true, QuoteIdentifiers)));
