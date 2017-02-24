@@ -1,4 +1,4 @@
-﻿// Copyright 2016 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -442,9 +442,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             PropertyInfo rfprop =
                 property.DeclaringType != null
                     ? property
-                          .DeclaringType
-                          .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                          .SingleOrDefault(pi => pi.Name == property.Name)
+                        .DeclaringType
+                        .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                        .SingleOrDefault(pi => pi.Name == property.Name)
                     : null;
 
             return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
@@ -547,7 +547,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             // Getting tableType of reflected object
             Type memberType = member.MemberType();
 
-            bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
+            bool notNullable = required || memberType != null && memberType.IsPrimitive || memberType == typeof(DateTime);
             propertyCustomizer.NotNullable(notNullable);
 
             StringLengthAttribute stringLengthAttribute =
