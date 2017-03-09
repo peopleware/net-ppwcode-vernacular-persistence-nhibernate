@@ -157,7 +157,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             get { return PrimaryKeyTypeEnum.TYPE_ID; }
         }
 
-        protected virtual string GetTableName(IModelInspector modelInspector, Type type)
+        protected virtual string GetTableName(Type type)
         {
             ModelMetaData modelMetaData;
             string tableName = null;
@@ -166,9 +166,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 tableName = modelMetaData.TableName;
             }
 
-            string result = ConditionalQuoteIdentifier(tableName ?? GetIdentifier(type.Name));
+            return tableName ?? GetIdentifier(type.Name);
+        }
 
-            return result;
+        protected virtual string GetTableNameAndQuote(Type type)
+        {
+            return ConditionalQuoteIdentifier(GetTableName(type));
         }
 
         protected virtual string GetColumnName(IModelInspector modelInspector, PropertyPath member)
@@ -203,10 +206,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             Type type = modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
                             ? otherSideProperty.MemberType()
                             : member.MemberType();
-            return GetKeyColumnName(modelInspector, type, true, quoteIdentifiers);
+            return GetKeyColumnName(type, true, quoteIdentifiers);
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, Type type, bool foreignKey, bool quoteIdentifiers)
+        protected virtual string GetKeyColumnName(Type type, bool foreignKey, bool quoteIdentifiers)
         {
             ModelMetaData modelMetaData;
             string columnPrefix = null;
@@ -506,12 +509,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName));
             }
 
-            classCustomizer.Table(GetTableName(modelInspector, type));
+            classCustomizer.Table(GetTableNameAndQuote(type));
 
             classCustomizer.Id(
                 m =>
                 {
-                    m.Column(GetKeyColumnName(modelInspector, type, false, QuoteIdentifiers));
+                    m.Column(GetKeyColumnName(type, false, QuoteIdentifiers));
                     m.Generator(Generators.HighLow);
                 });
 
@@ -540,21 +543,21 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             bool required =
                 member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<RequiredAttribute>()
-                      .Any();
+                    .GetCustomAttributes()
+                    .OfType<RequiredAttribute>()
+                    .Any();
 
             // Getting tableType of reflected object
             Type memberType = member.MemberType();
 
-            bool notNullable = required || memberType != null && memberType.IsPrimitive || memberType == typeof(DateTime);
+            bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
             propertyCustomizer.NotNullable(notNullable);
 
             StringLengthAttribute stringLengthAttribute =
                 member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<StringLengthAttribute>()
-                      .FirstOrDefault();
+                    .GetCustomAttributes()
+                    .OfType<StringLengthAttribute>()
+                    .FirstOrDefault();
             if (stringLengthAttribute != null)
             {
                 if (stringLengthAttribute.MaximumLength > 0)
@@ -570,7 +573,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
         {
-            unionSubclassCustomizer.Table(GetTableName(modelInspector, type));
+            unionSubclassCustomizer.Table(GetTableNameAndQuote(type));
         }
 
         protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
@@ -578,20 +581,20 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false, QuoteIdentifiers));
+                    k.Column(GetKeyColumnName(type.BaseType ?? type, false, QuoteIdentifiers));
                     if (type.BaseType != null)
                     {
-                        k.ForeignKey(string.Format("FK_{0}_{1}", type.Name, type.BaseType.Name));
+                        k.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(type), GetTableName(type.BaseType)));
                     }
                 });
 
-            joinedSubclassCustomizer.Table(GetTableName(modelInspector, type));
+            joinedSubclassCustomizer.Table(GetTableNameAndQuote(type));
         }
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
             string columnName = GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name));
-            string tableName = member.ManyToManyIntermediateTableName("To");
+            string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
             string foreignKeyName = string.Format("FK_{0}_{1}", tableName, columnName);
             // TODO how to put an index on the second FK??
             //string indexName = string.Format("IX_FK_{0}_{1}", tableName, columnName);
@@ -604,20 +607,21 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             string foreignKeyColumnName = GetKeyColumnName(modelInspector, member, false);
             propertyCustomizer.Column(ConditionalQuoteIdentifier(foreignKeyColumnName));
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, foreignKeyColumnName));
+            string tableName = GetTableName(member.Owner());
+            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", tableName, foreignKeyColumnName));
 
             bool required =
                 member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<RequiredAttribute>()
-                      .Any();
+                    .GetCustomAttributes()
+                    .OfType<RequiredAttribute>()
+                    .Any();
             propertyCustomizer.NotNullable(required);
-            propertyCustomizer.Index(string.Format("IX_FK_{0}_{1}", member.Owner().Name, foreignKeyColumnName));
+            propertyCustomizer.Index(string.Format("IX_FK_{0}_{1}", tableName, foreignKeyColumnName));
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", member.Owner().Name, member.ToColumnName()));
+            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(member.Owner()), GetIdentifier(member.ToColumnName())));
         }
 
         protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
@@ -629,8 +633,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             if (modelinspector.IsManyToManyItem(member.LocalMember))
             {
-                collectionPropertiesCustomizer.Table(member.ManyToManyIntermediateTableName("To"));
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member.Owner(), true, QuoteIdentifiers)));
+                string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
+                collectionPropertiesCustomizer.Table(tableName);
+                collectionPropertiesCustomizer.Key(
+                    k =>
+                    {
+                        string keyColumnName = GetKeyColumnName(member.Owner(), true, QuoteIdentifiers);
+                        k.Column(keyColumnName);
+                    });
             }
             else if (modelinspector.IsSet(member.LocalMember))
             {
@@ -647,7 +657,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 else
                 {
                     Contract.Assert(oneToManyProperty.DeclaringType != null, "otherSideProperty.DeclaringType != null");
-                    collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", oneToManyProperty.DeclaringType.Name, oneToManyProperty.Name)));
+                    collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(oneToManyProperty.DeclaringType), GetIdentifier(oneToManyProperty.Name))));
                 }
 
                 collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, QuoteIdentifiers)));
