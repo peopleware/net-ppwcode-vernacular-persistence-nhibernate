@@ -27,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
 
             Assert.AreEqual(IdentityName, company.CreatedBy);
-            Assert.AreEqual(Now, company.CreatedAt);
+            Assert.AreEqual(UtcNow, company.CreatedAt);
         }
 
         [Test]
@@ -36,12 +36,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Audit
             Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
 
             Assert.AreEqual(IdentityName, company.CreatedBy);
-            Assert.AreEqual(Now, company.CreatedAt);
+            Assert.AreEqual(UtcNow, company.CreatedAt);
 
             foreach (CompanyIdentification companyIdentification in company.Identifications)
             {
                 Assert.AreEqual(IdentityName, companyIdentification.CreatedBy);
-                Assert.AreEqual(Now, companyIdentification.CreatedAt);
+                Assert.AreEqual(UtcNow, companyIdentification.CreatedAt);
             }
         }
 

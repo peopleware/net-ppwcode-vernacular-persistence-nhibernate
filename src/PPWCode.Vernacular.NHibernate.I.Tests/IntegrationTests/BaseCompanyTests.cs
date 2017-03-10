@@ -105,7 +105,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             // ReSharper disable once ObjectCreationAsStatement
             new FailedCompany
             {
-                FailingDate = Now,
+                FailingDate = UtcNow,
                 Company = company
             };
 

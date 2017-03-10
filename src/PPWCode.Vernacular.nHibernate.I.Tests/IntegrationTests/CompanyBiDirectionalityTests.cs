@@ -257,7 +257,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                         FailedCompany failedCompany =
                             new FailedCompany
                             {
-                                FailingDate = Now
+                                FailingDate = UtcNow
                             };
                         mergedCompany.FailedCompany = failedCompany;
 
@@ -284,7 +284,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                         // ReSharper disable once ObjectCreationAsStatement
                         new FailedCompany
                         {
-                            FailingDate = Now,
+                            FailingDate = UtcNow,
                             Company = mergedCompany
                         };
 

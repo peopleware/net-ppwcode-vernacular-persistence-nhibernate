@@ -38,7 +38,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected abstract Configuration Configuration { get; }
         protected abstract string IdentityName { get; }
-        protected abstract DateTime Now { get; }
+        protected abstract DateTime UtcNow { get; }
 
         protected virtual bool UseProfiler
         {
@@ -80,9 +80,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
             timeProvider
                 .Setup(tp => tp.Now)
-                .Returns(Now);
+                .Returns(UtcNow.ToLocalTime);
+            timeProvider
+                .Setup(tp => tp.UtcNow)
+                .Returns(UtcNow);
 
-            AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object);
+            AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
             return SessionFactory.OpenSession(sessionLocalInterceptor);
         }
 

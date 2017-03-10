@@ -24,7 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         where TId : IEquatable<TId>
     {
         private IRepository<T, TId> m_Repository;
-        private DateTime? m_Now;
+        private DateTime? m_UtcNow;
 
         protected abstract Func<IRepository<T, TId>> RepositoryFactory { get; }
 
@@ -33,16 +33,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             get { return m_Repository; }
         }
 
-        protected override DateTime Now
+        protected override DateTime UtcNow
         {
             get
             {
-                if (m_Now == null)
+                if (m_UtcNow == null)
                 {
-                    m_Now = DateTime.Now.ToUniversalTime();
+                    m_UtcNow = DateTime.UtcNow;
                 }
 
-                return m_Now.Value;
+                return m_UtcNow.Value;
             }
         }
 
@@ -55,7 +55,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected override void OnTeardown()
         {
-            m_Now = null;
+            m_UtcNow = null;
             m_Repository = null;
 
             base.OnTeardown();
