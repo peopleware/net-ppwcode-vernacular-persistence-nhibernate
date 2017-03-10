@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,8 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
+    [Serializable]
     public abstract class AuditLogEventListener<TId, TAuditEntity> :
         IRegisterEventListener,
         IPostUpdateEventListener,
@@ -44,16 +47,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         private readonly IIdentityProvider m_IdentityProvider;
         private readonly ITimeProvider m_TimeProvider;
+        private readonly bool m_UseUtc;
 
-        protected AuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider)
+        protected AuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
             Contract.Requires(identityProvider != null);
             Contract.Requires(timeProvider != null);
             Contract.Ensures(IdentityProvider == identityProvider);
             Contract.Ensures(TimeProvider == timeProvider);
+            Contract.Ensures(UseUtc == useUtc);
 
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;
+            m_UseUtc = useUtc;
         }
 
         [ContractInvariantMethod]
@@ -63,7 +69,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             Contract.Invariant(TimeProvider != null);
         }
 
-        protected IIdentityProvider IdentityProvider
+        public IIdentityProvider IdentityProvider
         {
             get
             {
@@ -73,7 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        protected ITimeProvider TimeProvider
+        public ITimeProvider TimeProvider
         {
             get
             {
@@ -81,6 +87,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
                 return m_TimeProvider;
             }
+        }
+
+        public bool UseUtc
+        {
+            get { return m_UseUtc; }
         }
 
         public void Register(Configuration cfg)
@@ -102,7 +113,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
             {
                 string identityName = IdentityProvider.IdentityName;
-                DateTime now = TimeProvider.Now.ToUniversalTime();
+                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
                 string entityName = @event.Entity.GetType().Name;
 
                 if (@event.OldState == null)
@@ -161,7 +172,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
             {
                 string identityName = IdentityProvider.IdentityName;
-                DateTime now = TimeProvider.Now.ToUniversalTime();
+                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
                 string entityName = @event.Entity.GetType().Name;
 
                 List<TAuditEntity> auditLogs = new List<TAuditEntity>();
@@ -207,7 +218,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
             {
                 string identityName = IdentityProvider.IdentityName;
-                DateTime now = TimeProvider.Now.ToUniversalTime();
+                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
                 string entityName = @event.Entity.GetType().Name;
 
                 ISession session = @event.Session.GetSession(EntityMode.Poco);

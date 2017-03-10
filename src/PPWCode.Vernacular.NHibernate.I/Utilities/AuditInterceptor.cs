@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 using NHibernate;
@@ -24,6 +25,8 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
+    [Serializable]
     public class AuditInterceptor<T> : EmptyInterceptor
         where T : IEquatable<T>
     {
@@ -35,16 +38,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         private readonly IIdentityProvider m_IdentityProvider;
         private readonly ConcurrentDictionary<Property, int> m_IndexCache = new ConcurrentDictionary<Property, int>();
         private readonly ITimeProvider m_TimeProvider;
+        private readonly bool m_UseUtc;
 
-        public AuditInterceptor(IIdentityProvider identityProvider, ITimeProvider timeProvider)
+        public AuditInterceptor(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
             Contract.Requires(identityProvider != null);
             Contract.Requires(timeProvider != null);
             Contract.Ensures(IdentityProvider == identityProvider);
             Contract.Ensures(TimeProvider == timeProvider);
+            Contract.Ensures(UseUtc == useUtc);
 
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;
+            m_UseUtc = useUtc;
         }
 
         [ContractInvariantMethod]
@@ -54,7 +60,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             Contract.Invariant(TimeProvider != null);
         }
 
-        private IIdentityProvider IdentityProvider
+        public IIdentityProvider IdentityProvider
         {
             get
             {
@@ -64,7 +70,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        private ITimeProvider TimeProvider
+        public ITimeProvider TimeProvider
         {
             get
             {
@@ -74,7 +80,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        private ConcurrentDictionary<Property, int> IndexCache
+        public bool UseUtc
+        {
+            get { return m_UseUtc; }
+        }
+
+        protected ConcurrentDictionary<Property, int> IndexCache
         {
             get { return m_IndexCache; }
         }
@@ -103,7 +114,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 return false;
             }
 
-            DateTime time = TimeProvider.Now.ToUniversalTime();
+            DateTime time = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
             string identityName = IdentityProvider.IdentityName;
             if (identityName == null)
             {
@@ -196,7 +207,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             return SetAuditInfo(entity, state, propertyNames, true);
         }
 
-        private struct Property : IEquatable<Property>
+        protected struct Property : IEquatable<Property>
         {
             private readonly Type m_EntityType;
             private readonly string m_PropertyName;

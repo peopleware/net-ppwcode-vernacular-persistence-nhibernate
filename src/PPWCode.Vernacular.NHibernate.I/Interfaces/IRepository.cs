@@ -51,6 +51,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <param name="index"></param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        /// <remarks></remarks>
+        T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+
+        /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <param name="index"></param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+
+        /// <summary>
         ///     Find all the records.
         /// </summary>
         /// <returns>
@@ -84,6 +104,39 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        /// <summary>
+        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a resultset.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
+
+        /// <summary>
+        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a resultset.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
         ///     Find a set of records complying with the given function.
@@ -167,6 +220,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
+        public T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
+        {
+            Contract.Requires(func != null);
+            Contract.Requires(index >= 0);
+
+            Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
+
+            return default(T);
+        }
+
+        public T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
+        {
+            Contract.Requires(alias != null);
+            Contract.Requires(func != null);
+            Contract.Requires(index >= 0);
+
+            Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
+
+            return default(T);
+        }
+
         public IList<T> FindAll()
         {
             Contract.Ensures(Contract.Result<IList<T>>() != null);
@@ -182,6 +256,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         }
 
         public IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
+        {
+            Contract.Requires(alias != null);
+
+            Contract.Ensures(Contract.Result<IList<T>>() != null);
+
+            return default(IList<T>);
+        }
+
+        public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
+        {
+            Contract.Requires(skip == null || skip >= 0);
+            Contract.Requires(count == null || count >= 0);
+            Contract.Ensures(Contract.Result<IList<T>>() != null);
+
+            return default(IList<T>);
+        }
+
+        public IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
         {
             Contract.Requires(alias != null);
 
