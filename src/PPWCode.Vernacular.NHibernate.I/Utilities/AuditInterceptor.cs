@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 
 using NHibernate;
@@ -24,6 +25,8 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
+    [Serializable]
     public class AuditInterceptor<T> : EmptyInterceptor
         where T : IEquatable<T>
     {

@@ -14,6 +14,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 using NHibernate;
@@ -21,6 +22,8 @@ using NHibernate.Connection;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
+    [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
         private static readonly IInternalLogger s_Log = LoggerProvider.LoggerFor(typeof(PPWDriverConnectionProvider));
