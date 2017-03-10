@@ -1,4 +1,4 @@
-﻿// Copyright 2014 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -139,7 +139,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                                         OldValue = oldValue,
                                         NewValue = newValue,
                                         CreatedBy = identityName,
-                                        CreatedAt = now,
+                                        CreatedAt = now
                                     });
                             }
                         }
@@ -186,7 +186,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                                     OldValue = null,
                                     NewValue = newValue,
                                     CreatedBy = identityName,
-                                    CreatedAt = now,
+                                    CreatedAt = now
                                 });
                         }
                     }
@@ -218,7 +218,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         EntityName = entityName,
                         EntityId = @event.Id.ToString(),
                         CreatedBy = identityName,
-                        CreatedAt = now,
+                        CreatedAt = now
                     });
                 session.Flush();
             }
@@ -247,13 +247,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 AuditLogItem result = s_DomainTypes
                     .GetOrAdd(
                         t,
-                        @type =>
+                        type =>
                         {
                             result = new AuditLogItem();
-                            if (@type != typeof(TAuditEntity))
+                            if (type != typeof(TAuditEntity))
                             {
                                 AuditLogAttribute auditLogAttribute =
-                                    @type
+                                    type
                                         .GetCustomAttributes(true)
                                         .OfType<AuditLogAttribute>()
                                         .FirstOrDefault();

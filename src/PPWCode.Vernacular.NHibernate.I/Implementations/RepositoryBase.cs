@@ -1,4 +1,4 @@
-﻿// Copyright 2015 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -141,13 +141,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             {
                 result = func.Invoke();
                 transaction.Commit();
-                transaction.Dispose();
             }
             catch
             {
                 transaction.Rollback();
-                transaction.Dispose();
                 throw;
+            }
+            finally
+            {
+                transaction.Dispose();
             }
 
             return result;

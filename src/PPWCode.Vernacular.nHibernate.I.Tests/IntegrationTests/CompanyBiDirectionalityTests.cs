@@ -1,4 +1,4 @@
-﻿// Copyright 2016 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ using System.Linq;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
