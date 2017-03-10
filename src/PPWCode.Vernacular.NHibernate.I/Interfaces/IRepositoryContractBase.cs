@@ -33,6 +33,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public abstract T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
+        public abstract T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+
+        public abstract T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+
         public abstract IList<T> FindAll();
 
         public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
@@ -42,6 +46,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         public abstract IPagedList<T> FindPaged(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+
+        public abstract IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
+
+        public abstract IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         public abstract T Merge(T entity);
 
