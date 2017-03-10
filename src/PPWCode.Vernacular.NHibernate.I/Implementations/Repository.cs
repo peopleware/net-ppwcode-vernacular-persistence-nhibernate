@@ -174,6 +174,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual T MergeInternal(T entity)
         {
+            // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
+            // NHibernate MERGE transforms an UPDATE for a not-found-PK into a CREATE
+            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
+            {
+                throw new NotFoundException("Merge executed for an entity that no longer exists in the database.");
+            }
+
             T result = Session.Merge(entity);
 
             return result;
