@@ -12,11 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public class GenericSalutationEnumTranslationMapper : GenericEnumTranslationMapper<SalutationEnum>
+    public class GenderEnumTranslation : GenericEnumTranslation<GenderEnum>
     {
+        public GenderEnumTranslation()
+        {
+        }
+
+        public GenderEnumTranslation(int id)
+            : base(id)
+        {
+        }
     }
 }

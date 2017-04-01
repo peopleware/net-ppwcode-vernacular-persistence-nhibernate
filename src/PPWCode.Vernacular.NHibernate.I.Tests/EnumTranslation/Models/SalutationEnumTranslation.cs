@@ -12,13 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public enum SalutationEnum
+    public class SalutationEnumTranslation : GenericEnumTranslation<SalutationEnum>
     {
-        NONE = 0,
-        MR = 1,
-        MRS = 2,
-        MS = 3
+        public SalutationEnumTranslation()
+        {
+        }
+
+        public SalutationEnumTranslation(int id)
+            : base(id)
+        {
+        }
     }
 }

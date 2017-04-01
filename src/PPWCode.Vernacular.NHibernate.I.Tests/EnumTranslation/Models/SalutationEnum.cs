@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public class EnumTranslationMapper : PersistentObjectMapper<EnumTranslation, int>
+    public enum SalutationEnum
     {
-        public EnumTranslationMapper()
-        {
-            Property(et => et.TranslationNl);
-            Property(et => et.TranslationFr);
-        }
+        NONE = 0,
+        MR = 1,
+        MRS = 2,
+        MS = 3
     }
 }

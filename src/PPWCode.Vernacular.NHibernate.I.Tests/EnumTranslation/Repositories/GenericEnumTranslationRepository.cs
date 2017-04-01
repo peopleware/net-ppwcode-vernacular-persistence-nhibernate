@@ -19,9 +19,10 @@ using NHibernate;
 using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Exceptions.II;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Repositories
 {
     public class GenericEnumTranslationRepository<T, X>
         : TestRepository<T>,

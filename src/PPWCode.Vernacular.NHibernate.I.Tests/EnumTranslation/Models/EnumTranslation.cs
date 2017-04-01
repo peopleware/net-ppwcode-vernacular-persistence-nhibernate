@@ -12,17 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+using PPWCode.Vernacular.Persistence.II;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public class SalutationEnumTranslation : GenericEnumTranslation<SalutationEnum>
+    public class EnumTranslation : PersistentObject<int>
     {
-        public SalutationEnumTranslation()
+        private string m_TranslationNl;
+        private string m_TranslationFr;
+
+        protected EnumTranslation()
         {
         }
 
-        public SalutationEnumTranslation(int id)
+        protected EnumTranslation(int id)
             : base(id)
         {
+        }
+
+        public virtual string TranslationNl
+        {
+            get { return m_TranslationNl; }
+            set { m_TranslationNl = value; }
+        }
+
+        public virtual string TranslationFr
+        {
+            get { return m_TranslationFr; }
+            set { m_TranslationFr = value; }
         }
     }
 }

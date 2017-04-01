@@ -12,34 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.Persistence.II;
+using System;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+using PPWCode.Vernacular.Exceptions.II;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public class EnumTranslation : PersistentObject<int>
+    public abstract class GenericEnumTranslation<T> : EnumTranslation
+        where T : struct, IComparable, IConvertible, IFormattable
     {
-        private string m_TranslationNl;
-        private string m_TranslationFr;
+        private T? m_Code;
 
-        protected EnumTranslation()
+        protected GenericEnumTranslation()
         {
+            if (!typeof(T).IsEnum)
+            {
+                throw new ProgrammingError("Invalid generic type.");
+            }
         }
 
-        protected EnumTranslation(int id)
+        protected GenericEnumTranslation(int id)
             : base(id)
         {
         }
 
-        public virtual string TranslationNl
+        public virtual T? Code
         {
-            get { return m_TranslationNl; }
-            set { m_TranslationNl = value; }
-        }
-
-        public virtual string TranslationFr
-        {
-            get { return m_TranslationFr; }
-            set { m_TranslationFr = value; }
+            get { return m_Code; }
+            set { m_Code = value; }
         }
     }
 }

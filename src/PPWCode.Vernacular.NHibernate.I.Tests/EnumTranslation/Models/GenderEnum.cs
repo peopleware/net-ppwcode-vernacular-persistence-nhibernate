@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NHibernate.Mapping.ByCode.Conformist;
-
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
-    public class SalutationEnumTranslationMapper : SubclassMapping<SalutationEnumTranslation>
+    public enum GenderEnum
     {
+        NONE = 0,
+        MALE = 1,
+        FEMALE = 2
     }
 }
