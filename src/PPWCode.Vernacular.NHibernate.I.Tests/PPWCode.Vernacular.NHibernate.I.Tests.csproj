@@ -125,7 +125,7 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0774796e73ebf640, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernateProfiler.Appender.3.0.3091.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
+      <HintPath>..\packages\NHibernateProfiler.Appender.4.0.4039\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Iesi.Collections">
@@ -234,6 +234,14 @@
     <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\TestRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="RepositoryWithDtoMapping\DtoMappingTests.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Mappers\CargoContainerMapper.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Mappers\ShipMapper.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\CargoContainer.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\ContainerDto.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\Ship.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Repositories\CargoContainerRepository.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Repositories\ShipRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -251,6 +259,7 @@
       <Name>PPWCode.Vernacular.NHibernate.I</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
