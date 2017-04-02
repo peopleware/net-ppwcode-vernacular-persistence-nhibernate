@@ -29,10 +29,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Mappers
                 s => s.CargoContainers,
                 m =>
                 {
-                    // m.Inverse(true);
+                    m.Inverse(true);
                     m.Cascade(Cascade.All | Cascade.Merge);
                 },
-                r => r.OneToMany(m => m.Class(typeof(CargoContainer))));
+                r => r.OneToMany());
         }
     }
 }
