@@ -179,6 +179,16 @@
     <Compile Include="..\Solution Items\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="BiDirectionalNoCascading\BiDirectionalNoCascadingTest.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\AuthorMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\BookMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\KeywordMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Author.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Book.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Keyword.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\AuthorRepository.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\BookRepository.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\KeywordRepository.cs" />
     <Compile Include="IntegrationTests\BaseUserTests.cs" />
     <Compile Include="EnumTranslation\EnumTranslationTests.cs" />
     <Compile Include="EnumTranslation\Models\EnumTranslation.cs" />
