@@ -62,13 +62,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
             {
                 if (m_Ship != value)
                 {
-                    Ship previousShip = m_Ship;
-                    m_Ship = value;
-
-                    if (previousShip != null)
+                    if (m_Ship != null)
                     {
+                        Ship previousShip = m_Ship;
+                        m_Ship = null;
                         previousShip.RemoveCargoContainer(this);
                     }
+
+                    m_Ship = value;
 
                     if (m_Ship != null)
                     {
