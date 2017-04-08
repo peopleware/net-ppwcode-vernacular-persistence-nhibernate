@@ -79,7 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading
                             Author = mergedJohn
                         };
                     Book mergedInDepth = BookRepository.Merge(inDepth);
-                    
+
                     Assert.IsTrue(inDepth.IsTransient, "Original Book object is unchanged: did not get a primary key.");
                     Assert.IsFalse(mergedInDepth.IsTransient, "Result of the merge is a new object with primary key.");
                     Assert.AreNotEqual(mergedInDepth, inDepth);

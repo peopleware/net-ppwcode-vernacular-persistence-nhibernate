@@ -24,7 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
     {
         [DataMember]
         private string m_Code;
-        
+
         [DataMember]
         private int m_Load;
 
@@ -35,7 +35,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
         {
         }
 
-        public CargoContainer(int id) : base(id)
+        public CargoContainer(int id)
+            : base(id)
         {
         }
 
@@ -53,10 +54,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 
         public virtual Ship Ship
         {
-            get
-            {
-                return m_Ship;
-            }
+            get { return m_Ship; }
 
             set
             {
@@ -70,7 +68,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
                     }
 
                     m_Ship = value;
-
                     if (m_Ship != null)
                     {
                         m_Ship.AddCargoContainer(this);

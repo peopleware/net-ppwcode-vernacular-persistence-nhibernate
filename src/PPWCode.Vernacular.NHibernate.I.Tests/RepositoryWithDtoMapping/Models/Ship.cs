@@ -33,7 +33,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
         {
         }
 
-        public Ship(int id) : base(id)
+        public Ship(int id)
+            : base(id)
         {
         }
 

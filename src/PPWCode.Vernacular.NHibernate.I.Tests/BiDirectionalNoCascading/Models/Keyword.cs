@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 using PPWCode.Vernacular.Persistence.II;
-using PPWCode.Vernacular.NHibernate.I.Semantics;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {

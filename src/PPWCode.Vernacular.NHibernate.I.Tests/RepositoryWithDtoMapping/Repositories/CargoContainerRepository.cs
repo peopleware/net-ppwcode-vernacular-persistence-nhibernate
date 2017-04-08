@@ -19,7 +19,8 @@ using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Repositories
 {
-    public class CargoContainerRepository : TestRepository<CargoContainer>, ITestRepository<CargoContainer>
+    public class CargoContainerRepository : TestRepository<CargoContainer>,
+                                            ITestRepository<CargoContainer>
     {
         public CargoContainerRepository(ISession session)
             : base(session)

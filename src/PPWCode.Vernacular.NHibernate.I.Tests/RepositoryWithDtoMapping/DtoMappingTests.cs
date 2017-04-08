@@ -34,10 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping
 
         public ShipRepository ShipRepository
         {
-            get
-            {
-                return new ShipRepository(Session);
-            }
+            get { return new ShipRepository(Session); }
         }
 
         /// <summary>
@@ -141,7 +138,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping
             GenerateShipAndContainers();
 
             IList<ContainerDto> dtos = null;
-            
+
             RunInsideTransaction(
                 () =>
                 {

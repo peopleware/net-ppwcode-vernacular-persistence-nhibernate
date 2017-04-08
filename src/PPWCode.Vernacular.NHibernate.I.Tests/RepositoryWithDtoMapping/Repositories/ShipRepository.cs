@@ -22,7 +22,8 @@ using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Repositories
 {
-    public class ShipRepository : TestRepository<Ship>, ITestRepository<Ship>
+    public class ShipRepository : TestRepository<Ship>,
+                                  ITestRepository<Ship>
     {
         public ShipRepository(ISession session)
             : base(session)
@@ -41,9 +42,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Reposit
                     .JoinAlias(() => ship.CargoContainers, () => cargoContainer)
                     .WhereRestrictionOn(() => ship.Code).IsLike(code + "%")
                     .SelectList(list => list
-                        .SelectGroup(() => ship.Code).WithAlias(() => dto.ShipCode)
-                        .SelectGroup(() => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
-                        .SelectGroup(() => cargoContainer.Load).WithAlias(() => dto.Load))
+                                    .SelectGroup(() => ship.Code).WithAlias(() => dto.ShipCode)
+                                    .SelectGroup(() => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
+                                    .SelectGroup(() => cargoContainer.Load).WithAlias(() => dto.Load))
                     .TransformUsing(Transformers.AliasToBean<ContainerDto>()));
         }
     }
