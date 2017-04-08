@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
+    [Serializable, DataContract(IsReference = true)]
     public class Book : PersistentObject<int>
     {
         private string m_Name;
@@ -33,10 +38,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Keywords != null);
+            Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Author, b => b.Books));
+        }
+
         public virtual string Name
         {
             get { return m_Name; }
-            set { m_Name = value; }
+            set
+            {
+                Contract.Ensures(Name == value);
+
+                m_Name = value;
+            }
         }
 
         public virtual Author Author
@@ -44,16 +61,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             get { return m_Author; }
             set
             {
+                Contract.Ensures(Author == value);
+                // ReSharper disable once PossibleNullReferenceException
+                Contract.Ensures(Contract.OldValue(Author) == null || Contract.OldValue(Author) == value || !Contract.OldValue(Author).Books.Contains(this));
+                Contract.Ensures(Author == null || Author.Books.Contains(this));
+
                 if (m_Author != value)
                 {
-                    Author previousAuthor = m_Author;
-                    m_Author = value;
-
-                    if (previousAuthor != null)
+                    if (m_Author != null)
                     {
+                        Author previousAuthor = m_Author;
+                        m_Author = null;
                         previousAuthor.RemoveBook(this);
                     }
 
+                    m_Author = value;
                     if (m_Author != null)
                     {
                         m_Author.AddBook(this);
@@ -69,6 +91,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void AddKeyword(Keyword keyword)
         {
+            Contract.Ensures(Keywords.Contains(keyword));
+
             if (keyword != null && m_Keywords.Add(keyword))
             {
                 keyword.AddBook(this);
@@ -77,6 +101,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveKeyword(Keyword keyword)
         {
+            Contract.Ensures(!Keywords.Contains(keyword));
+
             if (keyword != null && m_Keywords.Remove(keyword))
             {
                 keyword.RemoveBook(this);

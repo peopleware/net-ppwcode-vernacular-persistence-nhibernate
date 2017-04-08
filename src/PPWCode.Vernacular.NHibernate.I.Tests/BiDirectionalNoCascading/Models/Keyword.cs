@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
@@ -32,10 +34,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Books != null);
+        }
+
         public virtual string Name
         {
             get { return m_Name; }
-            set { m_Name = value; }
+            set
+            {
+                Contract.Ensures(Name == value);
+
+                m_Name = value;
+            }
         }
 
         public virtual ISet<Book> Books
@@ -45,6 +58,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void AddBook(Book book)
         {
+            Contract.Ensures(book == null || Books.Contains(book));
+
             if (book != null && m_Books.Add(book))
             {
                 book.AddKeyword(this);
@@ -53,6 +68,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveBook(Book book)
         {
+            Contract.Ensures(book == null || !Books.Contains(book));
+
             if (book != null && m_Books.Remove(book))
             {
                 book.RemoveKeyword(this);

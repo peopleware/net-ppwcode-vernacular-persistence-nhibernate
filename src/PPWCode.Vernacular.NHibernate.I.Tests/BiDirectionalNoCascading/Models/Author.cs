@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
+    [Serializable, DataContract(IsReference = true)]
     public class Author : PersistentObject<int>
     {
         private string m_Name;
@@ -32,10 +37,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
         }
 
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(Books != null);
+            Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Books, b => b.Author));
+        }
+
         public virtual string Name
         {
             get { return m_Name; }
-            set { m_Name = value; }
+            set
+            {
+                Contract.Ensures(Name == value);
+
+                m_Name = value;
+            }
         }
 
         public virtual ISet<Book> Books
@@ -45,6 +62,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void AddBook(Book book)
         {
+            Contract.Ensures(book == null || Books.Contains(book));
+
             if (book != null && m_Books.Add(book))
             {
                 book.Author = this;
@@ -53,6 +72,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveBook(Book book)
         {
+            Contract.Ensures(book == null || !Books.Contains(book));
+
             if (book != null && m_Books.Remove(book))
             {
                 book.Author = null;
