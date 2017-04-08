@@ -70,9 +70,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     in the result.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
-        /// <remarks></remarks>
         T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
         /// <summary>
@@ -80,9 +79,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     in the result.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
-        /// <remarks></remarks>
         R GetAtIndex<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
         /// <summary>
@@ -91,7 +89,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
@@ -101,7 +99,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         R GetAtIndex<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
@@ -168,14 +166,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<R> Find<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post conditions.</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
@@ -184,14 +182,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post conditions.</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
@@ -200,15 +198,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<R> Find<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post condition.s</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
@@ -217,15 +215,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post conditions.</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
