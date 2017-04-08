@@ -150,6 +150,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return Execute("Merge", () => MergeInternal(entity));
         }
 
+        public virtual void SaveOrUpdate(T entity)
+        {
+            Execute("SaveOrUpdate", () => SaveOrUpdateInternal(entity));
+        }
+
         public virtual void Delete(T entity)
         {
             Execute("Delete", () => DeleteInternal(entity));
@@ -306,6 +311,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             T result = Session.Merge(entity);
 
             return result;
+        }
+
+        protected virtual void SaveOrUpdateInternal(T entity)
+        {
+            // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
+            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
+            {
+                throw new NotFoundException("SaveOrUpdate executed for an entity that no longer exists in the database.");
+            }
+
+            Session.SaveOrUpdate(entity);
         }
 
         protected virtual void DeleteInternal(T entity)

@@ -301,11 +301,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         /// <summary>
         ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
-        ///     An object is returned that represents the new record.
+        ///     An object is returned that represents the new record, this object is always a <e>new</e> object.
         /// </summary>
         /// <param name="entity">The entity to be saved or updated.</param>
         /// <returns>The persistent entity.</returns>
         T Merge(T entity);
+
+        /// <summary>
+        ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
+        ///     An object is returned that represents the new record.
+        /// </summary>
+        /// <param name="entity">An attached entity to be saved or updated.</param>
+        void SaveOrUpdate(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -529,6 +536,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
 
             return default(T);
+        }
+
+        public void SaveOrUpdate(T entity)
+        {
+            Contract.Requires(entity != null);
+
+            Contract.Ensures(!entity.IsTransient);
         }
 
         public void Delete(T entity)

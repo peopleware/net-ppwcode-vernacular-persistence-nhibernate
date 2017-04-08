@@ -16,7 +16,6 @@ using NHibernate;
 
 using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
-using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories
 {
@@ -25,23 +24,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Reposit
         public AuthorRepository(ISession session)
             : base(session)
         {
-        }
-
-        public void SaveOrUpdate(Author entity)
-        {
-            Execute("SaveOrUpdate", () => SaveOrUpdateInternal(entity));
-        }
-
-        private void SaveOrUpdateInternal(Author entity)
-        {
-            // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
-            // NHibernate MERGE transforms an UPDATE for a not-found-PK into a CREATE
-            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
-            {
-                throw new NotFoundException("Merge executed for an entity that no longer exists in the database.");
-            }
-
-            Session.SaveOrUpdate(entity);
         }
     }
 }
