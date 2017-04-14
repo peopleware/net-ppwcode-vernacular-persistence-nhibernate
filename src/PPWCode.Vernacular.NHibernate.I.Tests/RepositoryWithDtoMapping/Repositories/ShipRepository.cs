@@ -30,22 +30,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Reposit
         {
         }
 
-        public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
+        private IList<ContainerDto> InternalFindContainersFromShipsMatchingCode(string code)
         {
-            Ship ship = null;
             CargoContainer cargoContainer = null;
             ContainerDto dto = null;
 
-            return Find<ContainerDto>(
-                () => ship,
-                qry => qry
-                    .JoinAlias(() => ship.CargoContainers, () => cargoContainer)
-                    .WhereRestrictionOn(() => ship.Code).IsLike(code + "%")
-                    .SelectList(list => list
-                                    .SelectGroup(() => ship.Code).WithAlias(() => dto.ShipCode)
-                                    .SelectGroup(() => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
-                                    .SelectGroup(() => cargoContainer.Load).WithAlias(() => dto.Load))
-                    .TransformUsing(Transformers.AliasToBean<ContainerDto>()));
+            return CreateQueryOver()
+                .JoinAlias(ship => ship.CargoContainers, () => cargoContainer)
+                .WhereRestrictionOn(ship => ship.Code)
+                .IsLike(code + "%")
+                .SelectList(list => list
+                                .SelectGroup(ship => ship.Code)
+                                .WithAlias(() => dto.ShipCode)
+                                .SelectGroup(ship => cargoContainer.Code)
+                                .WithAlias(() => dto.ContainerCode)
+                                .SelectGroup(ship => cargoContainer.Load)
+                                .WithAlias(() => dto.Load))
+                .TransformUsing(Transformers.AliasToBean<ContainerDto>())
+                .List<ContainerDto>();
+        }
+
+        public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
+        {
+            return Execute("FindContainersFromShipsMatchingCodeWithExecute", () => InternalFindContainersFromShipsMatchingCode(code));
         }
     }
 }

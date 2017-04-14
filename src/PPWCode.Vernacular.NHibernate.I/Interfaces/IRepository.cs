@@ -43,31 +43,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     Gets a result of type <typeparamref name="R"/> based on a query over type <typeparamref name="T"/> 
-        ///     using a function <paramref name="func"/>.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <typeparam name="R">The type of the result.</typeparam>
-        /// <returns>A result of type <typeparamref name="R"/> or null if not found.</returns>
-        R Get<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
         ///     Gets an entity by a function.
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Gets a result of type <typeparamref name="R"/> based on a query over type <typeparamref name="T"/> 
-        ///     using a function <paramref name="func"/>.
-        /// </summary>
-        /// <param name="alias">An additional alias.</param>
-        /// <param name="func">The given function.</param>
-        /// <typeparam name="R">The type of the result.</typeparam>
-        /// <returns>A result of type <typeparamref name="R"/> or null if not found.</returns>
-        R Get<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
         ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
@@ -79,17 +60,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
         /// <summary>
-        ///     Executes the given query <paramref name="func"/> over type <typeparamref name="T"/> and
-        ///     returns the object of type <typeparamref name="R"/> at position <paramref name="index"/>
-        ///     in the result.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <param name="index">The given index.</param>
-        /// <typeparam name="R">The type of the result.</typeparam>
-        /// <returns>A result of type <typeparamref name="R"/> or null if not found.</returns>
-        R GetAtIndex<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
-
-        /// <summary>
         ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
         ///     in the result.
         /// </summary>
@@ -98,18 +68,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
-
-        /// <summary>
-        ///     Executes the given query <paramref name="func"/> over type <typeparamref name="T"/> and
-        ///     returns the object of type <typeparamref name="R"/> at position <paramref name="index"/>
-        ///     in the result.
-        /// </summary>
-        /// <param name="alias">An additional alias.</param>
-        /// <param name="func">The given function.</param>
-        /// <param name="index">The given index.</param>
-        /// <typeparam name="R">The type of the result.</typeparam>
-        /// <returns>A result of type <typeparamref name="R"/> or null if not found.</returns>
-        R GetAtIndex<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
         /// <summary>
         ///     Find all the records.
@@ -133,17 +91,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="func" />.
-        /// </returns>
-        IList<R> Find<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
         ///     Find the records complying with the given function.
         /// </summary>
         /// <param name="alias">An additional alias.</param>
@@ -156,18 +103,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>.
-        /// </summary>
-        /// <param name="alias">An additional alias.</param>
-        /// <param name="func">The given function.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="func" />.
-        /// </returns>
-        IList<R> Find<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
         ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
@@ -184,21 +119,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
-
-        /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>. In this result-set,
-        ///     <paramref name="skip"/> tuples are skipped and then <paramref name="count"/> are taken
-        ///     as the result-set.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
-        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="func" />.
-        /// </returns>
-        IList<R> Find<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
         ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
@@ -218,22 +138,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>. In this result-set,
-        ///     <paramref name="skip"/> tuples are skipped and then <paramref name="count"/> are taken
-        ///     as the result-set.
-        /// </summary>
-        /// <param name="alias">An additional alias.</param>
-        /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
-        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     A list of the records satisfying the given <paramref name="func" />.
-        /// </returns>
-        IList<R> Find<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
-
-        /// <summary>
         ///     Find a set of records complying with the given function.
         ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
         /// </summary>
@@ -248,20 +152,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>. 
-        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
-        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
-        /// </returns>
-        IPagedList<R> FindPaged<R>(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
         ///     Find a set of records complying with the given function.
@@ -279,21 +169,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         IPagedList<T> FindPaged(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
-
-        /// <summary>
-        ///     Returns the results of type <typeparamref name="R"/> for the given
-        ///     query <paramref name="func"/> over type <typeparamref name="T"/>. 
-        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
-        /// </summary>
-        /// <param name="alias">An additional alias.</param>
-        /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
-        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
-        /// <typeparam name="R">The type of the results.</typeparam>
-        /// <returns>
-        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
-        /// </returns>
-        IPagedList<R> FindPaged<R>(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
         ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
@@ -341,13 +216,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public R Get<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(func != null);
-
-            return default(R);
-        }
-
         public T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
             Contract.Requires(alias != null);
@@ -356,14 +224,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
 
             return default(T);
-        }
-
-        public R Get<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(alias != null);
-            Contract.Requires(func != null);
-
-            return default(R);
         }
 
         public T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
@@ -376,14 +236,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(T);
         }
 
-        public R GetAtIndex<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
-        {
-            Contract.Requires(func != null);
-            Contract.Requires(index >= 0);
-
-            return default(R);
-        }
-
         public T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
         {
             Contract.Requires(alias != null);
@@ -393,15 +245,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<T>() == null || !Contract.Result<T>().IsTransient);
 
             return default(T);
-        }
-
-        public R GetAtIndex<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
-        {
-            Contract.Requires(alias != null);
-            Contract.Requires(func != null);
-            Contract.Requires(index >= 0);
-
-            return default(R);
         }
 
         public IList<T> FindAll()
@@ -418,13 +261,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IList<T>);
         }
 
-        public IList<R> Find<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Ensures(Contract.Result<IList<R>>() != null);
-
-            return default(IList<R>);
-        }
-
         public IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
             Contract.Requires(alias != null);
@@ -432,15 +268,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
-        }
-
-        public IList<R> Find<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(alias != null);
-
-            Contract.Ensures(Contract.Result<IList<R>>() != null);
-
-            return default(IList<R>);
         }
 
         public IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
@@ -453,16 +280,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IList<T>);
         }
 
-        public IList<R> Find<R>(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
-        {
-            Contract.Requires(skip == null || skip >= 0);
-            Contract.Requires(count == null || count >= 0);
-
-            Contract.Ensures(Contract.Result<IList<R>>() != null);
-
-            return default(IList<R>);
-        }
-
         public IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
         {
             Contract.Requires(alias != null);
@@ -470,15 +287,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
-        }
-
-        public IList<R> Find<R>(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
-        {
-            Contract.Requires(alias != null);
-
-            Contract.Ensures(Contract.Result<IList<R>>() != null);
-
-            return default(IList<R>);
         }
 
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
@@ -491,16 +299,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             return default(IPagedList<T>);
         }
 
-        public IPagedList<R> FindPaged<R>(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(pageIndex > 0);
-            Contract.Requires(pageSize > 0);
-
-            Contract.Ensures(Contract.Result<IPagedList<R>>() != null);
-
-            return default(IPagedList<R>);
-        }
-
         public IPagedList<T> FindPaged(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
             Contract.Requires(pageIndex > 0);
@@ -510,17 +308,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(Contract.Result<IPagedList<T>>() != null);
 
             return default(IPagedList<T>);
-        }
-
-        public IPagedList<R> FindPaged<R>(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
-        {
-            Contract.Requires(pageIndex > 0);
-            Contract.Requires(pageSize > 0);
-            Contract.Requires(alias != null);
-
-            Contract.Ensures(Contract.Result<IPagedList<R>>() != null);
-
-            return default(IPagedList<R>);
         }
 
         public T Merge(T entity)
