@@ -15,6 +15,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
+using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
@@ -37,6 +38,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         private void ObjectInvariant()
         {
             Contract.Invariant(Books != null);
+            Contract.Invariant(AssociationContracts.BiDirManyToMany(this, Books, book => book.Keywords));
         }
 
         public virtual string Name
@@ -58,6 +60,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         public virtual void AddBook(Book book)
         {
             Contract.Ensures(book == null || Books.Contains(book));
+            Contract.Ensures(book == null || book.Keywords.Contains(this));
 
             if (book != null && m_Books.Add(book))
             {
@@ -68,6 +71,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         public virtual void RemoveBook(Book book)
         {
             Contract.Ensures(book == null || !Books.Contains(book));
+            Contract.Ensures(book == null || !book.Keywords.Contains(this));
 
             if (book != null && m_Books.Remove(book))
             {

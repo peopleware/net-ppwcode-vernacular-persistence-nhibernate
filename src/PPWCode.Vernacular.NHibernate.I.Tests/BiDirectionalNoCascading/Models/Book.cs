@@ -43,6 +43,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
             Contract.Invariant(Keywords != null);
             Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Author, b => b.Books));
+            Contract.Invariant(AssociationContracts.BiDirManyToMany(this, Keywords, keyword => keyword.Books));
         }
 
         public virtual string Name
@@ -91,7 +92,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void AddKeyword(Keyword keyword)
         {
-            Contract.Ensures(Keywords.Contains(keyword));
+            Contract.Ensures(keyword == null || Keywords.Contains(keyword));
+            Contract.Ensures(keyword == null || keyword.Books.Contains(this));
 
             if (keyword != null && m_Keywords.Add(keyword))
             {
@@ -101,7 +103,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveKeyword(Keyword keyword)
         {
-            Contract.Ensures(!Keywords.Contains(keyword));
+            Contract.Ensures(keyword == null || !Keywords.Contains(keyword));
+            Contract.Ensures(keyword == null || !keyword.Books.Contains(this));
 
             if (keyword != null && m_Keywords.Remove(keyword))
             {

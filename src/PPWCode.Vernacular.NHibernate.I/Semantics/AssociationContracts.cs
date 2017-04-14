@@ -54,5 +54,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
         {
             return BiDirManyToOne(many, one, toMany);
         }
+
+        [Pure]
+        public static bool BiDirManyToMany<Morigin, Mdestination>(Morigin origin, ISet<Mdestination> destinations, Func<Mdestination, ISet<Morigin>> toOrigin)
+            where Morigin : class
+            where Mdestination : class
+        {
+            return destinations != null
+                   && (!NHibernateUtil.IsInitialized(destinations)
+                       || destinations.All(x =>
+                                           {
+                                               if (x != null)
+                                               {
+                                                   ISet<Morigin> origins = toOrigin(x);
+                                                   return origins == null || !NHibernateUtil.IsInitialized(origins) || origins.Contains(origin);
+                                               }
+                                               
+                                               return true;
+                                           }));
+        }
     }
 }
