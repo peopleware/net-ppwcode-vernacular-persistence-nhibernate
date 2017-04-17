@@ -22,6 +22,7 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests;
 using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Repositories;
+using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping
 {
@@ -167,6 +168,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping
                 true);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
+        }
+
+        [Test]
+        public void TestDtoMappingShipsXPaged()
+        {
+            GenerateShipAndContainers();
+
+            PagedList<ContainerDto> dtos = null;
+
+            RunInsideTransaction(
+                () =>
+                {
+                    dtos = ShipRepository.FindContainersFromShipsMatchingCodePaged(2, 10, "X");
+                },
+                true);
+
+            Assert.IsTrue(dtos.Items.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
         }
     }
 }
