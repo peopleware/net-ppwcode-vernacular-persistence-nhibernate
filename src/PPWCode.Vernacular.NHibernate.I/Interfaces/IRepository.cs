@@ -55,9 +55,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     in the result.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
-        /// <remarks></remarks>
         T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
         /// <summary>
@@ -66,7 +65,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="index"></param>
+        /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
 
@@ -106,14 +105,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post conditions.</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
@@ -122,15 +121,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
 
         /// <summary>
-        ///     Find the records complying with the given function. In this resultset, <paramref name="skip" /> tuples are skipped
-        ///     and then <paramref name="count" /> are taken as a resultset.
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
         /// </summary>
         /// <param name="alias">An additional alias.</param>
         /// <param name="func">The given function.</param>
-        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
         /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
         /// <remarks>
-        ///     <h3>Extra post conditions</h3>
+        ///     <h3>Extra post condition.s</h3>
         ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
         /// </remarks>
         /// <returns>
@@ -173,11 +172,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         /// <summary>
         ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
-        ///     An object is returned that represents the new record.
+        ///     An object is returned that represents the new record, this object is always a <e>new</e> object.
         /// </summary>
         /// <param name="entity">The entity to be saved or updated.</param>
         /// <returns>The persistent entity.</returns>
         T Merge(T entity);
+
+        /// <summary>
+        ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
+        ///     An object is returned that represents the new record.
+        /// </summary>
+        /// <param name="entity">An attached entity to be saved or updated.</param>
+        void SaveOrUpdate(T entity);
 
         /// <summary>
         ///     The record that represents <paramref name="entity" /> is deleted from the DB.
@@ -268,6 +274,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         {
             Contract.Requires(skip == null || skip >= 0);
             Contract.Requires(count == null || count >= 0);
+
             Contract.Ensures(Contract.Result<IList<T>>() != null);
 
             return default(IList<T>);
@@ -312,6 +319,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
             Contract.Ensures(!EqualityComparer<TId>.Default.Equals(Contract.Result<T>().Id, default(TId)));
 
             return default(T);
+        }
+
+        public void SaveOrUpdate(T entity)
+        {
+            Contract.Requires(entity != null);
+
+            Contract.Ensures(!entity.IsTransient);
         }
 
         public void Delete(T entity)

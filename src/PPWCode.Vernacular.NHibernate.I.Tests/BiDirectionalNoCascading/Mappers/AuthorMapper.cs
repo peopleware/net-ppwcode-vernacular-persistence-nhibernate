@@ -12,17 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
-{
-    public class SalutationEnumTranslation : GenericEnumTranslation<SalutationEnum>
-    {
-        public SalutationEnumTranslation()
-        {
-        }
+using NHibernate.Mapping.ByCode;
 
-        public SalutationEnumTranslation(int id)
-            : base(id)
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Mappers
+{
+    public class AuthorMapper : PersistentObjectMapper<Author, int>
+    {
+        public AuthorMapper()
         {
+            Property(a => a.Name);
+
+            Set(
+                c => c.Books,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                },
+                r => r.OneToMany(m => m.Class(typeof(Book))));
         }
     }
 }

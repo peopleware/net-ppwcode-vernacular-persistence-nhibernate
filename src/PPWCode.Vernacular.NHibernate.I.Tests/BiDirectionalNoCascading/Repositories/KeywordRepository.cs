@@ -12,13 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+using NHibernate;
+
+using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories
 {
-    public enum SalutationEnum
+    public class KeywordRepository : TestRepository<Keyword>
     {
-        NONE = 0,
-        MR = 1,
-        MRS = 2,
-        MS = 3
+        public KeywordRepository(ISession session)
+            : base(session)
+        {
+        }
     }
 }

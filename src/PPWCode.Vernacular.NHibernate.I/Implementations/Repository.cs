@@ -100,6 +100,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return Execute("Merge", () => MergeInternal(entity));
         }
 
+        public virtual void SaveOrUpdate(T entity)
+        {
+            Execute("SaveOrUpdate", () => SaveOrUpdateInternal(entity));
+        }
+
         public virtual void Delete(T entity)
         {
             Execute("Delete", () => DeleteInternal(entity));
@@ -114,28 +119,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual T GetInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            T result = func(CreateQueryOver()).SingleOrDefault();
+            T result = func(CreateQueryOver()).SingleOrDefault<T>();
 
             return result;
         }
 
         protected virtual T GetInternal(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            T result = func(CreateQueryOver(alias)).SingleOrDefault();
+            T result = func(CreateQueryOver(alias)).SingleOrDefault<T>();
 
             return result;
         }
 
         protected virtual T GetAtIndexInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
         {
-            T result = func(CreateQueryOver()).Skip(index).Take(1).SingleOrDefault();
+            T result = func(CreateQueryOver()).Skip(index).Take(1).SingleOrDefault<T>();
 
             return result;
         }
 
         protected virtual T GetAtIndexInternal(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
         {
-            T result = func(CreateQueryOver(alias)).Skip(index).Take(1).SingleOrDefault();
+            T result = func(CreateQueryOver(alias)).Skip(index).Take(1).SingleOrDefault<T>();
 
             return result;
         }
@@ -204,42 +209,41 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            IQueryOver<T> rowCountQueryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
-            IFutureValue<int> rowCount =
-                rowCountQueryOver
-                    .ToRowCountQuery()
-                    .FutureValue<int>();
-
-            IQueryOver<T> pagingQueryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
-            IList<T> qryResult =
-                pagingQueryOver
-                    .Skip((pageIndex - 1) * pageSize)
-                    .Take(pageSize)
-                    .Future<T>()
-                    .ToList();
-
-            PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
-
-            return result;
+            return FindPagedInternal(pageIndex, pageSize, () => func != null ? func(CreateQueryOver()) : CreateQueryOver());
         }
 
         protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            IQueryOver<T> rowCountQueryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
+            return FindPagedInternal(pageIndex, pageSize, () => func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias));
+        }
+
+        protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryOver<T, T>> queryFactory)
+        {
+            return FindPagedInternal<T, T>(pageIndex, pageSize, queryFactory);
+        }
+
+        protected virtual PagedList<R> FindPagedInternal<R>(int pageIndex, int pageSize, Func<IQueryOver<T, T>> queryFactory)
+        {
+            return FindPagedInternal<R, T>(pageIndex, pageSize, queryFactory);
+        }
+
+        protected virtual PagedList<R> FindPagedInternal<R, X>(int pageIndex, int pageSize, Func<IQueryOver<T, X>> queryFactory)
+        {
+            IQueryOver<T, X> rowCountQueryOver = queryFactory();
             IFutureValue<int> rowCount =
                 rowCountQueryOver
                     .ToRowCountQuery()
                     .FutureValue<int>();
 
-            IQueryOver<T> pagingQueryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
-            IList<T> qryResult =
+            IQueryOver<T, X> pagingQueryOver = queryFactory();
+            IList<R> qryResult =
                 pagingQueryOver
                     .Skip((pageIndex - 1) * pageSize)
                     .Take(pageSize)
-                    .Future<T>()
+                    .Future<R>()
                     .ToList();
 
-            PagedList<T> result = new PagedList<T>(qryResult, pageIndex, pageSize, rowCount.Value);
+            PagedList<R> result = new PagedList<R>(qryResult, pageIndex, pageSize, rowCount.Value);
 
             return result;
         }
@@ -256,6 +260,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             T result = Session.Merge(entity);
 
             return result;
+        }
+
+        protected virtual void SaveOrUpdateInternal(T entity)
+        {
+            // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
+            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
+            {
+                throw new NotFoundException("SaveOrUpdate executed for an entity that no longer exists in the database.");
+            }
+
+            Session.SaveOrUpdate(entity);
         }
 
         protected virtual void DeleteInternal(T entity)
@@ -277,7 +292,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         protected virtual IQueryOver<T, T> CreateQueryOver()
         {
             T rootAlias = null;
-            return Session.QueryOver(() => rootAlias);
+            return CreateQueryOver(() => rootAlias);
         }
 
         protected virtual IQueryOver<T, T> CreateQueryOver(Expression<Func<T>> alias)

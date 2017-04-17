@@ -12,26 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using NHibernate.Mapping.ByCode.Conformist;
-using NHibernate.Type;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Mapping
 {
-    public abstract class GenericEnumTranslationMapper<T> : SubclassMapping<GenericEnumTranslation<T>>
-        where T : struct, IComparable, IConvertible, IFormattable
+    public class GenderEnumTranslationMapper : SubclassMapping<GenderEnumTranslation>
     {
-        protected GenericEnumTranslationMapper()
-        {
-            Property(
-                e => e.Code,
-                m =>
-                {
-                    m.Type<EnumStringType<T>>();
-                });
-        }
     }
 }

@@ -82,14 +82,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                 if (m_FailedCompany != value)
                 {
-                    FailedCompany previousFailedCompany = m_FailedCompany;
-                    m_FailedCompany = value;
-
-                    if (previousFailedCompany != null)
+                    if (m_FailedCompany != null)
                     {
+                        FailedCompany previousFailedCompany = m_FailedCompany;
+                        m_FailedCompany = null;
                         previousFailedCompany.Company = null;
                     }
 
+                    m_FailedCompany = value;
                     if (m_FailedCompany != null)
                     {
                         m_FailedCompany.Company = this;

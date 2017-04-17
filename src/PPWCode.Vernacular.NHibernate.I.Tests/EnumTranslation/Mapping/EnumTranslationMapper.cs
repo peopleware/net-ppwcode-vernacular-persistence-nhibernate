@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
-
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Mapping
 {
-    public interface IGenericEnumTranslationRepository<T, X> : ITestRepository<T>
-        where T : GenericEnumTranslation<X>
-        where X : struct, IComparable, IConvertible, IFormattable
+    public class EnumTranslationMapper : PersistentObjectMapper<Models.EnumTranslation, int>
     {
-        string Translate(X code, string language);
+        public EnumTranslationMapper()
+        {
+            Property(et => et.TranslationNl);
+            Property(et => et.TranslationFr);
+        }
     }
 }

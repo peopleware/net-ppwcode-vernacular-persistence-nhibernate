@@ -12,13 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Mappers
 {
-    public class SalutationEnumTranslationMapper : SubclassMapping<SalutationEnumTranslation>
+    public class KeywordMapper : PersistentObjectMapper<Keyword, int>
     {
+        public KeywordMapper()
+        {
+            Property(k => k.Name);
+
+            Set(
+                k => k.Books,
+                m =>
+                {
+                    m.Cascade(Cascade.None);
+                },
+                r => r.ManyToMany());
+        }
     }
 }

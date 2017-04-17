@@ -543,9 +543,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             bool required =
                 member.LocalMember
-                    .GetCustomAttributes()
-                    .OfType<RequiredAttribute>()
-                    .Any();
+                      .GetCustomAttributes()
+                      .OfType<RequiredAttribute>()
+                      .Any();
 
             // Getting tableType of reflected object
             Type memberType = member.MemberType();
@@ -555,9 +555,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             StringLengthAttribute stringLengthAttribute =
                 member.LocalMember
-                    .GetCustomAttributes()
-                    .OfType<StringLengthAttribute>()
-                    .FirstOrDefault();
+                      .GetCustomAttributes()
+                      .OfType<StringLengthAttribute>()
+                      .FirstOrDefault();
             if (stringLengthAttribute != null)
             {
                 if (stringLengthAttribute.MaximumLength > 0)
@@ -612,9 +612,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
             bool required =
                 member.LocalMember
-                    .GetCustomAttributes()
-                    .OfType<RequiredAttribute>()
-                    .Any();
+                      .GetCustomAttributes()
+                      .OfType<RequiredAttribute>()
+                      .Any();
             propertyCustomizer.NotNullable(required);
             propertyCustomizer.Index(string.Format("IX_FK_{0}_{1}", tableName, foreignKeyColumnName));
         }

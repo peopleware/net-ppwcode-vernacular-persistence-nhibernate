@@ -125,7 +125,7 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
     <Reference Include="HibernatingRhinos.Profiler.Appender, Version=3.0.0.0, Culture=neutral, PublicKeyToken=0774796e73ebf640, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernateProfiler.Appender.3.0.3091.0\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
+      <HintPath>..\packages\NHibernateProfiler.Appender.4.0.4039\lib\HibernatingRhinos.Profiler.Appender.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Iesi.Collections">
@@ -179,21 +179,31 @@
     <Compile Include="..\Solution Items\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="BiDirectionalNoCascading\BiDirectionalNoCascadingTest.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\AuthorMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\BookMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Mappers\KeywordMapper.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Author.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Book.cs" />
+    <Compile Include="BiDirectionalNoCascading\Models\Keyword.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\AuthorRepository.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\BookRepository.cs" />
+    <Compile Include="BiDirectionalNoCascading\Repositories\KeywordRepository.cs" />
     <Compile Include="IntegrationTests\BaseUserTests.cs" />
-    <Compile Include="IntegrationTests\EnumTranslationTests.cs" />
-    <Compile Include="Models\Enums\EnumTranslation.cs" />
-    <Compile Include="Models\Mapping\Enums\GenderEnumTranslationMapper.cs" />
-    <Compile Include="Models\Mapping\Enums\GenericGenderEnumTranslationMapper.cs" />
-    <Compile Include="Models\Mapping\Enums\GenericSalutationEnumTranslationMapper.cs" />
-    <Compile Include="Models\Mapping\Enums\SalutationEnumTranslationMapper.cs" />
-    <Compile Include="Models\Mapping\Enums\GenericEnumTranslationMapper.cs" />
-    <Compile Include="Models\Mapping\Enums\EnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\EnumTranslationTests.cs" />
+    <Compile Include="EnumTranslation\Models\EnumTranslation.cs" />
+    <Compile Include="EnumTranslation\Mapping\GenderEnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\Mapping\GenericGenderEnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\Mapping\GenericSalutationEnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\Mapping\SalutationEnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\Mapping\GenericEnumTranslationMapper.cs" />
+    <Compile Include="EnumTranslation\Mapping\EnumTranslationMapper.cs" />
     <Compile Include="Models\Gender.cs" />
-    <Compile Include="Models\Enums\GenderEnum.cs" />
-    <Compile Include="Models\Enums\GenderEnumTranslation.cs" />
-    <Compile Include="Models\Enums\GenericEnumTranslation.cs" />
-    <Compile Include="Models\Enums\SalutationEnum.cs" />
-    <Compile Include="Models\Enums\SalutationEnumTranslation.cs" />
+    <Compile Include="EnumTranslation\Models\GenderEnum.cs" />
+    <Compile Include="EnumTranslation\Models\GenderEnumTranslation.cs" />
+    <Compile Include="EnumTranslation\Models\GenericEnumTranslation.cs" />
+    <Compile Include="EnumTranslation\Models\SalutationEnum.cs" />
+    <Compile Include="EnumTranslation\Models\SalutationEnumTranslation.cs" />
     <Compile Include="Repositories\CompanyRepository.cs" />
     <Compile Include="ConventionMappingTests.cs" />
     <Compile Include="Repositories\FailedCompanyRepository.cs" />
@@ -224,16 +234,24 @@
     <Compile Include="Models\WebBasedIctCompany.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Mapping\TestsSimpleModelMapper.cs" />
-    <Compile Include="Repositories\Enums\GenericEnumTranslationRepository.cs" />
+    <Compile Include="EnumTranslation\Repositories\GenericEnumTranslationRepository.cs" />
     <Compile Include="Repositories\ICompanyRepository.cs" />
     <Compile Include="Repositories\IFailedCompanyRepository.cs" />
-    <Compile Include="Repositories\Enums\IGenericEnumTranslationRepository.cs" />
+    <Compile Include="EnumTranslation\Repositories\IGenericEnumTranslationRepository.cs" />
     <Compile Include="Repositories\IRoleRepository.cs" />
     <Compile Include="Repositories\ITestRepository.cs" />
     <Compile Include="Repositories\IUserRepository.cs" />
     <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\TestRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="RepositoryWithDtoMapping\DtoMappingTests.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Mappers\CargoContainerMapper.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Mappers\ShipMapper.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\CargoContainer.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\ContainerDto.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Models\Ship.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Repositories\CargoContainerRepository.cs" />
+    <Compile Include="RepositoryWithDtoMapping\Repositories\ShipRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -251,6 +269,7 @@
       <Name>PPWCode.Vernacular.NHibernate.I</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

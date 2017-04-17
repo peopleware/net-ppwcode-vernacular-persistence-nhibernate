@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using NHibernate.Mapping.ByCode;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Mappers
 {
-    public class EnumTranslationMapper : PersistentObjectMapper<EnumTranslation, int>
+    public class ShipMapper : PersistentObjectMapper<Ship, int>
     {
-        public EnumTranslationMapper()
+        public ShipMapper()
         {
-            Property(et => et.TranslationNl);
-            Property(et => et.TranslationFr);
+            Property(s => s.Code);
+
+            Set(
+                s => s.CargoContainers,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.All | Cascade.Merge);
+                },
+                r => r.OneToMany());
         }
     }
 }

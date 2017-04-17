@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
+using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Repositories
 {
-    public class GenericSalutationEnumTranslationMapper : GenericEnumTranslationMapper<SalutationEnum>
+    public class CargoContainerRepository : TestRepository<CargoContainer>,
+                                            ITestRepository<CargoContainer>
     {
+        public CargoContainerRepository(ISession session)
+            : base(session)
+        {
+        }
     }
 }

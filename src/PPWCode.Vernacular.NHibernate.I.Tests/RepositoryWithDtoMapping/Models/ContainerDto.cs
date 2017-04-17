@@ -12,17 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 {
-    public class GenderEnumTranslation : GenericEnumTranslation<GenderEnum>
+    public class ContainerDto
     {
-        public GenderEnumTranslation()
-        {
-        }
-
-        public GenderEnumTranslation(int id)
-            : base(id)
-        {
-        }
+        public string ShipCode { get; set; }
+        public string ContainerCode { get; set; }
+        public int Load { get; set; }
     }
 }

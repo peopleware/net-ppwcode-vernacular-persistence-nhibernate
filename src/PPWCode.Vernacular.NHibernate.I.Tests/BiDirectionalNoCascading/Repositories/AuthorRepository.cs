@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums;
+using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping.Enums
+using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
+using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories
 {
-    public class GenericGenderEnumTranslationMapper : GenericEnumTranslationMapper<GenderEnum>
+    public class AuthorRepository : TestRepository<Author>
     {
+        public AuthorRepository(ISession session)
+            : base(session)
+        {
+        }
     }
 }

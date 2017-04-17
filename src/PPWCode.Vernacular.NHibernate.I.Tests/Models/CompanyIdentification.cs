@@ -76,14 +76,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                 if (m_Company != value)
                 {
-                    Company previousCompany = m_Company;
-                    m_Company = value;
-
-                    if (previousCompany != null)
+                    if (m_Company != null)
                     {
+                        Company previousCompany = m_Company;
+                        m_Company = null;
                         previousCompany.RemoveIdentification(this);
                     }
 
+                    m_Company = value;
                     if (m_Company != null)
                     {
                         m_Company.AddIdentification(this);

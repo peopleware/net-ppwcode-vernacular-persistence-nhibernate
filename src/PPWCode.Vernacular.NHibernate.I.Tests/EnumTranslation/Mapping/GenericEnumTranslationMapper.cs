@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,32 +14,24 @@
 
 using System;
 
-using PPWCode.Vernacular.Exceptions.II;
+using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Type;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Enums
+using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Mapping
 {
-    public abstract class GenericEnumTranslation<T> : EnumTranslation
+    public abstract class GenericEnumTranslationMapper<T> : SubclassMapping<GenericEnumTranslation<T>>
         where T : struct, IComparable, IConvertible, IFormattable
     {
-        private T? m_Code;
-
-        protected GenericEnumTranslation()
+        protected GenericEnumTranslationMapper()
         {
-            if (!typeof(T).IsEnum)
-            {
-                throw new ProgrammingError("Invalid generic type.");
-            }
-        }
-
-        protected GenericEnumTranslation(int id)
-            : base(id)
-        {
-        }
-
-        public virtual T? Code
-        {
-            get { return m_Code; }
-            set { m_Code = value; }
+            Property(
+                e => e.Code,
+                m =>
+                {
+                    m.Type<EnumStringType<T>>();
+                });
         }
     }
 }

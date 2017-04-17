@@ -53,6 +53,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 
         public abstract T Merge(T entity);
 
+        public abstract void SaveOrUpdate(T entity);
+
         public abstract void Delete(T entity);
     }
 }
