@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     {
         protected VersionedPersistentObjectMapper()
         {
-            Version(x => x.PersistenceVersion, m => m.UnsavedValue(default(TId)));
+            Version(x => x.PersistenceVersion, m => m.UnsavedValue(default(TVersion)));
         }
     }
 }
