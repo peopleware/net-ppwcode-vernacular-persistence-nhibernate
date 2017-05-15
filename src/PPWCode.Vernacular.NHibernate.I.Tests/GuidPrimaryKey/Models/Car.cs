@@ -16,17 +16,25 @@ using System;
 
 using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
+namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models
 {
-    public abstract class VersionedPersistentObjectMapper<T, TId, TVersion>
-        : PersistentObjectMapper<T, TId>
-        where T : class, IVersionedPersistentObject<TId, TVersion>
-        where TId : IEquatable<TId>
-        where TVersion : IEquatable<TVersion>
+    public class Car : PersistentObject<Guid>
     {
-        protected VersionedPersistentObjectMapper()
+        private string m_ModelName;
+
+        public Car()
         {
-            Version(x => x.PersistenceVersion, m => m.UnsavedValue(default(TVersion)));
+        }
+
+        public Car(Guid id)
+            : base(id)
+        {
+        }
+
+        public virtual string ModelName
+        {
+            get { return m_ModelName; }
+            set { m_ModelName = value; }
         }
     }
 }

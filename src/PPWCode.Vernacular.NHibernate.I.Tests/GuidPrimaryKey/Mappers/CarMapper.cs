@@ -14,19 +14,25 @@
 
 using System;
 
-using PPWCode.Vernacular.Persistence.II;
+using NHibernate.Mapping.ByCode;
 
-namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
+
+namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Mappers
 {
-    public abstract class VersionedPersistentObjectMapper<T, TId, TVersion>
-        : PersistentObjectMapper<T, TId>
-        where T : class, IVersionedPersistentObject<TId, TVersion>
-        where TId : IEquatable<TId>
-        where TVersion : IEquatable<TVersion>
+    public class CarMapper : PersistentObjectMapper<Car, Guid>
     {
-        protected VersionedPersistentObjectMapper()
+        public CarMapper()
         {
-            Version(x => x.PersistenceVersion, m => m.UnsavedValue(default(TVersion)));
+            Id(
+                c => c.Id,
+                m =>
+                {
+                    m.Generator(Generators.Guid);
+                });
+
+            Property(c => c.ModelName);
         }
     }
 }
