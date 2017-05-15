@@ -189,6 +189,10 @@
     <Compile Include="BiDirectionalNoCascading\Repositories\AuthorRepository.cs" />
     <Compile Include="BiDirectionalNoCascading\Repositories\BookRepository.cs" />
     <Compile Include="BiDirectionalNoCascading\Repositories\KeywordRepository.cs" />
+    <Compile Include="GuidPrimaryKey\GuidPrimaryKeyTest.cs" />
+    <Compile Include="GuidPrimaryKey\Mappers\CarMapper.cs" />
+    <Compile Include="GuidPrimaryKey\Models\Car.cs" />
+    <Compile Include="GuidPrimaryKey\Repositories\CarRepository.cs" />
     <Compile Include="IntegrationTests\BaseUserTests.cs" />
     <Compile Include="EnumTranslation\EnumTranslationTests.cs" />
     <Compile Include="EnumTranslation\Models\EnumTranslation.cs" />
