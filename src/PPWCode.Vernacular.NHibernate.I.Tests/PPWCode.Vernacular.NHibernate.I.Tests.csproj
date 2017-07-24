@@ -189,6 +189,17 @@
     <Compile Include="BiDirectionalNoCascading\Repositories\AuthorRepository.cs" />
     <Compile Include="BiDirectionalNoCascading\Repositories\BookRepository.cs" />
     <Compile Include="BiDirectionalNoCascading\Repositories\KeywordRepository.cs" />
+    <Compile Include="DictionariesAndLists\DictionariesAndListsTest.cs" />
+    <Compile Include="DictionariesAndLists\Mappers\ClippingPlaneMapper.cs" />
+    <Compile Include="DictionariesAndLists\Mappers\PlaneMapper.cs" />
+    <Compile Include="DictionariesAndLists\Mappers\TowerMapper.cs" />
+    <Compile Include="DictionariesAndLists\Mappers\Vector3DMapper.cs" />
+    <Compile Include="DictionariesAndLists\Models\ClippingPlane.cs" />
+    <Compile Include="DictionariesAndLists\Models\Plane.cs" />
+    <Compile Include="DictionariesAndLists\Models\SideEnum.cs" />
+    <Compile Include="DictionariesAndLists\Models\Tower.cs" />
+    <Compile Include="DictionariesAndLists\Models\Vector3D.cs" />
+    <Compile Include="DictionariesAndLists\Repositories\TowerRepository.cs" />
     <Compile Include="GuidPrimaryKey\GuidPrimaryKeyTest.cs" />
     <Compile Include="GuidPrimaryKey\Mappers\CarMapper.cs" />
     <Compile Include="GuidPrimaryKey\Models\Car.cs" />
