@@ -30,7 +30,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Mappers
                     c.Index(idx =>
                             {
                                 idx.Base(1); // Note: You can not do idx.Base(0).
-                                idx.Column("Index");
+                                idx.Column("`Index`");
                             });
                     c.Table("ModelSection");
                     c.Key(km =>
