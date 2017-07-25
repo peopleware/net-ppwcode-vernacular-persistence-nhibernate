@@ -23,7 +23,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Mappers
         public PlaneMapper()
         {
             Component(p => p.Normal);
-            Component(p => p.Translation);
+            Property(p => p.Translation);
         }
     }
 }
