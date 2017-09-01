@@ -55,7 +55,7 @@
       <dependency id="PPWCode.Vernacular.Persistence.II" version="[3,4)" />
       <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />
       <dependency id="PPWCode.Vernacular.Exceptions.II" version="[1,2)" />
-      <dependency id="PPWCode.Vernacular.NHibernate.I" version="[2,3)" />
+      <dependency id="PPWCode.Vernacular.NHibernate.I" version="[3,4)" />
     </dependencies>
 
     <!-- explicit references -->
