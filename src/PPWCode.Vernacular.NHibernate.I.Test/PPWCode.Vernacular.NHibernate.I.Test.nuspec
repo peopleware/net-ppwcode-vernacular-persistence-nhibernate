@@ -37,7 +37,8 @@
       - Audit interceptor and AuditLog event listener: can log using UTC or LOCAL time
       - Repository: SaveOrUpdate supported (in addition to Merge)
       - Unit tests: more tests to illustrate NHibernate functionality
-    </releaseNotes>
+3.0.1 Fix nuspec file: dependency version
+</releaseNotes>
 
     <copyright>Copyright 2014-2017 by PeopleWare n.v.</copyright>
 
