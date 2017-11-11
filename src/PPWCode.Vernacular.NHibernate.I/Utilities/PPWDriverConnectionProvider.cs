@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -40,7 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     </property>
         /// </summary>
         /// <param name="conn">The <see cref="T:System.Data.IDbConnection" /> to clean up.</param>
-        public override void CloseConnection(IDbConnection conn)
+        public override void CloseConnection(DbConnection conn)
         {
             if (conn != null)
             {

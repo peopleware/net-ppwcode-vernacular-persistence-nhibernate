@@ -307,14 +307,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
                     () =>
                     {
                         Company mergedCompany = Repository.Merge(company);
-
-                        FailedCompany failedCompany = mergedCompany.FailedCompany;
                         mergedCompany.FailedCompany = null;
-
-                        // Due cascading delete isn't supported for one-to-one relation, 
-                        // see https://nhibernate.jira.com/browse/NH-1262
-                        Session.Delete(failedCompany);
-
                         return mergedCompany;
                     },
                     true);

@@ -24,19 +24,31 @@ using NHibernate.Dialect;
 using NHibernate.Driver;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
+using PPWCode.Vernacular.Persistence.II;
 
 using Environment = NHibernate.Cfg.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class NHibernateSqlServerFixture<TId> : NHibernateFixture<TId>
+    public abstract partial class NHibernateSqlServerFixture<TId, TAuditEntity> : NHibernateFixture<TId>
         where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
+        public class TestAuditLogEventListener : AuditLogEventListener<TId, TAuditEntity>
+        {
+            public TestAuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
+                : base(identityProvider, timeProvider, useUtc)
+            {
+            }
+        }
+
         private Configuration m_Configuration;
         private string m_ConnectionString;
 
         protected abstract string CatalogName { get; }
+        protected abstract bool UseUtc { get; }
 
         protected virtual string ConnectionString
         {
@@ -121,6 +133,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     }
 
                     new CivilizedEventListener().Register(m_Configuration);
+                    new TestAuditLogEventListener(new TestIdentityProvider(IdentityName), new TestTimeProvider(UtcNow), UseUtc).Register(m_Configuration);
                 }
 
                 return m_Configuration;

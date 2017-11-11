@@ -18,10 +18,13 @@ using HibernatingRhinos.Profiler.Appender.NHibernate;
 
 using log4net.Config;
 
+using PPWCode.Vernacular.Persistence.II;
+
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class NHibernateSqlServerSetUpFixture<TId> : NHibernateSqlServerFixture<TId>
+    public abstract class NHibernateSqlServerSetUpFixture<TId, TAuditEntity> : NHibernateSqlServerFixture<TId, TAuditEntity>
         where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
         protected override void OnFixtureSetup()
         {

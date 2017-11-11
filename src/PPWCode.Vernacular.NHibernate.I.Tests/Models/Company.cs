@@ -23,7 +23,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable, DataContract(IsReference = true), AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         public Company(int id, int persistenceVersion)

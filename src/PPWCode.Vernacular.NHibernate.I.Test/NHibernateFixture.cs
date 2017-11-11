@@ -86,7 +86,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                 .Returns(UtcNow);
 
             AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
-            return SessionFactory.OpenSession(sessionLocalInterceptor);
+            return
+                SessionFactory
+                    .WithOptions()
+                    .Interceptor(sessionLocalInterceptor)
+                    .OpenSession();
         }
 
         protected virtual ISession Session
@@ -131,20 +135,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
         {
             T result;
-            ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted);
-            try
+            using (ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted))
             {
                 result = func();
                 transaction.Commit();
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
-            finally
-            {
-                transaction.Dispose();
             }
 
             if (clearSession)

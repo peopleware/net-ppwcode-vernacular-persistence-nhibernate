@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Data;
+using System.Data.Common;
 
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -42,9 +43,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             return x == null ? 0 : x.GetHashCode();
         }
 
-        public abstract object NullSafeGet(IDataReader rs, string[] names, object owner);
+        public abstract object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor sessionImplementor, object owner);
 
-        public abstract void NullSafeSet(IDbCommand cmd, object value, int index);
+        public abstract void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor sessionImplementor);
 
         public object DeepCopy(object value)
         {

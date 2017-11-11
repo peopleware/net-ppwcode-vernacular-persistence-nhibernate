@@ -26,7 +26,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {
-    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Car, Guid>
+    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Car, Guid, TestGuidAuditLog>
     {
         protected override string CatalogName
         {

@@ -19,9 +19,10 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class BaseRepositoryFixture<T, TId> : NHibernateSqlServerSetUpFixture<TId>
+    public abstract class BaseRepositoryFixture<T, TId, TAuditEntity> : NHibernateSqlServerSetUpFixture<TId, TAuditEntity>
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
         private IRepository<T, TId> m_Repository;
         private DateTime? m_UtcNow;
@@ -44,6 +45,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
                 return m_UtcNow.Value;
             }
+        }
+
+        protected override bool UseUtc
+        {
+            get { return true; }
         }
 
         protected override void OnSetup()

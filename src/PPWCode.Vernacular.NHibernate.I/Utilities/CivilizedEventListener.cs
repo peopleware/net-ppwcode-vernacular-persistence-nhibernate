@@ -15,6 +15,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using NHibernate.Cfg;
 using NHibernate.Event;
@@ -26,11 +28,34 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
-    public class CivilizedEventListener :
-        IRegisterEventListener,
-        IPreUpdateEventListener,
-        IPreInsertEventListener
+    public class CivilizedEventListener
+        : IRegisterEventListener,
+          IPreUpdateEventListener,
+          IPreInsertEventListener
     {
+        /// <summary>
+        ///     Return true if the operation should be vetoed.
+        /// </summary>
+        /// <param name="event">The given event.</param>
+        /// <param name="cancellationToken">The given cancellation token.</param>
+        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        public Task<bool> OnPreInsertAsync(PreInsertEvent @event, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled<bool>(cancellationToken);
+            }
+
+            try
+            {
+                return Task.FromResult(OnPreInsert(@event));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException<bool>(ex);
+            }
+        }
+
         /// <summary>
         ///     Return true if the operation should be vetoed.
         /// </summary>
@@ -40,6 +65,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         {
             ValidateObject(@event.Entity);
             return false;
+        }
+
+        /// <summary>
+        ///     Return true if the operation should be vetoed.
+        /// </summary>
+        /// <param name="event">The given event.</param>
+        /// <param name="cancellationToken">The given cancellation token.</param>
+        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        public Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled<bool>(cancellationToken);
+            }
+
+            try
+            {
+                return Task.FromResult(OnPreUpdate(@event));
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException<bool>(ex);
+            }
         }
 
         /// <summary>

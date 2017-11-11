@@ -134,7 +134,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             List<string> ghosts = new List<string>();
             DirtyCheckingInterceptor interceptor = new DirtyCheckingInterceptor(ghosts);
 
-            using (ISession session = SessionFactory.OpenSession(interceptor))
+            using (ISession session = SessionFactory.WithOptions().Interceptor(interceptor).OpenSession())
             {
                 using (ITransaction tx = session.BeginTransaction())
                 {

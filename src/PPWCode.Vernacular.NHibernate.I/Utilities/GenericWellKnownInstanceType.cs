@@ -14,8 +14,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics.Contracts;
+
+using NHibernate.Engine;
 
 using PPWCode.Vernacular.NHibernate.I.Implementations;
 
@@ -42,7 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             get { return typeof(T); }
         }
 
-        public override object NullSafeGet(IDataReader rs, string[] names, object owner)
+        public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor sessionImplementor, object owner)
         {
             int index0 = rs.GetOrdinal(names[0]);
             if (rs.IsDBNull(index0))
@@ -51,21 +53,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
 
             TId key = (TId)rs.GetValue(index0);
-            T value;
-            m_Repository.TryGetValue(key, out value);
+            m_Repository.TryGetValue(key, out T value);
             return value;
         }
 
-        public override void NullSafeSet(IDbCommand cmd, object value, int index)
+        public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor sessionImplementor)
         {
-            if (value == null)
-            {
-                ((IDbDataParameter)cmd.Parameters[index]).Value = DBNull.Value;
-            }
-            else
-            {
-                ((IDbDataParameter)cmd.Parameters[index]).Value = m_IdGetter((T)value);
-            }
+            cmd.Parameters[index].Value = value == null ? (object)DBNull.Value : m_IdGetter((T)value);
         }
     }
 }

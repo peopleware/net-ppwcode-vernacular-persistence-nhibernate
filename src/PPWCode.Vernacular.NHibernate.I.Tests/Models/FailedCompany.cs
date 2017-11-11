@@ -21,7 +21,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true), Serializable, AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class FailedCompany : InsertAuditablePersistentObject<int>
     {
         [ContractInvariantMethod]

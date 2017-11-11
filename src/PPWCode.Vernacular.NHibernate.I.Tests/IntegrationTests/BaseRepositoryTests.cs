@@ -21,7 +21,7 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
-    public abstract class BaseRepositoryTests<T> : BaseRepositoryFixture<T, int>
+    public abstract class BaseRepositoryTests<T> : BaseRepositoryFixture<T, int, TestIntAuditLog>
         where T : class, IIdentity<int>
     {
         protected override string CatalogName

@@ -95,7 +95,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             object[] oldState = oldEntry.LoadedState;
-            object[] currentState = persister.GetPropertyValues(entity, sessionImpl.EntityMode);
+            object[] currentState = persister.GetPropertyValues(entity);
             int[] dirtyProperties = persister.FindDirty(currentState, oldState, entity, sessionImpl);
 
             foreach (int index in dirtyProperties)

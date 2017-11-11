@@ -12,24 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.Persistence.II;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
-    public class CompanyMapper : AuditableVersionedPersistentObjectMapper<Company, int, int>
+    public class TestIntAuditLog : AuditLog<int>
     {
-        public CompanyMapper()
+    }
+
+    public class TestLongAuditLog : AuditLog<long>
+    {
+    }
+
+    public class TestGuidAuditLog : AuditLog<Guid>
+    {
+    }
+
+    public class TestIntAuditLogMapper : AuditLogMapper<TestIntAuditLog, int>
+    {
+    }
+
+    public class TestLongAuditLogMapper : AuditLogMapper<TestLongAuditLog, long>
+    {
+    }
+
+    public class TestGuidAuditLogMapper : AuditLogMapper<TestGuidAuditLog, Guid>
+    {
+        public TestGuidAuditLogMapper()
         {
-            Property(c => c.Name);
-
-            Set(
-                c => c.Identifications,
-                c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
-                r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
-
-            OneToOne(c => c.FailedCompany, m => m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)));
+            Id(c => c.Id, m => m.Generator(Generators.Guid));
         }
     }
 }
