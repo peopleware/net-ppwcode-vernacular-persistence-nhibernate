@@ -332,7 +332,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         protected virtual string GetStringValueFromStateArray(IEventSource session, object[] stateArray, int position)
         {
             object value = stateArray[position];
-            return value != null ? value.ToString() : null;
+            if (value != null)
+            {
+                IPersistentObject<TId> persistentObject = value as IPersistentObject<TId>;
+                return persistentObject != null
+                           ? persistentObject.Id.ToString()
+                           : value.ToString();
+            }
+
+            return null;
         }
 
         protected class AuditLogItem

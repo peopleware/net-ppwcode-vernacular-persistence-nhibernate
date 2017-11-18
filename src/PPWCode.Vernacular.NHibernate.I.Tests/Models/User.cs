@@ -60,6 +60,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             set { m_HasBlueEyes = value; }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual ISet<Role> Roles
         {
             get { return m_Roles; }

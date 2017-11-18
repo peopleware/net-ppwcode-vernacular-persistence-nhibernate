@@ -45,6 +45,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             set { m_Name = value; }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual ISet<User> Users
         {
             get { return m_Users; }

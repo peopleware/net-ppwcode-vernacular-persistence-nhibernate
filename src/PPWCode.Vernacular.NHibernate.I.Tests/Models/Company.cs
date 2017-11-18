@@ -70,6 +70,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual FailedCompany FailedCompany
         {
             get { return m_FailedCompany; }
@@ -108,6 +109,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual ISet<CompanyIdentification> Identifications
         {
             get { return m_Identifications; }
