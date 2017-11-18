@@ -25,7 +25,6 @@ using System.Threading.Tasks;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Event;
-using NHibernate.Proxy;
 
 using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -115,8 +114,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 
@@ -125,8 +127,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                SaveAuditLogs(@event, auditLogs);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    SaveAuditLogs(@event, auditLogs);
+                }
             }
         }
 
@@ -135,8 +140,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 
@@ -145,8 +153,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                SaveAuditLogs(@event, auditLogs);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    SaveAuditLogs(@event, auditLogs);
+                }
             }
         }
 
@@ -155,8 +166,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
 
@@ -165,10 +179,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
             {
-                ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                SaveAuditLogs(@event, auditLogs);
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    SaveAuditLogs(@event, auditLogs);
+                }
             }
         }
+
+        protected abstract bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction);
 
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostInsertEvent @event, AuditLogItem auditLogItem)
         {
@@ -314,7 +333,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         {
             object value = stateArray[position];
             return value != null ? value.ToString() : null;
-            
         }
 
         protected class AuditLogItem

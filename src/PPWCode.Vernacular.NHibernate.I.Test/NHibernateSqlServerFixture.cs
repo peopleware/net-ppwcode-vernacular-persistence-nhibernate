@@ -22,6 +22,7 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Driver;
+using NHibernate.Event;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -41,6 +42,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             public TestAuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
                 : base(identityProvider, timeProvider, useUtc)
             {
+            }
+
+            protected override bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction)
+            {
+                return true;
             }
         }
 
