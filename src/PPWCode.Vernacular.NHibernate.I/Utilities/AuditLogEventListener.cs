@@ -199,7 +199,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             int length = @event.State.Length;
             for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
             {
-                string newValue = GetStringValueFromStateArray(@event.Session, @event.State, fieldIndex);
+                string newValue = GetStringValueFromStateArray(@event, @event.State, fieldIndex);
 
                 string propertyName = @event.Persister.PropertyNames[fieldIndex];
                 if (auditLogItem.Properties.TryGetValue(propertyName, out AuditLogActionEnum auditLogAction))
@@ -244,8 +244,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
             foreach (int dirtyFieldIndex in fieldIndices)
             {
-                string oldValue = GetStringValueFromStateArray(@event.Session, @event.OldState, dirtyFieldIndex);
-                string newValue = GetStringValueFromStateArray(@event.Session, @event.State, dirtyFieldIndex);
+                string oldValue = GetStringValueFromStateArray(@event, @event.OldState, dirtyFieldIndex);
+                string newValue = GetStringValueFromStateArray(@event, @event.State, dirtyFieldIndex);
 
                 if (oldValue != newValue)
                 {
@@ -329,7 +329,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        protected virtual string GetStringValueFromStateArray(IEventSource session, object[] stateArray, int position)
+        protected virtual string GetStringValueFromStateArray(AbstractEvent @event, object[] stateArray, int position)
         {
             object value = stateArray[position];
             if (value != null)
