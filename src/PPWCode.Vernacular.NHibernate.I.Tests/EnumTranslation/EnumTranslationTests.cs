@@ -20,12 +20,13 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Repositories;
 using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests;
+using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation
 {
     public class EnumTranslationTests : BaseRepositoryTests<GenderEnumTranslation>
     {
-        protected override Func<IRepository<GenderEnumTranslation, int>> RepositoryFactory
+        protected override Func<IQueryOverRepository<GenderEnumTranslation, int>> RepositoryFactory
         {
             get { return () => new GenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum>(Session); }
         }

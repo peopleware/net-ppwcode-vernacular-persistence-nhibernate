@@ -16,6 +16,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 {
     public class ContainerDto
     {
+        public ContainerDto()
+        {
+        }
+
+        public ContainerDto(string shipCode, string containerCode, int load)
+        {
+            ShipCode = shipCode;
+            ContainerCode = containerCode;
+            Load = load;
+        }
+
         public string ShipCode { get; set; }
         public string ContainerCode { get; set; }
         public int Load { get; set; }

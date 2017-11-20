@@ -19,7 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Repositories
 {
-    public class TowerRepository : TestRepository<Tower>
+    public class TowerRepository : TestQueryOverRepository<Tower>
     {
         public TowerRepository(ISession session)
             : base(session)

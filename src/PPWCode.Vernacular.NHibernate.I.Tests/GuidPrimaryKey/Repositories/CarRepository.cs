@@ -18,12 +18,11 @@ using System.Data;
 using NHibernate;
 
 using PPWCode.Vernacular.NHibernate.I.Implementations;
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Repositories
 {
-    public class CarRepository : Repository<Car, Guid>, IRepository<Car, Guid>
+    public class CarRepository : QueryOverRepository<Car, Guid>
     {
         public CarRepository(ISession session)
             : base(session)

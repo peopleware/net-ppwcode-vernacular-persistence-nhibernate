@@ -20,12 +20,13 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Repositories;
 using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests;
+using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists
 {
     public class DictionariesAndListsTest : BaseRepositoryTests<Tower>
     {
-        protected override Func<IRepository<Tower, int>> RepositoryFactory
+        protected override Func<IQueryOverRepository<Tower, int>> RepositoryFactory
         {
             get { return () => new TowerRepository(Session); }
         }

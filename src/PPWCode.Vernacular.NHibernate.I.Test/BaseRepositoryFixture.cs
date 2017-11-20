@@ -14,25 +14,15 @@
 
 using System;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class BaseRepositoryFixture<T, TId, TAuditEntity> : NHibernateSqlServerSetUpFixture<TId, TAuditEntity>
-        where T : class, IIdentity<TId>
+    public abstract class BaseRepositoryFixture<TId, TAuditEntity> : NHibernateSqlServerSetUpFixture<TId, TAuditEntity>
         where TId : IEquatable<TId>
         where TAuditEntity : AuditLog<TId>, new()
     {
-        private IRepository<T, TId> m_Repository;
         private DateTime? m_UtcNow;
-
-        protected abstract Func<IRepository<T, TId>> RepositoryFactory { get; }
-
-        protected IRepository<T, TId> Repository
-        {
-            get { return m_Repository; }
-        }
 
         protected override DateTime UtcNow
         {
@@ -52,17 +42,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             get { return true; }
         }
 
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            m_Repository = RepositoryFactory();
-        }
-
         protected override void OnTeardown()
         {
             m_UtcNow = null;
-            m_Repository = null;
 
             base.OnTeardown();
         }

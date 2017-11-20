@@ -19,7 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories
 {
-    public class KeywordRepository : TestRepository<Keyword>
+    public class KeywordRepository : TestQueryOverRepository<Keyword>
     {
         public KeywordRepository(ISession session)
             : base(session)

@@ -21,12 +21,13 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories;
 using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests;
+using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading
 {
     public class BiDirectionalNoCascadingTest : BaseRepositoryTests<Author>
     {
-        protected override Func<IRepository<Author, int>> RepositoryFactory
+        protected override Func<IQueryOverRepository<Author, int>> RepositoryFactory
         {
             get { return () => new AuthorRepository(Session); }
         }

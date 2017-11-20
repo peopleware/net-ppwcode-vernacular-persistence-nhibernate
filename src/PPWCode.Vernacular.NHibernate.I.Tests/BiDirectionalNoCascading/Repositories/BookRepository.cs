@@ -19,8 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Repositories
 {
-    public class BookRepository : TestRepository<Book>,
-                                  ITestRepository<Book>
+    public class BookRepository : TestQueryOverRepository<Book>
     {
         public BookRepository(ISession session)
             : base(session)

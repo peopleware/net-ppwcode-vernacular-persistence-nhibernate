@@ -26,8 +26,15 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {
-    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Car, Guid, TestGuidAuditLog>
+    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
+        private IQueryOverRepository<Car, Guid> m_Repository;
+
+        protected IQueryOverRepository<Car, Guid> Repository
+        {
+            get { return m_Repository; }
+        }
+
         protected override string CatalogName
         {
             get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
@@ -49,9 +56,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
             get { return "Test - IdentityName"; }
         }
 
-        protected override Func<IRepository<Car, Guid>> RepositoryFactory
+        protected virtual Func<IQueryOverRepository<Car, Guid>> RepositoryFactory
         {
             get { return () => new CarRepository(Session); }
+        }
+
+        protected override void OnSetup()
+        {
+            base.OnSetup();
+
+            m_Repository = RepositoryFactory();
+        }
+
+        protected override void OnTeardown()
+        {
+            m_Repository = null;
+
+            base.OnTeardown();
         }
 
         [Test]

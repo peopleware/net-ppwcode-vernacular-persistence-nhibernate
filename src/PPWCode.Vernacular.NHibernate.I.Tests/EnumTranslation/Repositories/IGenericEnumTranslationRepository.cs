@@ -19,7 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Repositories
 {
-    public interface IGenericEnumTranslationRepository<T, X> : ITestRepository<T>
+    public interface IGenericEnumTranslationRepository<T, in X> : ITestQueryOverRepository<T>
         where T : GenericEnumTranslation<X>
         where X : struct, IComparable, IConvertible, IFormattable
     {

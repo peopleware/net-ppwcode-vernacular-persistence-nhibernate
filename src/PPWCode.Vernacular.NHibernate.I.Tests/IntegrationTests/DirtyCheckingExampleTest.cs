@@ -15,6 +15,7 @@
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Test;
+using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {

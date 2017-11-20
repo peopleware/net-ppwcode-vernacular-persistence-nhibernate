@@ -14,7 +14,6 @@
 
 using System;
 using System.Data.SqlClient;
-using System.Diagnostics.Contracts;
 using System.Transactions;
 
 using Castle.Core.Logging;
@@ -39,85 +38,45 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected RepositoryBase(ISession session)
         {
-            Contract.Requires(session != null);
-            Contract.Ensures(Session == session);
-
             m_Session = session;
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Logger != null);
-            Contract.Invariant(Session != null);
         }
 
         public ILogger Logger
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<ILogger>() != null);
+            get { return m_Logger; }
 
-                return m_Logger;
-            }
-
-            set
-            {
-                Contract.Requires(value != null);
-                Contract.Ensures(value == Logger);
-
-                m_Logger = value;
-            }
+            set { m_Logger = value; }
         }
 
         public ISession Session
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<ISession>() != null);
-
-                return m_Session;
-            }
+            get { return m_Session; }
         }
 
         protected abstract IsolationLevel IsolationLevel { get; }
 
         protected virtual void Execute(string requestDescription, Action action)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(action != null);
-
             Execute(requestDescription, action, null);
         }
 
         protected virtual void Execute(string requestDescription, Action action, T entity)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(action != null);
-
             EnsureTransaction(() => EnsureControlledEnvironment(requestDescription, action, entity));
         }
 
         protected virtual TResult Execute<TResult>(string requestDescription, Func<TResult> func)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(func != null);
-
             return Execute(requestDescription, func, null);
         }
 
         protected virtual TResult Execute<TResult>(string requestDescription, Func<TResult> func, T entity)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(func != null);
-
             return EnsureTransaction(() => EnsureControlledEnvironment(requestDescription, func, entity));
         }
 
         protected virtual void EnsureTransaction(Action action)
         {
-            Contract.Requires(action != null);
-
             EnsureTransaction(
                 () =>
                 {
@@ -128,8 +87,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual TResult EnsureTransaction<TResult>(Func<TResult> func)
         {
-            Contract.Requires(func != null);
-
             if (Session.Transaction.IsActive || Transaction.Current != null)
             {
                 return func.Invoke();
@@ -167,9 +124,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         /// <returns>An exception that is a sub class either from <see cref="SemanticException" /> or from <see cref="Error" />.</returns>
         protected virtual Exception TriageException(Exception exception, string message)
         {
-            Contract.Requires(exception != null);
-            Contract.Requires(!string.IsNullOrEmpty(message));
-
             Exception result;
 
             Logger.Debug(message, exception);
@@ -199,9 +153,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual void EnsureControlledEnvironment(string requestDescription, Action action, T entity)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(action != null);
-
             EnsureControlledEnvironment(
                 requestDescription,
                 () =>
@@ -214,9 +165,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected virtual TResult EnsureControlledEnvironment<TResult>(string requestDescription, Func<TResult> func, T entity)
         {
-            Contract.Requires(!string.IsNullOrEmpty(requestDescription));
-            Contract.Requires(func != null);
-
             if (Logger.IsInfoEnabled)
             {
                 string msg =
