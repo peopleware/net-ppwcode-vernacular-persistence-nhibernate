@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 using NHibernate.Cfg;
 
@@ -33,18 +32,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         protected NhConfigurationBase(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
         {
-            Contract.Requires(nhInterceptor != null);
-            Contract.Requires(nhProperties != null);
-            Contract.Requires(mappingAssemblies != null);
-            Contract.Requires(hbmMapping != null);
-            Contract.Requires(registerEventListeners != null);
-
-            Contract.Ensures(NhInterceptor == nhInterceptor);
-            Contract.Ensures(NhProperties == nhProperties);
-            Contract.Ensures(MappingAssemblies == mappingAssemblies);
-            Contract.Ensures(HbmMapping == hbmMapping);
-            Contract.Ensures(RegisterEventListeners == registerEventListeners);
-
             m_NhInterceptor = nhInterceptor;
             m_NhProperties = nhProperties;
             m_MappingAssemblies = mappingAssemblies;
@@ -52,66 +39,31 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             m_RegisterEventListeners = registerEventListeners;
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(NhProperties != null);
-            Contract.Invariant(RegisterEventListeners != null);
-            Contract.Invariant(NhInterceptor != null);
-            Contract.Invariant(HbmMapping != null);
-            Contract.Invariant(MappingAssemblies != null);
-        }
-
         protected INhProperties NhProperties
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<INhProperties>() != null);
-
-                return m_NhProperties;
-            }
+            get { return m_NhProperties; }
         }
 
         protected IEnumerable<IRegisterEventListener> RegisterEventListeners
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IEnumerable<IRegisterEventListener>>() != null);
-
-                return m_RegisterEventListeners;
-            }
+            get { return m_RegisterEventListeners; }
         }
 
         protected abstract Configuration Configuration { get; }
 
         protected INhInterceptor NhInterceptor
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<INhInterceptor>() != null);
-
-                return m_NhInterceptor;
-            }
+            get { return m_NhInterceptor; }
         }
 
         protected IHbmMapping HbmMapping
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IHbmMapping>() != null);
-
-                return m_HbmMapping;
-            }
+            get { return m_HbmMapping; }
         }
 
         protected IMappingAssemblies MappingAssemblies
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IMappingAssemblies>() != null);
-
-                return m_MappingAssemblies;
-            }
+            get { return m_MappingAssemblies; }
         }
 
         public Configuration GetConfiguration()

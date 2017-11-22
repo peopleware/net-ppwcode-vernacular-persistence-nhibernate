@@ -12,31 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-
 using NHibernate;
 
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
-    [ContractClass(typeof(INHibernateSessionFactoryContract))]
     public interface INHibernateSessionFactory
     {
         ISessionFactory SessionFactory { get; }
-    }
-
-    // ReSharper disable once InconsistentNaming
-    [ExcludeFromCodeCoverage, ContractClassFor(typeof(INHibernateSessionFactory))]
-    internal abstract class INHibernateSessionFactoryContract : INHibernateSessionFactory
-    {
-        public ISessionFactory SessionFactory
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ISessionFactory>() != null);
-
-                return default(ISessionFactory);
-            }
-        }
     }
 }

@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using NHibernate.Cfg.MappingSchema;
@@ -31,8 +30,6 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected ModelMapperBase(IMappingAssemblies mappingAssemblies)
         {
-            Contract.Requires(mappingAssemblies != null);
-
             m_MappingAssemblies = mappingAssemblies;
             m_ModelMapper = new ModelMapper();
 

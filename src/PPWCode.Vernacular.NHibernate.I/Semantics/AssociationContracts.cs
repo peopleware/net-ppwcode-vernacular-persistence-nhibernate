@@ -62,16 +62,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
         {
             return destinations != null
                    && (!NHibernateUtil.IsInitialized(destinations)
-                       || destinations.All(x =>
-                                           {
-                                               if (x != null)
-                                               {
-                                                   ISet<Morigin> origins = toOrigin(x);
-                                                   return origins == null || !NHibernateUtil.IsInitialized(origins) || origins.Contains(origin);
-                                               }
-                                               
-                                               return true;
-                                           }));
+                       || destinations.All(
+                           x =>
+                           {
+                               if (x != null)
+                               {
+                                   ISet<Morigin> origins = toOrigin(x);
+                                   return origins == null || !NHibernateUtil.IsInitialized(origins) || origins.Contains(origin);
+                               }
+
+                               return true;
+                           }));
         }
     }
 }

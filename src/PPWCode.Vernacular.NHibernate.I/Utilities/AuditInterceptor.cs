@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 
 using NHibernate;
 using NHibernate.Type;
@@ -42,42 +41,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         public AuditInterceptor(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
-            Contract.Requires(identityProvider != null);
-            Contract.Requires(timeProvider != null);
-            Contract.Ensures(IdentityProvider == identityProvider);
-            Contract.Ensures(TimeProvider == timeProvider);
-            Contract.Ensures(UseUtc == useUtc);
-
             m_IdentityProvider = identityProvider;
             m_TimeProvider = timeProvider;
             m_UseUtc = useUtc;
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(IdentityProvider != null);
-            Contract.Invariant(TimeProvider != null);
-        }
-
         public IIdentityProvider IdentityProvider
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IIdentityProvider>() != null);
-
-                return m_IdentityProvider;
-            }
+            get { return m_IdentityProvider; }
         }
 
         public ITimeProvider TimeProvider
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<ITimeProvider>() != null);
-
-                return m_TimeProvider;
-            }
+            get { return m_TimeProvider; }
         }
 
         public bool UseUtc

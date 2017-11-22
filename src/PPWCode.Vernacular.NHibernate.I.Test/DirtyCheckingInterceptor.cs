@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 using NHibernate;
 using NHibernate.Engine;
@@ -30,32 +29,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyCheckingInterceptor(IList<string> dirtyProps)
         {
-            Contract.Requires(dirtyProps != null);
-            Contract.Ensures(DirtyProps == dirtyProps);
-
             m_DirtyProps = dirtyProps;
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(DirtyProps != null);
         }
 
         protected IList<string> DirtyProps
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<IList<string>>() != null);
-
-                return m_DirtyProps;
-            }
+            get { return m_DirtyProps; }
         }
 
         public override void SetSession(ISession session)
         {
-            Contract.Requires(session != null);
-
             m_Session = session;
         }
 

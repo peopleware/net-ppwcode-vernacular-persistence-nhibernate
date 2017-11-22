@@ -39,28 +39,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Logger != null);
-        }
-
         public ILogger Logger
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<ILogger>() != null);
-
-                return m_Logger;
-            }
-
-            set
-            {
-                Contract.Requires(value != null);
-                Contract.Ensures(value == Logger);
-
-                m_Logger = value;
-            }
+            get { return m_Logger; }
+            set { m_Logger = value; }
         }
 
         [Pure]
@@ -84,8 +66,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
         private Configuration LoadConfigurationFromFile()
         {
-            Contract.Ensures(!IsConfigurationFileValid || Contract.Result<Configuration>() != null);
-
             Configuration result = null;
             if (IsConfigurationFileValid)
             {

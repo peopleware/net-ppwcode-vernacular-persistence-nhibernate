@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using NHibernate;
@@ -33,68 +32,30 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyChecking(Configuration configuration, ISessionFactory sessionFactory, Action<string> failCallback, Action<string> inconclusiveCallback)
         {
-            Contract.Requires(configuration != null);
-            Contract.Requires(sessionFactory != null);
-            Contract.Requires(failCallback != null);
-            Contract.Requires(inconclusiveCallback != null);
-            Contract.Ensures(Configuration == configuration);
-            Contract.Ensures(SessionFactory == sessionFactory);
-            Contract.Ensures(FailCallback == failCallback);
-            Contract.Ensures(InconclusiveCallback == inconclusiveCallback);
-
             m_Configuration = configuration;
             m_SessionFactory = sessionFactory;
             m_FailCallback = failCallback;
             m_InconclusiveCallback = inconclusiveCallback;
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Configuration != null);
-            Contract.Invariant(FailCallback != null);
-            Contract.Invariant(InconclusiveCallback != null);
-            Contract.Invariant(SessionFactory != null);
-        }
-
         protected Configuration Configuration
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<Configuration>() != null);
-
-                return m_Configuration;
-            }
+            get { return m_Configuration; }
         }
 
         protected Action<string> FailCallback
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<Action<string>>() != null);
-
-                return m_FailCallback;
-            }
+            get { return m_FailCallback; }
         }
 
         protected Action<string> InconclusiveCallback
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<Action<string>>() != null);
-
-                return m_InconclusiveCallback;
-            }
+            get { return m_InconclusiveCallback; }
         }
 
         protected ISessionFactory SessionFactory
         {
-            get
-            {
-                Contract.Ensures(Contract.Result<ISessionFactory>() != null);
-
-                return m_SessionFactory;
-            }
+            get { return m_SessionFactory; }
         }
 
         public void Test()

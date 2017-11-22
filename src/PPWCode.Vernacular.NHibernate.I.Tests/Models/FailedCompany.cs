@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 using PPWCode.Vernacular.Exceptions.II;
@@ -24,12 +23,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [DataContract(IsReference = true), Serializable, AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class FailedCompany : InsertAuditablePersistentObject<int>
     {
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Company == null || Company.FailedCompany == this);
-        }
-
         [DataMember]
         private DateTime m_FailingDate;
 
@@ -39,12 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public virtual DateTime FailingDate
         {
             get { return m_FailingDate; }
-            set
-            {
-                Contract.Ensures(FailingDate == value);
-
-                m_FailingDate = value;
-            }
+            set { m_FailingDate = value; }
         }
 
         public virtual Company Company
@@ -52,11 +40,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             get { return m_Company; }
             set
             {
-                Contract.Ensures(Company == value);
-                // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || Contract.OldValue(Company).FailedCompany != this);
-                Contract.Ensures(Company == null || Company.FailedCompany == this);
-
                 if (m_Company != value)
                 {
                     if (m_Company != null)

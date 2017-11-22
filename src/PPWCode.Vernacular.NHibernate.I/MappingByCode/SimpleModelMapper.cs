@@ -550,7 +550,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             // Getting tableType of reflected object
             Type memberType = member.MemberType();
 
-            bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
+            bool notNullable = required || memberType != null && memberType.IsPrimitive || memberType == typeof(DateTime);
             propertyCustomizer.NotNullable(notNullable);
 
             StringLengthAttribute stringLengthAttribute =

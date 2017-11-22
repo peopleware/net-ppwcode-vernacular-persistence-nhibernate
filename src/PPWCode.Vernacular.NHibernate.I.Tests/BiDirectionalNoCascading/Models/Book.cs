@@ -14,10 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.Semantics;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
@@ -38,23 +36,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Keywords != null);
-            Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Author, b => b.Books));
-            Contract.Invariant(AssociationContracts.BiDirManyToMany(this, Keywords, keyword => keyword.Books));
-        }
-
         public virtual string Name
         {
             get { return m_Name; }
-            set
-            {
-                Contract.Ensures(Name == value);
-
-                m_Name = value;
-            }
+            set { m_Name = value; }
         }
 
         public virtual Author Author
@@ -62,11 +47,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             get { return m_Author; }
             set
             {
-                Contract.Ensures(Author == value);
-                // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(Author) == null || Contract.OldValue(Author) == value || !Contract.OldValue(Author).Books.Contains(this));
-                Contract.Ensures(Author == null || Author.Books.Contains(this));
-
                 if (m_Author != value)
                 {
                     if (m_Author != null)
@@ -92,9 +72,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void AddKeyword(Keyword keyword)
         {
-            Contract.Ensures(keyword == null || Keywords.Contains(keyword));
-            Contract.Ensures(keyword == null || keyword.Books.Contains(this));
-
             if (keyword != null && m_Keywords.Add(keyword))
             {
                 keyword.AddBook(this);
@@ -103,9 +80,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveKeyword(Keyword keyword)
         {
-            Contract.Ensures(keyword == null || !Keywords.Contains(keyword));
-            Contract.Ensures(keyword == null || !keyword.Books.Contains(this));
-
             if (keyword != null && m_Keywords.Remove(keyword))
             {
                 keyword.RemoveBook(this);

@@ -12,27 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.Contracts;
-
 using NHibernate.Cfg;
 
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
-    [ContractClass(typeof(INhConfigurationContract))]
     public interface INhConfiguration
     {
         Configuration GetConfiguration();
-    }
-
-    // ReSharper disable once InconsistentNaming
-    [ContractClassFor(typeof(INhConfiguration))]
-    public abstract class INhConfigurationContract : INhConfiguration
-    {
-        public Configuration GetConfiguration()
-        {
-            Contract.Ensures(Contract.Result<Configuration>() != null);
-
-            return default(Configuration);
-        }
     }
 }

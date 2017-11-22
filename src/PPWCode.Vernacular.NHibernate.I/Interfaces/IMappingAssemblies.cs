@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Reflection;
 
 using NHibernate.Mapping.ByCode;
@@ -23,7 +22,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
     /// <summary>
     ///     Used to determine where we can find our hbm definition for our models.
     /// </summary>
-    [ContractClass(typeof(IMappingAssembliesContract))]
     public interface IMappingAssemblies
     {
         /// <summary>
@@ -45,17 +43,5 @@ namespace PPWCode.Vernacular.NHibernate.I.Interfaces
         ///     Sequence of <see cref="Assembly" />
         /// </returns>
         IEnumerable<Assembly> GetAssemblies();
-    }
-
-    // ReSharper disable once InconsistentNaming
-    [ContractClassFor(typeof(IMappingAssemblies))]
-    public abstract class IMappingAssembliesContract : IMappingAssemblies
-    {
-        public IEnumerable<Assembly> GetAssemblies()
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<Assembly>>() != null);
-
-            return default(IEnumerable<Assembly>);
-        }
     }
 }

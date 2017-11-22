@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Diagnostics.Contracts;
 
 using NHibernate.Engine;
 
@@ -32,9 +31,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected GenericWellKnownInstanceType(IDictionary<TId, T> repository, Func<T, TId> idGetter)
         {
-            Contract.Requires(repository != null);
-            Contract.Requires(idGetter != null);
-
             m_Repository = repository;
             m_IdGetter = idGetter;
         }

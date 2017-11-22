@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Diagnostics.Contracts;
-
 using NHibernate;
 using NHibernate.Cfg;
 
@@ -29,8 +27,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         public NHibernateSessionFactory(INhConfiguration nhConfiguration)
         {
-            Contract.Requires(nhConfiguration != null);
-
             m_NhConfiguration = nhConfiguration;
         }
 
