@@ -68,12 +68,10 @@
   <!-- explicit file inclusion -->
   <files>
     <!-- assemblies -->
-    <file src="$OutputPath$$AssemblyName$.dll" target="lib\net45" />
-    <file src="$OutputPath$$AssemblyName$.pdb" target="lib\net45" />
-    <file src="$OutputPath$$AssemblyName$.xml" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.resources.dll" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.Contracts.dll" target="lib\net45" />
-    <file src="$OutputPath$**\$AssemblyName$.Contracts.pdb" target="lib\net45" />
+    <file src="$OutputPath$$AssemblyName$.dll" target="lib\net462" />
+    <file src="$OutputPath$$AssemblyName$.pdb" target="lib\net462" />
+    <file src="$OutputPath$$AssemblyName$.xml" target="lib\net462" />
+    <file src="$OutputPath$**\$AssemblyName$.resources.dll" target="lib\net462" />
 
     <!-- license information -->
     <file src="..\..\LICENSE" target="LICENSE" />
