@@ -53,7 +53,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
 
             TId key = (TId)rs.GetValue(index0);
-            m_Repository.TryGetValue(key, out T value);
+            T value;
+            m_Repository.TryGetValue(key, out value);
             return value;
         }
 

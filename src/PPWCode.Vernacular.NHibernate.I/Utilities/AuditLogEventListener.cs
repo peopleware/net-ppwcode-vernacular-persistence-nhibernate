@@ -202,7 +202,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 string newValue = GetStringValueFromStateArray(@event, @event.State, fieldIndex);
 
                 string propertyName = @event.Persister.PropertyNames[fieldIndex];
-                if (auditLogItem.Properties.TryGetValue(propertyName, out AuditLogActionEnum auditLogAction))
+                AuditLogActionEnum auditLogAction;
+                if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
                 {
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
@@ -250,7 +251,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 if (oldValue != newValue)
                 {
                     string propertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
-                    if (auditLogItem.Properties.TryGetValue(propertyName, out AuditLogActionEnum auditLogAction))
+                    AuditLogActionEnum auditLogAction;
+                    if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
                     {
                         if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                         {
