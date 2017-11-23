@@ -39,7 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// <param name="event">The given event.</param>
         /// <param name="cancellationToken">The given cancellation token.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public Task<bool> OnPreInsertAsync(PreInsertEvent @event, CancellationToken cancellationToken)
+        public virtual Task<bool> OnPreInsertAsync(PreInsertEvent @event, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -61,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </summary>
         /// <param name="event">The given event.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public bool OnPreInsert(PreInsertEvent @event)
+        public virtual bool OnPreInsert(PreInsertEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
@@ -73,7 +73,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// <param name="event">The given event.</param>
         /// <param name="cancellationToken">The given cancellation token.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken)
+        public virtual Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -95,13 +95,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </summary>
         /// <param name="event">The given event.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public bool OnPreUpdate(PreUpdateEvent @event)
+        public virtual bool OnPreUpdate(PreUpdateEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
         }
 
-        public void Register(Configuration cfg)
+        public virtual void Register(Configuration cfg)
         {
             cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { this }
                 .Concat(cfg.EventListeners.PreUpdateEventListeners)
@@ -111,7 +111,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 .ToArray();
         }
 
-        private void ValidateObject(object entity)
+        protected virtual void ValidateObject(object entity)
         {
             ICivilizedObject civilizedObject = entity as ICivilizedObject;
             if (civilizedObject != null)
