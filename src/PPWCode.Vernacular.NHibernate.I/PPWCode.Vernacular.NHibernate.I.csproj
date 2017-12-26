@@ -109,7 +109,6 @@
     <Compile Include="Interfaces\ILinqRepository.cs" />
     <Compile Include="Interfaces\INhInterceptor.cs" />
     <Compile Include="Interfaces\IQueryOverRepository.cs" />
-    <Compile Include="MappingByCode\MemberInfoExtensions.cs" />
     <Compile Include="MappingByCode\ModelMapperBase.cs" />
     <Compile Include="MappingByCode\PropertyPathExtensions.cs" />
     <Compile Include="MappingByCode\NoneVersioned\AuditablePersistentObjectMapper.cs" />

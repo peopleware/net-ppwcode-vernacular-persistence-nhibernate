@@ -48,7 +48,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         public static Type MemberType(this PropertyPath member)
         {
-            return member.LocalMember.MemberType();
+            return member.LocalMember.GetPropertyOrFieldType();
         }
 
         private static IEnumerable<string> ManyToManySidesNames(this PropertyPath member)

@@ -47,13 +47,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
 
-        [Required, StringLength(128)] public virtual string Name
+        [Required, StringLength(128)]
+        public virtual string Name
         {
             get { return m_Name; }
             set { m_Name = value; }
         }
 
-        [AuditLogPropertyIgnore] public virtual FailedCompany FailedCompany
+        [AuditLogPropertyIgnore]
+        public virtual FailedCompany FailedCompany
         {
             get { return m_FailedCompany; }
             set
@@ -81,7 +83,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             get { return FailedCompany != null; }
         }
 
-        [AuditLogPropertyIgnore] public virtual ISet<CompanyIdentification> Identifications
+        [AuditLogPropertyIgnore]
+        public virtual ISet<CompanyIdentification> Identifications
         {
             get { return m_Identifications; }
         }

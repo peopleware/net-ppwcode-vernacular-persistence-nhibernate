@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
@@ -38,6 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
+        [Required]
         public virtual string WebBased
         {
             get { return m_WebBased; }

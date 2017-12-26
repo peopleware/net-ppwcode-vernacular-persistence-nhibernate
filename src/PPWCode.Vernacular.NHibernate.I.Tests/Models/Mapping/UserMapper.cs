@@ -23,6 +23,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
     {
         public UserMapper()
         {
+            // User is most of the time a reserved word
+            Table("`User`");
             Property(
                 u => u.Name,
                 m =>
