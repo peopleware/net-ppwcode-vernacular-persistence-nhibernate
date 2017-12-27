@@ -254,9 +254,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual void ComponentParentToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
         {
             Type componentType = member.LocalMember.GetPropertyOrFieldType();
-            IEnumerable<MemberInfo> persistentProperties = MembersProvider
-                                                           .GetComponentMembers(componentType)
-                                                           .Where(p => ModelInspector.IsPersistentProperty(p));
+            IEnumerable<MemberInfo> persistentProperties =
+                MembersProvider
+                    .GetComponentMembers(componentType)
+                    .Where(p => ModelInspector.IsPersistentProperty(p));
 
             MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
             if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
@@ -268,9 +269,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual void ComponentParentNoSetterToField(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
         {
             Type componentType = member.LocalMember.GetPropertyOrFieldType();
-            IEnumerable<MemberInfo> persistentProperties = MembersProvider
-                                                           .GetComponentMembers(componentType)
-                                                           .Where(p => ModelInspector.IsPersistentProperty(p));
+            IEnumerable<MemberInfo> persistentProperties =
+                MembersProvider
+                    .GetComponentMembers(componentType)
+                    .Where(p => ModelInspector.IsPersistentProperty(p));
 
             MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
             if (parentReferenceProperty != null && MatchNoSetterProperty(parentReferenceProperty))
@@ -398,14 +400,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual bool IsMemberDeclaredInATablePerClassHierarchy(IModelInspector modelInspector, PropertyPath member)
         {
-            Type reflectedType = member.LocalMember.ReflectedType;
-            Type declaredType = member.LocalMember.DeclaringType;
-            if (reflectedType != null && declaredType != null)
+            if (member != null)
             {
-                return modelInspector.IsTablePerClassHierarchy(reflectedType)
-                       && !modelInspector.IsRootEntity(reflectedType)
-                       && modelInspector.IsTablePerClassHierarchy(declaredType)
-                       && !modelInspector.IsRootEntity(declaredType);
+                Type declaredType = member.GetRootMember().DeclaringType;
+                if (declaredType != null)
+                {
+                    return modelInspector.IsTablePerClassHierarchy(declaredType)
+                           && !modelInspector.IsRootEntity(declaredType);
+                }
             }
 
             return false;
@@ -418,10 +420,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member))
             {
                 bool required =
-                    member.LocalMember
-                          .GetCustomAttributes()
-                          .OfType<RequiredAttribute>()
-                          .Any();
+                    member
+                        .LocalMember
+                        .GetCustomAttributes()
+                        .OfType<RequiredAttribute>()
+                        .Any();
 
                 Type memberType = member.MemberType();
 
@@ -430,10 +433,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             }
 
             StringLengthAttribute stringLengthAttribute =
-                member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<StringLengthAttribute>()
-                      .FirstOrDefault();
+                member
+                    .LocalMember
+                    .GetCustomAttributes()
+                    .OfType<StringLengthAttribute>()
+                    .FirstOrDefault();
             if (stringLengthAttribute != null)
             {
                 if (stringLengthAttribute.MaximumLength > 0)
@@ -489,10 +493,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member))
             {
                 bool required =
-                    member.LocalMember
-                          .GetCustomAttributes()
-                          .OfType<RequiredAttribute>()
-                          .Any();
+                    member
+                        .LocalMember
+                        .GetCustomAttributes()
+                        .OfType<RequiredAttribute>()
+                        .Any();
                 propertyCustomizer.NotNullable(required);
             }
 
