@@ -570,6 +570,21 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)
         {
+            if (BatchSize != null && BatchSize.Value > 0)
+            {
+                collectionPropertiesCustomizer.BatchSize(BatchSize.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+            {
+                collectionPropertiesCustomizer.Catalog(ConditionalQuoteIdentifier(DefaultCatalogName, QuoteIdentifiers));
+            }
+
+            if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+            {
+                collectionPropertiesCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName, QuoteIdentifiers));
+            }
+
             if (modelinspector.IsManyToManyItem(member.LocalMember))
             {
                 string tableName = GetTableNameForManyToMany(modelinspector, member, false);
