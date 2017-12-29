@@ -22,7 +22,7 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
+using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {

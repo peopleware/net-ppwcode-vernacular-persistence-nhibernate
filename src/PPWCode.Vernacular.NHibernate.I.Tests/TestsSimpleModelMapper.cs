@@ -15,7 +15,7 @@
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
+namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     public class TestsSimpleModelMapper : SimpleModelMapper
     {
