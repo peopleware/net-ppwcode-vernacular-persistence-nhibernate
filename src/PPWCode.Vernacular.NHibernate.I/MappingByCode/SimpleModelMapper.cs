@@ -103,6 +103,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual bool QuoteIdentifiers => false;
 
+        public virtual bool CreateIndexForForeignKey => true;
+
         protected virtual PrimaryKeyTypeEnum PrimaryKeyType => PrimaryKeyTypeEnum.TYPE_ID;
 
         protected virtual string GetTableName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
@@ -509,7 +511,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 propertyCustomizer.NotNullable(true);
             }
 
-            propertyCustomizer.Index($"IX_FK_{tableName}_{foreignKeyColumnName}");
+            if (CreateIndexForForeignKey)
+            {
+                propertyCustomizer.Index($"IX_FK_{tableName}_{foreignKeyColumnName}");
+            }
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
