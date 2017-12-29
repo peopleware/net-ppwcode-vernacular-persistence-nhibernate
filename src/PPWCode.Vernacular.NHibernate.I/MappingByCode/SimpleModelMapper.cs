@@ -400,36 +400,50 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected virtual bool IsMemberDeclaredInATablePerClassHierarchy(IModelInspector modelInspector, PropertyPath member)
         {
-            if (member != null)
+            Type declaredType = member.GetRootMember().DeclaringType;
+            return modelInspector.IsTablePerClassHierarchy(declaredType) && !modelInspector.IsRootEntity(declaredType);
+        }
+
+        protected virtual bool IsRequired(IModelInspector modelInspector, PropertyPath member)
+        {
+            if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member))
             {
-                Type declaredType = member.GetRootMember().DeclaringType;
-                if (declaredType != null)
+                bool required = IsPropertyPathPrimitive(member);
+                if (!required)
                 {
-                    return modelInspector.IsTablePerClassHierarchy(declaredType)
-                           && !modelInspector.IsRootEntity(declaredType);
+                    PropertyPath walker = member;
+                    required = true;
+                    do
+                    {
+                        required &=
+                            walker
+                                .LocalMember
+                                .GetCustomAttributes()
+                                .OfType<RequiredAttribute>()
+                                .Any();
+                        walker = walker.PreviousPath;
+                    } while (required && walker != null);
                 }
+
+                return required;
             }
 
             return false;
+        }
+
+        protected virtual bool IsPropertyPathPrimitive(PropertyPath member)
+        {
+            Type memberType = member.MemberType();
+            return memberType.IsPrimitive || memberType == typeof(DateTime);
         }
 
         protected override void OnBeforeMapProperty(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
         {
             propertyCustomizer.Column(GetColumnName(modelInspector, member, QuoteIdentifiers));
 
-            if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member))
+            if (IsRequired(modelInspector, member))
             {
-                bool required =
-                    member
-                        .LocalMember
-                        .GetCustomAttributes()
-                        .OfType<RequiredAttribute>()
-                        .Any();
-
-                Type memberType = member.MemberType();
-
-                bool notNullable = required || memberType != null && (memberType.IsPrimitive || memberType == typeof(DateTime));
-                propertyCustomizer.NotNullable(notNullable);
+                propertyCustomizer.NotNullable(true);
             }
 
             StringLengthAttribute stringLengthAttribute =
@@ -490,15 +504,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             string tableName = GetTableName(modelInspector, member.Owner(), false);
             propertyCustomizer.ForeignKey($"FK_{tableName}_{foreignKeyColumnName}");
 
-            if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member))
+            if (IsRequired(modelInspector, member))
             {
-                bool required =
-                    member
-                        .LocalMember
-                        .GetCustomAttributes()
-                        .OfType<RequiredAttribute>()
-                        .Any();
-                propertyCustomizer.NotNullable(required);
+                propertyCustomizer.NotNullable(true);
             }
 
             propertyCustomizer.Index($"IX_FK_{tableName}_{foreignKeyColumnName}");
