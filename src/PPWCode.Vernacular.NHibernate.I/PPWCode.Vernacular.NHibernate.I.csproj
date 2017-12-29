@@ -127,6 +127,7 @@
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
     <Compile Include="Utilities\HighLowPerTableAuxiliaryDatabaseObject.cs" />
+    <Compile Include="Utilities\PpwAuxiliaryDatabaseObject.cs" />
     <Compile Include="Utilities\PPWDriverConnectionProvider.cs" />
     <Compile Include="Utilities\GenericWellKnownInstanceType.cs" />
     <Compile Include="Implementations\NhConfiguration.cs" />

@@ -20,21 +20,17 @@ using System.Text;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Engine;
-using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public abstract class HighLowPerTableAuxiliaryDatabaseObject
-        : AbstractAuxiliaryDatabaseObject
+    public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {
         protected HighLowPerTableAuxiliaryDatabaseObject(IHbmMapping hbmMapping)
+            : base(hbmMapping)
         {
-            HbmMapping = hbmMapping;
         }
-
-        public IHbmMapping HbmMapping { get; }
 
         public override string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
         {
