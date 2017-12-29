@@ -147,6 +147,7 @@
     <Compile Include="IntegrationTests\BaseQueryTests.cs" />
     <Compile Include="IntegrationTests\Linq\CompanyTests.cs" />
     <Compile Include="IntegrationTests\Linq\UserTests.cs" />
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Gender.cs" />
     <Compile Include="EnumTranslation\Models\GenderEnum.cs" />
     <Compile Include="EnumTranslation\Models\GenderEnumTranslation.cs" />
