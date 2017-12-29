@@ -15,6 +15,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
@@ -38,7 +41,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
-        [Required, StringLength(200)]
+        [Required]
+        [StringLength(200)]
         public virtual string Name
         {
             get { return m_Name; }
@@ -46,10 +50,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<User> Users
-        {
-            get { return m_Users; }
-        }
+        public virtual ISet<User> Users => m_Users;
 
         public virtual void AddUser(User user)
         {
@@ -65,6 +66,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             {
                 user.RemoveRole(this);
             }
+        }
+    }
+
+    public class RoleMapper : AuditableVersionedPersistentObjectMapper<Role, int, int>
+    {
+        public RoleMapper()
+        {
+            Property(r => r.Name);
+            Set(
+                r => r.Users,
+                m =>
+                {
+                    m.Cascade(Cascade.None);
+                    m.Inverse(true);
+                },
+                c => c.ManyToMany());
         }
     }
 }

@@ -21,4 +21,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         MRS = 2,
         MS = 3
     }
+
+    public class GenericSalutationEnumTranslationMapper : GenericEnumTranslationMapper<SalutationEnum>
+    {
+    }
 }

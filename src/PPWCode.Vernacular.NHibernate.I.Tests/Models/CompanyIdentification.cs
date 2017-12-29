@@ -16,11 +16,13 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class CompanyIdentification : AuditablePersistentObject<int>
     {
         [DataMember]
@@ -32,7 +34,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private Company m_Company;
 
-        [Required, StringLength(256)] public virtual string Identification
+        [Required]
+        [StringLength(256)]
+        public virtual string Identification
         {
             get { return m_Identification; }
             set { m_Identification = value; }
@@ -44,7 +48,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             set { m_Number = value; }
         }
 
-        [Required] public virtual Company Company
+        [Required]
+        public virtual Company Company
         {
             get { return m_Company; }
             set
@@ -65,6 +70,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                     }
                 }
             }
+        }
+    }
+
+    public class CompanyIdentificationMapper : AuditablePersistentObjectMapper<CompanyIdentification, int>
+    {
+        public CompanyIdentificationMapper()
+        {
+            Property(ci => ci.Identification);
+            Property(ci => ci.Number);
+            ManyToOne(ci => ci.Company);
         }
     }
 }

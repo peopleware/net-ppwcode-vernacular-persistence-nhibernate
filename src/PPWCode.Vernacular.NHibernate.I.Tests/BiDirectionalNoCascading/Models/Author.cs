@@ -16,11 +16,15 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Author : PersistentObject<int>
     {
         private string m_Name;
@@ -41,10 +45,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             set { m_Name = value; }
         }
 
-        public virtual ISet<Book> Books
-        {
-            get { return m_Books; }
-        }
+        public virtual ISet<Book> Books => m_Books;
 
         public virtual void AddBook(Book book)
         {
@@ -60,6 +61,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             {
                 book.Author = null;
             }
+        }
+    }
+
+    public class AuthorMapper : PersistentObjectMapper<Author, int>
+    {
+        public AuthorMapper()
+        {
+            Property(a => a.Name);
+
+            Set(
+                c => c.Books,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                },
+                r => r.OneToMany(m => m.Class(typeof(Book))));
         }
     }
 }

@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models
 {
     public class ClippingPlane
@@ -28,6 +31,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models
         {
             get { return m_MeshTranslation; }
             set { m_MeshTranslation = value; }
+        }
+    }
+
+    public class ClippingPlaneMapper : ComponentMapping<ClippingPlane>
+    {
+        public ClippingPlaneMapper()
+        {
+            Component(p => p.Plane);
+            Component(p => p.MeshTranslation);
         }
     }
 }

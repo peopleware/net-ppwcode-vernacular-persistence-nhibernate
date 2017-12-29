@@ -20,4 +20,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         MALE = 1,
         FEMALE = 2
     }
+
+    public class GenericGenderEnumTranslationMapper : GenericEnumTranslationMapper<GenderEnum>
+    {
+    }
 }

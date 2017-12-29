@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
     public class GenderEnumTranslation : GenericEnumTranslation<GenderEnum>
@@ -24,5 +26,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
             : base(id)
         {
         }
+    }
+
+    public class GenderEnumTranslationMapper : SubclassMapping<GenderEnumTranslation>
+    {
     }
 }

@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models
 {
     public class Vector3D
@@ -35,6 +38,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models
         {
             get { return m_Z; }
             set { m_Z = value; }
+        }
+    }
+
+    public class Vector3DMapper : ComponentMapping<Vector3D>
+    {
+        public Vector3DMapper()
+        {
+            Property(v => v.X);
+            Property(v => v.Y);
+            Property(v => v.Z);
         }
     }
 }

@@ -17,9 +17,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
     public class AllRoundIctCompany : IctCompany
     {
         [DataMember]
@@ -50,6 +53,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                 m_AllRound = value;
             }
+        }
+    }
+
+    public class AllRoundIctCompanyMapper : SubclassMapping<AllRoundIctCompany>
+    {
+        public AllRoundIctCompanyMapper()
+        {
+            Property(c => c.AllRound);
         }
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
@@ -40,6 +41,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         {
             get { return m_TranslationFr; }
             set { m_TranslationFr = value; }
+        }
+    }
+
+    public class EnumTranslationMapper : PersistentObjectMapper<EnumTranslation, int>
+    {
+        public EnumTranslationMapper()
+        {
+            Property(et => et.TranslationNl);
+            Property(et => et.TranslationFr);
         }
     }
 }

@@ -15,6 +15,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using NHibernate.Mapping.ByCode;
+using NHibernate.Type;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
@@ -40,7 +44,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
-        [Required, StringLength(200)]
+        [Required]
+        [StringLength(200)]
         public virtual string Name
         {
             get { return m_Name; }
@@ -61,10 +66,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<Role> Roles
-        {
-            get { return m_Roles; }
-        }
+        public virtual ISet<Role> Roles => m_Roles;
 
         public virtual void AddRole(Role role)
         {
@@ -80,6 +82,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             {
                 role.RemoveUser(this);
             }
+        }
+    }
+
+    public class UserMapper : AuditableVersionedPersistentObjectMapper<User, int, int>
+    {
+        public UserMapper()
+        {
+            // User is most of the time a reserved word
+            Table("`User`");
+            Property(
+                u => u.Name,
+                m =>
+                {
+                    m.Unique(true);
+                    m.UniqueKey("UQ_User_Name");
+                });
+            Property(u => u.Gender, m => m.Type<EnumStringType<Gender>>());
+            Property(u => u.HasBlueEyes, m => m.Type<YesNoType>());
+            Set(
+                u => u.Roles,
+                m => m.Cascade(Cascade.None),
+                c => c.ManyToMany());
         }
     }
 }

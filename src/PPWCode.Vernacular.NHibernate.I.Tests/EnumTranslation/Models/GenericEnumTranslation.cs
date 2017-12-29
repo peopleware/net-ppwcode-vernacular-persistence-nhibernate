@@ -14,6 +14,9 @@
 
 using System;
 
+using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Type;
+
 using PPWCode.Vernacular.Exceptions.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
@@ -40,6 +43,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         {
             get { return m_Code; }
             set { m_Code = value; }
+        }
+    }
+
+    public abstract class GenericEnumTranslationMapper<T> : SubclassMapping<GenericEnumTranslation<T>>
+        where T : struct, IComparable, IConvertible, IFormattable
+    {
+        protected GenericEnumTranslationMapper()
+        {
+            Property(
+                e => e.Code,
+                m => { m.Type<EnumStringType<T>>(); });
         }
     }
 }

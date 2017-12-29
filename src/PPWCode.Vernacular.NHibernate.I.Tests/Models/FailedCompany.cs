@@ -15,12 +15,17 @@
 using System;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
 using PPWCode.Vernacular.Exceptions.II;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable, AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
+    [DataContract(IsReference = true)]
+    [Serializable]
+    [AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class FailedCompany : InsertAuditablePersistentObject<int>
     {
         [DataMember]
@@ -68,6 +73,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
 
             return sce;
+        }
+    }
+
+    public class FailedCompanyMapper : InsertAuditablePersistentObjectMapper<FailedCompany, int>
+    {
+        public FailedCompanyMapper()
+        {
+            Id(fc => fc.Id, m => m.Generator(Generators.Foreign<FailedCompany>(fc => fc.Company)));
+            Property(fc => fc.FailingDate);
+            OneToOne(fc => fc.Company, m => m.Constrained(true));
         }
     }
 }

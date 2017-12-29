@@ -17,11 +17,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true), AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
+    [Serializable]
+    [DataContract(IsReference = true)]
+    [AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         public Company(int id, int persistenceVersion)
@@ -47,7 +52,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
 
-        [Required, StringLength(128)]
+        [Required]
+        [StringLength(128)]
         public virtual string Name
         {
             get { return m_Name; }
@@ -78,16 +84,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
         }
 
-        public virtual bool IsFailed
-        {
-            get { return FailedCompany != null; }
-        }
+        public virtual bool IsFailed => FailedCompany != null;
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<CompanyIdentification> Identifications
-        {
-            get { return m_Identifications; }
-        }
+        public virtual ISet<CompanyIdentification> Identifications => m_Identifications;
 
         public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {
@@ -103,6 +103,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             {
                 companyIdentification.Company = this;
             }
+        }
+    }
+
+    public class CompanyMapper : AuditableVersionedPersistentObjectMapper<Company, int, int>
+    {
+        public CompanyMapper()
+        {
+            Property(c => c.Name);
+
+            Set(
+                c => c.Identifications,
+                c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
+                r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
+
+            OneToOne(c => c.FailedCompany, m => m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)));
         }
     }
 }

@@ -15,9 +15,12 @@
 using System;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
     public class IctCompany : Company
     {
         public IctCompany(int id, int persistenceVersion)
@@ -33,5 +36,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public IctCompany()
         {
         }
+    }
+
+    public class IctCompanyMapper : SubclassMapping<IctCompany>
+    {
     }
 }

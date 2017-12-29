@@ -16,11 +16,15 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Ship : PersistentObject<int>
     {
         [DataMember]
@@ -44,10 +48,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
             set { m_Code = value; }
         }
 
-        public virtual ISet<CargoContainer> CargoContainers
-        {
-            get { return m_CargoContainers; }
-        }
+        public virtual ISet<CargoContainer> CargoContainers => m_CargoContainers;
 
         public virtual void AddCargoContainer(CargoContainer cargoContainer)
         {
@@ -63,6 +64,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
             {
                 cargoContainer.Ship = null;
             }
+        }
+    }
+
+    public class ShipMapper : PersistentObjectMapper<Ship, int>
+    {
+        public ShipMapper()
+        {
+            Property(s => s.Code);
+
+            Set(
+                s => s.CargoContainers,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.All | Cascade.Merge);
+                },
+                r => r.OneToMany());
         }
     }
 }

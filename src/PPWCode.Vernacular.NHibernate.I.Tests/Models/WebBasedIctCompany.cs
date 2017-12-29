@@ -17,9 +17,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
     public class WebBasedIctCompany : IctCompany
     {
         [DataMember]
@@ -49,6 +52,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                 m_WebBased = value;
             }
+        }
+    }
+
+    public class WebBasedIctCompanyMapper : SubclassMapping<WebBasedIctCompany>
+    {
+        public WebBasedIctCompanyMapper()
+        {
+            Property(c => c.WebBased);
         }
     }
 }

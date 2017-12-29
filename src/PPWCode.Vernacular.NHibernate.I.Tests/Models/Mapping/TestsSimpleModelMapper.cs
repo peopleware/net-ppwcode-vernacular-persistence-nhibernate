@@ -24,14 +24,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping
         {
         }
 
-        protected override string DefaultSchemaName
-        {
-            get { return @"dbo"; }
-        }
+        protected override string DefaultSchemaName => @"dbo";
 
-        protected override bool QuoteIdentifiers
-        {
-            get { return true; }
-        }
+        protected override bool QuoteIdentifiers => true;
     }
 }

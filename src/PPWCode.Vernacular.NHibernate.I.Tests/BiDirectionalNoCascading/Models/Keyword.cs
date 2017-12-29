@@ -14,6 +14,9 @@
 
 using System.Collections.Generic;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
@@ -38,10 +41,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             set { m_Name = value; }
         }
 
-        public virtual ISet<Book> Books
-        {
-            get { return m_Books; }
-        }
+        public virtual ISet<Book> Books => m_Books;
 
         public virtual void AddBook(Book book)
         {
@@ -57,6 +57,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             {
                 book.RemoveKeyword(this);
             }
+        }
+    }
+
+    public class KeywordMapper : PersistentObjectMapper<Keyword, int>
+    {
+        public KeywordMapper()
+        {
+            Property(k => k.Name);
+
+            Set(
+                k => k.Books,
+                m => { m.Cascade(Cascade.None); },
+                r => r.ManyToMany());
         }
     }
 }
