@@ -24,6 +24,7 @@ using NHibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 
+using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
@@ -105,7 +106,9 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         public virtual bool CreateIndexForForeignKey => true;
 
-        protected virtual PrimaryKeyTypeEnum PrimaryKeyType => PrimaryKeyTypeEnum.TYPE_ID;
+        protected virtual KeyTypeEnum PrimaryKeyType => KeyTypeEnum.TYPE_ID;
+
+        protected virtual KeyTypeEnum ForeignKeyType => KeyTypeEnum.TYPE_ID;
 
         protected virtual string GetTableName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
         {
@@ -117,27 +120,55 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return ConditionalQuoteIdentifier(GetIdentifier(member.ToColumnName()), quoteIdentifier ?? QuoteIdentifiers);
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, PropertyPath member, bool quoteIdentifier)
+        protected virtual string GetForeignKeyColumnName(IModelInspector modelInspector, PropertyPath member, bool quoteIdentifier)
         {
-            MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
-            Type type = modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
-                            ? otherSideProperty.GetPropertyOrFieldType()
-                            : member.MemberType();
-            return GetKeyColumnName(modelInspector, type, true, quoteIdentifier);
+            string keyColumnName;
+
+            if (modelInspector.IsManyToManyItem(member.LocalMember))
+            {
+                keyColumnName = member.CollectionElementType().Name;
+            }
+            else if (modelInspector.IsManyToOne(member.LocalMember) || modelInspector.IsSet(member.LocalMember))
+            {
+                MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
+                keyColumnName =
+                    modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
+                        ? otherSideProperty.GetPropertyOrFieldType().Name
+                        : member.ToColumnName();
+            }
+            else
+            {
+                throw new NotSupportedException($"Unable to determine foreignkey column-name for {member}.");
+            }
+
+            if (ForeignKeyType == KeyTypeEnum.ID)
+            {
+                throw new ProgrammingError("Not supported for Foreign keys.");
+            }
+
+            return GetKeyColumnName(ForeignKeyType, keyColumnName, quoteIdentifier);
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, Type type, bool foreignKey, bool quoteIdentifier)
+        protected virtual string GetPrimaryKeyColumnName(IModelInspector modelInspector, Type type, bool quoteIdentifier)
+        {
+            return GetKeyColumnName(PrimaryKeyType, type.Name, quoteIdentifier);
+        }
+
+        protected virtual string GetKeyColumnName(KeyTypeEnum keyType, string keyColumnName, bool quoteIdentifier)
         {
             string result;
-            PrimaryKeyTypeEnum primaryKeyType = foreignKey ? PrimaryKeyTypeEnum.TYPE_ID : PrimaryKeyType;
-            switch (primaryKeyType)
+            switch (keyType)
             {
-                case PrimaryKeyTypeEnum.ID:
+                case KeyTypeEnum.ID:
                     result = GetIdentifier("Id");
                     break;
 
-                case PrimaryKeyTypeEnum.TYPE_ID:
-                    result = GetIdentifier(string.Concat(type.Name, "Id"));
+                case KeyTypeEnum.TYPE_ID:
+                    result = GetIdentifier(string.Concat(keyColumnName, "Id"));
+                    break;
+
+                case KeyTypeEnum.ID_TYPE:
+                    result = GetIdentifier(string.Concat("Id", keyColumnName));
                     break;
 
                 default:
@@ -383,7 +414,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             classCustomizer.Id(
                 m =>
                 {
-                    m.Column(GetKeyColumnName(modelInspector, type, false, QuoteIdentifiers));
+                    m.Column(GetPrimaryKeyColumnName(modelInspector, type, QuoteIdentifiers));
                     m.Generator(Generators.HighLow);
                 });
 
@@ -477,7 +508,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             joinedSubclassCustomizer.Key(
                 k =>
                 {
-                    k.Column(GetKeyColumnName(modelInspector, type.BaseType ?? type, false, QuoteIdentifiers));
+                    k.Column(GetPrimaryKeyColumnName(modelInspector, type.BaseType ?? type, QuoteIdentifiers));
                     if (type.BaseType != null)
                     {
                         k.ForeignKey($"FK_{GetTableName(modelInspector, type, false)}_{GetTableName(modelInspector, type.BaseType, false)}");
@@ -489,8 +520,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            string columnName = GetIdentifier($"{member.CollectionElementType().Name}Id");
-            string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
+            string columnName = GetForeignKeyColumnName(modelInspector, member, false);
+            string tableName = GetTableNameForManyToMany(modelInspector, member, false);
             string foreignKeyName = $"FK_{tableName}_{columnName}";
             // TODO how to put an index on the second FK??
             //string indexName = string.Format("IX_FK_{0}_{1}", tableName, columnName);
@@ -499,9 +530,19 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             collectionRelationManyToManyCustomizer.ForeignKey(foreignKeyName);
         }
 
+        protected virtual string GetTableNameForManyToMany(IModelInspector modelInspector, PropertyPath member, bool quoteIdentifier)
+        {
+            if (!modelInspector.IsManyToManyItem(member.LocalMember))
+            {
+                throw new ProgrammingError($"Member {member} must be a many-to-many-item.");
+            }
+
+            return ConditionalQuoteIdentifier(GetIdentifier(member.ManyToManyIntermediateTableName("To")), quoteIdentifier);
+        }
+
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            string foreignKeyColumnName = GetKeyColumnName(modelInspector, member, false);
+            string foreignKeyColumnName = GetForeignKeyColumnName(modelInspector, member, false);
             propertyCustomizer.Column(ConditionalQuoteIdentifier(foreignKeyColumnName, QuoteIdentifiers));
             string tableName = GetTableName(modelInspector, member.Owner(), false);
             propertyCustomizer.ForeignKey($"FK_{tableName}_{foreignKeyColumnName}");
@@ -531,12 +572,12 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         {
             if (modelinspector.IsManyToManyItem(member.LocalMember))
             {
-                string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
-                collectionPropertiesCustomizer.Table(tableName);
+                string tableName = GetTableNameForManyToMany(modelinspector, member, false);
+                collectionPropertiesCustomizer.Table(ConditionalQuoteIdentifier(tableName, QuoteIdentifiers));
                 collectionPropertiesCustomizer.Key(
                     k =>
                     {
-                        string keyColumnName = GetKeyColumnName(modelinspector, member.Owner(), true, QuoteIdentifiers);
+                        string keyColumnName = GetKeyColumnName(ForeignKeyType, member.Owner().Name, QuoteIdentifiers);
                         k.Column(keyColumnName);
                     });
             }
@@ -558,7 +599,8 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     collectionPropertiesCustomizer.Key(k => k.ForeignKey($"FK_{GetTableName(modelinspector, oneToManyProperty.DeclaringType, false)}_{GetIdentifier(oneToManyProperty.Name)}"));
                 }
 
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, QuoteIdentifiers)));
+                string keyColumnName = GetForeignKeyColumnName(modelinspector, member, QuoteIdentifiers);
+                collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
 
             if (BatchSize != null && BatchSize.Value > 0)
@@ -593,10 +635,11 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return result.ToUpper();
         }
 
-        public enum PrimaryKeyTypeEnum
+        public enum KeyTypeEnum
         {
             ID,
-            TYPE_ID
+            TYPE_ID,
+            ID_TYPE
         }
     }
 }

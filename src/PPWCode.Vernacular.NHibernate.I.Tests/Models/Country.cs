@@ -16,40 +16,41 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
     [Serializable]
     [DataContract(IsReference = true)]
-    public class Address
+    public class Country : AuditableVersionedPersistentObject<int, int>
     {
-        [DataMember]
-        [Required]
-        [StringLength(128)]
-        public virtual string Street { get; set; }
+        public Country(int id, int persistenceVersion)
+            : base(id, persistenceVersion)
+        {
+        }
+
+        public Country(int id)
+            : base(id)
+        {
+        }
+
+        public Country()
+        {
+        }
 
         [DataMember]
         [Required]
-        [StringLength(16)]
-        public virtual string Number { get; set; }
-
-        [DataMember]
-        [StringLength(16)]
-        public virtual string Box { get; set; }
-
-        [DataMember]
-        public virtual Country Country { get; set; }
+        public virtual string Name { get; set; }
     }
 
-    public class AddressMapper : ComponentMapping<Address>
+    public class CountryMapper : AuditableVersionedPersistentObjectMapper<Country, int, int>
     {
-        public AddressMapper()
+        public CountryMapper()
         {
-            Property(a => a.Street);
-            Property(a => a.Number);
-            Property(a => a.Box);
-            ManyToOne(a => a.Country);
+            Property(c => c.Name);
         }
     }
 }
