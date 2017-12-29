@@ -14,21 +14,19 @@
 
 using System;
 
-using NHibernate.Cfg.MappingSchema;
-
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {
     public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
         private IQueryOverRepository<Car, Guid> m_Repository;
+        private IHbmMapping m_HbmMapping;
 
         protected IQueryOverRepository<Car, Guid> Repository
         {
@@ -45,10 +43,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
             get { return FixedConnectionString; }
         }
 
-        protected override HbmMapping GetHbmMapping()
+        protected override IHbmMapping HbmMapping
         {
-            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            return mapper.GetHbmMapping();
+            get { return m_HbmMapping ?? (m_HbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
         }
 
         protected override string IdentityName

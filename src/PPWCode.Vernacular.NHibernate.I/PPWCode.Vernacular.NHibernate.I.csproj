@@ -105,6 +105,7 @@
     <Compile Include="Implementations\LinqRepository.cs" />
     <Compile Include="Implementations\QueryOverRepository.cs" />
     <Compile Include="Implementations\RepositoryBase.cs" />
+    <Compile Include="Interfaces\IAuxiliaryDatabaseObjectEx.cs" />
     <Compile Include="Interfaces\IHbmMapping.cs" />
     <Compile Include="Interfaces\ILinqRepository.cs" />
     <Compile Include="Interfaces\INhInterceptor.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
+    <Compile Include="Utilities\HighLowPerTableAuxiliaryDatabaseObject.cs" />
     <Compile Include="Utilities\PPWDriverConnectionProvider.cs" />
     <Compile Include="Utilities\GenericWellKnownInstanceType.cs" />
     <Compile Include="Implementations\NhConfiguration.cs" />

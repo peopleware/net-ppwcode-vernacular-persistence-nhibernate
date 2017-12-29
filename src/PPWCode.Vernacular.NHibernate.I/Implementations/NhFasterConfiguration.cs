@@ -22,6 +22,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Castle.Core.Logging;
 
 using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -34,15 +35,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         private const string ConfigFile = "hibernate.cfg.xml";
         private ILogger m_Logger = new NullLogger();
 
-        protected NhFasterConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
-            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
+        protected NhFasterConfiguration(
+            INhInterceptor nhInterceptor, 
+            INhProperties nhProperties, 
+            IMappingAssemblies mappingAssemblies, 
+            IHbmMapping hbmMapping, 
+            IRegisterEventListener[] registerEventListeners,
+            IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
         {
-        }
-
-        public ILogger Logger
-        {
-            get { return m_Logger; }
-            set { m_Logger = value; }
         }
 
         [Pure]

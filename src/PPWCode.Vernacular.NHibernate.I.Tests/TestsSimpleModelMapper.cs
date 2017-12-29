@@ -12,20 +12,81 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
+using NHibernate.Mapping.ByCode;
+
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.MappingByCode;
+using PPWCode.Vernacular.NHibernate.I.Utilities;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     public class TestsSimpleModelMapper : SimpleModelMapper
     {
+        public const string GeneratorTableName = "HIBERNATE_HI_LO";
+        public const string GeneratorNextHiColumnName = "NEXT_HI";
+        public const string GeneratorEntityNameColumnName = "ENTITY_NAME";
+        public const int GeneratorMaxLo = 999;
+
         public TestsSimpleModelMapper(IMappingAssemblies mappingAssemblies)
             : base(mappingAssemblies)
         {
         }
 
-        protected override string DefaultSchemaName => @"dbo";
+        protected override string DefaultSchemaName
+        {
+            get { return @"dbo"; }
+        }
 
-        protected override bool QuoteIdentifiers => true;
+        protected override bool QuoteIdentifiers
+        {
+            get { return true; }
+        }
+
+        protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        {
+            base.OnBeforeMapClass(modelInspector, type, classCustomizer);
+
+            classCustomizer
+                .Id(idMapper =>
+                    {
+                        idMapper.Generator(
+                            Generators.HighLow,
+                            generatorMapper =>
+                                generatorMapper.Params(
+                                    new
+                                    {
+                                        table = GeneratorTableName,
+                                        column = GeneratorNextHiColumnName,
+                                        max_lo = GeneratorMaxLo,
+                                        where = $"{GeneratorEntityNameColumnName} = '{type.FullName}'"
+                                    }));
+                    });
+        }
+    }
+
+    public class TestHighLowPerTableAuxiliaryDatabaseObject
+        : HighLowPerTableAuxiliaryDatabaseObject
+    {
+        public TestHighLowPerTableAuxiliaryDatabaseObject(IHbmMapping hbmMapping)
+            : base(hbmMapping)
+        {
+        }
+
+        protected override string GeneratorTableName
+        {
+            get { return TestsSimpleModelMapper.GeneratorTableName; }
+        }
+
+        protected override string GeneratorEntityNameColumnName
+        {
+            get { return TestsSimpleModelMapper.GeneratorEntityNameColumnName; }
+        }
+
+        protected override string GeneratorNextHiColumnName
+        {
+            get { return TestsSimpleModelMapper.GeneratorNextHiColumnName; }
+        }
     }
 }

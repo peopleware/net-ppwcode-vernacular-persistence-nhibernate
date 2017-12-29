@@ -14,7 +14,10 @@
 
 using System.Collections.Generic;
 
+using Castle.Core.Logging;
+
 using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -28,15 +31,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         private readonly IMappingAssemblies m_MappingAssemblies;
         private readonly IHbmMapping m_HbmMapping;
         private readonly IRegisterEventListener[] m_RegisterEventListeners;
+        private volatile IAuxiliaryDatabaseObject[] m_AuxiliaryDatabaseObjects;
         private volatile Configuration m_Configuration;
+        private ILogger m_Logger = NullLogger.Instance;
 
-        protected NhConfigurationBase(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
+        protected NhConfigurationBase(
+            INhInterceptor nhInterceptor, 
+            INhProperties nhProperties, 
+            IMappingAssemblies mappingAssemblies, 
+            IHbmMapping hbmMapping, 
+            IRegisterEventListener[] registerEventListeners,
+            IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
         {
             m_NhInterceptor = nhInterceptor;
             m_NhProperties = nhProperties;
             m_MappingAssemblies = mappingAssemblies;
             m_HbmMapping = hbmMapping;
             m_RegisterEventListeners = registerEventListeners;
+            m_AuxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
         }
 
         protected INhProperties NhProperties
@@ -64,6 +76,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         protected IMappingAssemblies MappingAssemblies
         {
             get { return m_MappingAssemblies; }
+        }
+
+        protected IAuxiliaryDatabaseObject[] AuxiliaryDatabaseObjects
+        {
+            get { return m_AuxiliaryDatabaseObjects; }
+        }
+
+        public ILogger Logger
+        {
+            get { return m_Logger; }
+            set
+            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if (value != null)
+                {
+                    m_Logger = value;
+                }
+            }
         }
 
         public Configuration GetConfiguration()

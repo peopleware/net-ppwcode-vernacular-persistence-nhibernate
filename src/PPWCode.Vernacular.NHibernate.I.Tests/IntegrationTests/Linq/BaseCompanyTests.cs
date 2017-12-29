@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
+
+using NHibernate.Mapping;
 
 using NUnit.Framework;
 

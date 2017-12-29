@@ -25,8 +25,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
     public abstract class ModelMapperBase : IHbmMapping
     {
+        private readonly object m_Locker = new object();
         private readonly IMappingAssemblies m_MappingAssemblies;
         private readonly ModelMapper m_ModelMapper;
+        private HbmMapping m_HbmMapping;
 
         protected ModelMapperBase(IMappingAssemblies mappingAssemblies)
         {
@@ -86,27 +88,38 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         public HbmMapping GetHbmMapping()
         {
-            IEnumerable<Type> mappingTypes =
-                MappingTypes
-                ?? m_MappingAssemblies
-                    .GetAssemblies()
-                    .SelectMany(a => a.GetExportedTypes());
-            ModelMapper.AddMappings(mappingTypes);
-
-            HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
-
-            hbmMapping.defaultlazy = DefaultLazy;
-            if (!string.IsNullOrWhiteSpace(DefaultAccess))
+            if (m_HbmMapping == null)
             {
-                hbmMapping.defaultaccess = DefaultAccess;
+                lock (m_Locker)
+                {
+                    if (m_HbmMapping == null)
+                    {
+                        IEnumerable<Type> mappingTypes =
+                            MappingTypes
+                            ?? m_MappingAssemblies
+                               .GetAssemblies()
+                               .SelectMany(a => a.GetExportedTypes());
+                        ModelMapper.AddMappings(mappingTypes);
+
+                        HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
+
+                        hbmMapping.defaultlazy = DefaultLazy;
+                        if (!string.IsNullOrWhiteSpace(DefaultAccess))
+                        {
+                            hbmMapping.defaultaccess = DefaultAccess;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(DefaultCascade))
+                        {
+                            hbmMapping.defaultcascade = DefaultCascade;
+                        }
+
+                        m_HbmMapping = hbmMapping;
+                    }
+                }
             }
 
-            if (!string.IsNullOrWhiteSpace(DefaultCascade))
-            {
-                hbmMapping.defaultcascade = DefaultCascade;
-            }
-
-            return hbmMapping;
+            return m_HbmMapping;
         }
 
         protected virtual IEnumerable<Type> MappingTypes

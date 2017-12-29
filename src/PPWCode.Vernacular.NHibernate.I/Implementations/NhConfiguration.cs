@@ -18,6 +18,7 @@ using System.Reflection;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
+using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -25,8 +26,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public class NhConfiguration : NhConfigurationBase
     {
-        public NhConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
-            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
+        public NhConfiguration(
+            INhInterceptor nhInterceptor,
+            INhProperties nhProperties,
+            IMappingAssemblies mappingAssemblies,
+            IHbmMapping hbmMapping,
+            IRegisterEventListener[] registerEventListeners,
+            IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
         {
         }
 
@@ -34,27 +41,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             get
             {
-                Configuration result = new Configuration();
+                Configuration configuration = new Configuration();
 
-                result.Configure();
+                configuration.Configure();
 
                 // Overrule properties if necessary
-                foreach (KeyValuePair<string, string> item in NhProperties.GetProperties(result))
+                foreach (KeyValuePair<string, string> item in NhProperties.GetProperties(configuration))
                 {
-                    if (result.Properties.ContainsKey(item.Key))
+                    if (configuration.Properties.ContainsKey(item.Key))
                     {
                         if (string.IsNullOrWhiteSpace(item.Value))
                         {
-                            result.Properties.Remove(item.Key);
+                            configuration.Properties.Remove(item.Key);
                         }
                         else
                         {
-                            result.SetProperty(item.Key, item.Value);
+                            configuration.SetProperty(item.Key, item.Value);
                         }
                     }
                     else
                     {
-                        result.Properties.Add(item);
+                        configuration.Properties.Add(item);
                     }
                 }
 
@@ -62,27 +69,34 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 IInterceptor interceptor = NhInterceptor.GetInterceptor();
                 if (interceptor != null)
                 {
-                    result.SetInterceptor(interceptor);
+                    configuration.SetInterceptor(interceptor);
                 }
 
                 foreach (IRegisterEventListener registerListener in RegisterEventListeners)
                 {
-                    registerListener.Register(result);
+                    registerListener.Register(configuration);
                 }
 
                 HbmMapping hbmMapping = HbmMapping.GetHbmMapping();
                 if (hbmMapping != null)
                 {
-                    result.AddMapping(hbmMapping);
+                    configuration.AddMapping(hbmMapping);
                 }
 
                 // map embedded resource of specified assemblies
                 foreach (Assembly assembly in MappingAssemblies.GetAssemblies())
                 {
-                    result.AddAssembly(assembly);
+                    configuration.AddAssembly(assembly);
                 }
 
-                return result;
+                foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
+                {
+                    IAuxiliaryDatabaseObjectEx auxiliaryDatabaseObjectEx = auxiliaryDatabaseObject as IAuxiliaryDatabaseObjectEx;
+                    auxiliaryDatabaseObjectEx?.SetConfiguration(configuration);
+                    configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
+                }
+
+                return configuration;
             }
         }
     }

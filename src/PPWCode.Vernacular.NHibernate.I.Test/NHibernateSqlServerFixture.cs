@@ -18,11 +18,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 
+using NHibernate;
 using NHibernate.Cfg;
-using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Event;
+using NHibernate.Mapping;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
@@ -107,24 +108,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                 if (m_Configuration == null)
                 {
                     m_Configuration = new Configuration()
-                        .DataBaseIntegration(
-                            db =>
-                            {
-                                db.Dialect<MsSql2008Dialect>();
-                                db.Driver<Sql2008ClientDriver>();
-                            })
-                        .Configure()
-                        .DataBaseIntegration(
-                            db =>
-                            {
-                                db.Dialect<MsSql2008Dialect>();
-                                db.Driver<Sql2008ClientDriver>();
-                                db.ConnectionString = ConnectionString;
-                                db.IsolationLevel = IsolationLevel.ReadCommitted;
-                            })
-                        .SetProperty(Environment.ShowSql, ShowSql.ToString())
-                        .SetProperty(Environment.FormatSql, FormatSql.ToString())
-                        .SetProperty(Environment.GenerateStatistics, GenerateStatistics.ToString());
+                                      .DataBaseIntegration(
+                                          db =>
+                                          {
+                                              db.Dialect<MsSql2008Dialect>();
+                                              db.Driver<Sql2008ClientDriver>();
+                                          })
+                                      .Configure()
+                                      .DataBaseIntegration(
+                                          db =>
+                                          {
+                                              db.Dialect<MsSql2008Dialect>();
+                                              db.Driver<Sql2008ClientDriver>();
+                                              db.ConnectionString = ConnectionString;
+                                              db.IsolationLevel = IsolationLevel.ReadCommitted;
+                                          })
+                                      .SetProperty(Environment.ShowSql, ShowSql.ToString())
+                                      .SetProperty(Environment.FormatSql, FormatSql.ToString())
+                                      .SetProperty(Environment.GenerateStatistics, GenerateStatistics.ToString());
 
                     IDictionary<string, string> props = m_Configuration.Properties;
                     if (props.ContainsKey(Environment.ConnectionStringName))
@@ -132,14 +133,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         props.Remove(Environment.ConnectionStringName);
                     }
 
-                    HbmMapping hbmMapping = GetHbmMapping();
-                    if (hbmMapping != null)
+                    IInterceptor interceptor = Interceptor?.GetInterceptor();
+                    if (interceptor != null)
                     {
-                        m_Configuration.AddMapping(hbmMapping);
+                        m_Configuration.SetInterceptor(interceptor);
                     }
 
-                    new CivilizedEventListener().Register(m_Configuration);
-                    new TestAuditLogEventListener(new TestIdentityProvider(IdentityName), new TestTimeProvider(UtcNow), UseUtc).Register(m_Configuration);
+                    foreach (IRegisterEventListener registerListener in RegisterEventListeners)
+                    {
+                        registerListener.Register(m_Configuration);
+                    }
+
+                    IHbmMapping hbmMapping = HbmMapping;
+                    if (hbmMapping != null)
+                    {
+                        m_Configuration.AddMapping(hbmMapping.GetHbmMapping());
+                    }
+
+                    foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
+                    {
+                        IAuxiliaryDatabaseObjectEx auxiliaryDatabaseObjectEx = auxiliaryDatabaseObject as IAuxiliaryDatabaseObjectEx;
+                        auxiliaryDatabaseObjectEx?.SetConfiguration(m_Configuration);
+                        m_Configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
+                    }
                 }
 
                 return m_Configuration;
@@ -152,9 +168,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             m_ConnectionString = null;
         }
 
-        protected virtual HbmMapping GetHbmMapping()
+        protected virtual IHbmMapping HbmMapping
         {
-            return null;
+            get { return null; }
+        }
+
+        protected virtual IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
+        {
+            get { yield break; }
+        }
+
+        protected virtual IEnumerable<IRegisterEventListener> RegisterEventListeners
+        {
+            get
+            {
+                yield return new CivilizedEventListener();
+                yield return new TestAuditLogEventListener(new TestIdentityProvider(IdentityName), new TestTimeProvider(UtcNow), UseUtc);
+            }
+        }
+
+        protected virtual INhInterceptor Interceptor
+        {
+            get { return null; }
         }
 
         protected virtual void CreateCatalog()
