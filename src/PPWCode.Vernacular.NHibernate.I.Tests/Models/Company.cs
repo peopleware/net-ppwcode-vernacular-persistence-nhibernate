@@ -121,7 +121,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                 c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
                 r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
 
-            OneToOne(c => c.FailedCompany, m => m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)));
+            OneToOne(
+                c => c.FailedCompany, 
+                m =>
+                {
+                    m.ForeignKey(null);
+                    m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+                });
         }
     }
 }
