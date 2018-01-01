@@ -34,12 +34,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         {
         }
 
-        protected override string DefaultSchemaName
+        public override string DefaultSchemaName
         {
             get { return @"dbo"; }
         }
 
-        protected override bool QuoteIdentifiers
+        public override bool QuoteIdentifiers
         {
             get { return true; }
         }

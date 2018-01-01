@@ -95,31 +95,31 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
-        protected virtual bool UseCamelCaseUnderScoreForDbObjects => false;
+        public virtual bool UseCamelCaseUnderScoreForDbObjects => false;
 
-        protected virtual bool DynamicInsert => false;
+        public virtual bool DynamicInsert => false;
 
-        protected virtual bool DynamicUpdate => false;
+        public virtual bool DynamicUpdate => false;
 
-        protected virtual int? ClassBatchSize => null;
+        public virtual int? ClassBatchSize => null;
 
-        protected virtual int? CollectionBatchSize => null;
+        public virtual int? CollectionBatchSize => null;
 
-        protected virtual string DefaultSchemaName => null;
+        public virtual string DefaultSchemaName => null;
 
-        protected virtual string DefaultCatalogName => null;
+        public virtual string DefaultCatalogName => null;
 
-        protected virtual bool QuoteIdentifiers => false;
+        public virtual bool QuoteIdentifiers => false;
 
         public virtual bool CreateIndexForForeignKey => true;
 
-        protected virtual KeyTypeEnum PrimaryKeyType => KeyTypeEnum.TYPE_ID;
+        public virtual KeyTypeEnum PrimaryKeyType => KeyTypeEnum.TYPE_ID;
 
-        protected virtual KeyTypeEnum ForeignKeyType => KeyTypeEnum.TYPE_ID;
+        public virtual KeyTypeEnum ForeignKeyType => KeyTypeEnum.TYPE_ID;
 
-        protected DefaultCandidatePersistentMembersProvider MembersProvider { get; }
+        public DefaultCandidatePersistentMembersProvider MembersProvider { get; }
 
-        protected virtual string CamelCaseToUnderscore(string camelCase)
+        public virtual string CamelCaseToUnderscore(string camelCase)
         {
             const string Rgx = @"([A-Z]+)([A-Z][a-z])";
             const string Rgx2 = @"([a-z\d])([A-Z])";
@@ -129,17 +129,17 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return result.ToUpper();
         }
 
-        protected virtual string GetIdentifier(string identifier)
+        public virtual string GetIdentifier(string identifier)
         {
             return UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
         }
 
-        protected virtual string ConditionalQuoteIdentifier(string identifier, bool quoteIdentifier)
+        public virtual string ConditionalQuoteIdentifier(string identifier, bool quoteIdentifier)
         {
             return quoteIdentifier ? QuoteIdentifier(identifier) : identifier;
         }
 
-        protected virtual string QuoteIdentifier(string identifier)
+        public virtual string QuoteIdentifier(string identifier)
         {
             return $"`{identifier}`";
         }
