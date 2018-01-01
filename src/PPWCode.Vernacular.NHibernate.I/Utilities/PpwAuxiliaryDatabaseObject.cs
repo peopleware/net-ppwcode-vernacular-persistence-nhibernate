@@ -24,7 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public abstract class PpwAuxiliaryDatabaseObject
         : AbstractAuxiliaryDatabaseObject,
-          IAuxiliaryDatabaseObjectEx
+          IPpwAuxiliaryDatabaseObject
     {
         private Configuration m_Configuration;
         public IHbmMapping HbmMapping { get; }

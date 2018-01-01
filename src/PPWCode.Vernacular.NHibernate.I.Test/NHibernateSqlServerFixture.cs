@@ -152,8 +152,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
                     foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
                     {
-                        IAuxiliaryDatabaseObjectEx auxiliaryDatabaseObjectEx = auxiliaryDatabaseObject as IAuxiliaryDatabaseObjectEx;
-                        auxiliaryDatabaseObjectEx?.SetConfiguration(m_Configuration);
+                        IPpwAuxiliaryDatabaseObject ppwAuxiliaryDatabaseObject = auxiliaryDatabaseObject as IPpwAuxiliaryDatabaseObject;
+                        ppwAuxiliaryDatabaseObject?.SetConfiguration(m_Configuration);
                         m_Configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
                     }
                 }

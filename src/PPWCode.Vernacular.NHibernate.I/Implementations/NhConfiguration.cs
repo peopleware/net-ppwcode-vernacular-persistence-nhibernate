@@ -91,8 +91,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 
                 foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
                 {
-                    IAuxiliaryDatabaseObjectEx auxiliaryDatabaseObjectEx = auxiliaryDatabaseObject as IAuxiliaryDatabaseObjectEx;
-                    auxiliaryDatabaseObjectEx?.SetConfiguration(configuration);
+                    IPpwAuxiliaryDatabaseObject ppwAuxiliaryDatabaseObject = auxiliaryDatabaseObject as IPpwAuxiliaryDatabaseObject;
+                    ppwAuxiliaryDatabaseObject?.SetConfiguration(configuration);
                     configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
                 }
 
