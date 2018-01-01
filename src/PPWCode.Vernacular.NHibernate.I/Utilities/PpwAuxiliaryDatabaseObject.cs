@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,11 +13,15 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
+using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
@@ -79,6 +83,54 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                             .Where(m => m.MappedClass == type && !m.MappedClass.IsAbstract)
                             .Select(m => m.DiscriminatorValue))
                     .ToArray();
+        }
+
+        protected virtual string GetColumnNames<TSource>(Expression<Func<TSource, object>> propertyLambda)
+        {
+            PropertyInfo propInfo = GetPropertyInfo(propertyLambda);
+            if (propInfo != null)
+            {
+                PersistentClass persistentClass = GetPersistentClassFor(typeof(TSource));
+                if (persistentClass != null)
+                {
+                    Property nhProperty =
+                        persistentClass
+                            .PropertyIterator
+                            .SingleOrDefault(p => string.Equals(p.Name, propInfo.Name, StringComparison.Ordinal));
+                    if (nhProperty != null)
+                    {
+                        IEnumerable<Column> columns = nhProperty.Value.ColumnIterator.OfType<Column>();
+                        return string.Join(",", columns.Select(c => c.Name));
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        protected virtual PropertyInfo GetPropertyInfo<TSource>(Expression<Func<TSource, object>> propertyLambda)
+        {
+            Expression body = propertyLambda.Body;
+            MemberExpression member = body as MemberExpression;
+            UnaryExpression unary = body as UnaryExpression;
+            if (member == null && !(unary != null && (member = unary.Operand as MemberExpression) != null))
+            {
+                throw new ProgrammingError($"Expression \'{propertyLambda}\' does not refer to a property.");
+            }
+
+            PropertyInfo propInfo = member.Member as PropertyInfo;
+            if (!(propInfo != null))
+            {
+                throw new ProgrammingError($"Expression \'{propertyLambda}\' refers to a field, not a property.");
+            }
+
+            Type type = typeof(TSource);
+            if (propInfo.DeclaringType != null && !propInfo.DeclaringType.IsAssignableFrom(type))
+            {
+                throw new ProgrammingError($"Expression \'{propertyLambda}\' refers to a property that is not from type \'{{type}}\'.");
+            }
+
+            return propInfo;
         }
     }
 }
