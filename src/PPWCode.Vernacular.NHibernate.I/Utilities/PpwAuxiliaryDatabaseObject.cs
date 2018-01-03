@@ -13,12 +13,12 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
 using NHibernate.Cfg;
+using NHibernate.Dialect;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.Exceptions.II;
@@ -31,13 +31,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
           IPpwAuxiliaryDatabaseObject
     {
         private Configuration m_Configuration;
-        public IHbmMapping HbmMapping { get; }
+        public IPpwHbmMapping PpwHbmMapping { get; }
 
         protected Configuration Configuration => m_Configuration;
 
-        protected PpwAuxiliaryDatabaseObject(IHbmMapping hbmMapping)
+        protected PpwAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
         {
-            HbmMapping = hbmMapping;
+            PpwHbmMapping = ppwHbmMapping;
         }
 
         public void SetConfiguration(Configuration configuration)
@@ -85,7 +85,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                     .ToArray();
         }
 
-        protected virtual string GetColumnNames<TSource>(Expression<Func<TSource, object>> propertyLambda)
+        protected virtual string[] GetColumnNames<TSource>(Expression<Func<TSource, object>> propertyLambda)
         {
             PropertyInfo propInfo = GetPropertyInfo(propertyLambda);
             if (propInfo != null)
@@ -99,13 +99,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                             .SingleOrDefault(p => string.Equals(p.Name, propInfo.Name, StringComparison.Ordinal));
                     if (nhProperty != null)
                     {
-                        IEnumerable<Column> columns = nhProperty.Value.ColumnIterator.OfType<Column>();
-                        return string.Join(",", columns.Select(c => c.Name));
+                        return
+                            nhProperty
+                                .Value
+                                .ColumnIterator
+                                .OfType<Column>()
+                                .Select(c => c.Name)
+                                .ToArray();
                     }
                 }
             }
 
-            return null;
+            return new string[0];
         }
 
         protected virtual PropertyInfo GetPropertyInfo<TSource>(Expression<Func<TSource, object>> propertyLambda)
@@ -132,5 +137,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             return propInfo;
         }
-    }
+
+        protected virtual string QuoteColumnName(Dialect dialect, string identifier)
+        {
+            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForColumnName(identifier) : identifier;
+        }
+
+        protected virtual string QuoteTableName(Dialect dialect, string identifier)
+        {
+            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForTableName(identifier) : identifier;
+        }
+
+        protected virtual string QuoteSchemaName(Dialect dialect, string identifier)
+        {
+            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForSchemaName(identifier) : identifier;
+        }
+	}
 }

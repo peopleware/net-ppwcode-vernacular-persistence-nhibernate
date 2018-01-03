@@ -27,8 +27,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {
-        protected HighLowPerTableAuxiliaryDatabaseObject(IHbmMapping hbmMapping)
-            : base(hbmMapping)
+        protected HighLowPerTableAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
+            : base(ppwHbmMapping)
         {
         }
 
@@ -53,7 +53,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             script.AppendLine();
 
-            HbmMapping hbmMapping = HbmMapping.GetHbmMapping();
+            HbmMapping hbmMapping = PpwHbmMapping.HbmMapping;
             HashSet<string> tables =
                 new HashSet<string>(
                     hbmMapping

@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
     public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
         private IQueryOverRepository<Car, Guid> m_Repository;
-        private IHbmMapping m_HbmMapping;
+        private IPpwHbmMapping m_PpwHbmMapping;
 
         protected IQueryOverRepository<Car, Guid> Repository
         {
@@ -43,9 +43,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
             get { return FixedConnectionString; }
         }
 
-        protected override IHbmMapping HbmMapping
+        protected override IPpwHbmMapping PpwHbmMapping
         {
-            get { return m_HbmMapping ?? (m_HbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
+            get { return m_PpwHbmMapping ?? (m_PpwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
         }
 
         protected override string IdentityName

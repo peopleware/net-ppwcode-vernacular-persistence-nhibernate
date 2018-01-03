@@ -60,9 +60,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             set { m_Name = value; }
         }
 
-        [DataMember]
-        public virtual Address Address { get; set; }
-
         [AuditLogPropertyIgnore]
         public virtual FailedCompany FailedCompany
         {
@@ -114,7 +111,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public CompanyMapper()
         {
             Property(c => c.Name);
-            Component(c => c.Address);
 
             Set(
                 c => c.Identifications,

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ using System.Linq;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Impl;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public abstract class ModelMapperBase : IHbmMapping
+    public abstract class ModelMapperBase : IPpwHbmMapping
     {
         private readonly object m_Locker = new object();
         private readonly IMappingAssemblies m_MappingAssemblies;
@@ -76,71 +77,60 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.AfterMapUnionSubclass += OnAfterMapUnionSubclass;
         }
 
-        protected ModelMapper ModelMapper
-        {
-            get { return m_ModelMapper; }
-        }
+        public abstract ICandidatePersistentMembersProvider MembersProvider { get; }
 
-        protected IModelInspector ModelInspector
-        {
-            get { return ModelMapper.ModelInspector; }
-        }
+        public abstract bool QuoteIdentifiers { get; }
 
-        public HbmMapping GetHbmMapping()
+        public ModelMapper ModelMapper => m_ModelMapper;
+
+        protected IModelInspector ModelInspector => ModelMapper.ModelInspector;
+
+        public HbmMapping HbmMapping
         {
-            if (m_HbmMapping == null)
+            get
             {
-                lock (m_Locker)
+                if (m_HbmMapping == null)
                 {
-                    if (m_HbmMapping == null)
+                    lock (m_Locker)
                     {
-                        IEnumerable<Type> mappingTypes =
-                            MappingTypes
-                            ?? m_MappingAssemblies
-                               .GetAssemblies()
-                               .SelectMany(a => a.GetExportedTypes());
-                        ModelMapper.AddMappings(mappingTypes);
-
-                        HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
-
-                        hbmMapping.defaultlazy = DefaultLazy;
-                        if (!string.IsNullOrWhiteSpace(DefaultAccess))
+                        if (m_HbmMapping == null)
                         {
-                            hbmMapping.defaultaccess = DefaultAccess;
-                        }
+                            IEnumerable<Type> mappingTypes =
+                                MappingTypes
+                                ?? m_MappingAssemblies
+                                   .GetAssemblies()
+                                   .SelectMany(a => a.GetExportedTypes());
+                            ModelMapper.AddMappings(mappingTypes);
 
-                        if (!string.IsNullOrWhiteSpace(DefaultCascade))
-                        {
-                            hbmMapping.defaultcascade = DefaultCascade;
-                        }
+                            HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
 
-                        m_HbmMapping = hbmMapping;
+                            hbmMapping.defaultlazy = DefaultLazy;
+                            if (!string.IsNullOrWhiteSpace(DefaultAccess))
+                            {
+                                hbmMapping.defaultaccess = DefaultAccess;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(DefaultCascade))
+                            {
+                                hbmMapping.defaultcascade = DefaultCascade;
+                            }
+
+                            m_HbmMapping = hbmMapping;
+                        }
                     }
                 }
+
+                return m_HbmMapping;
             }
-
-            return m_HbmMapping;
         }
 
-        protected virtual IEnumerable<Type> MappingTypes
-        {
-            get { return null; }
-        }
+        protected virtual IEnumerable<Type> MappingTypes => null;
 
-        protected virtual string DefaultAccess
-        {
-            get { return null; }
-        }
+        protected virtual string DefaultAccess => null;
 
-        protected virtual bool DefaultLazy
-        {
-            get { return true; }
-        }
+        protected virtual bool DefaultLazy => true;
 
-        protected virtual string DefaultCascade
-        {
-            get { return null; }
-        }
+        protected virtual string DefaultCascade => null;
 
         protected virtual void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
         {

@@ -18,12 +18,13 @@ using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
+using PPWCode.Vernacular.NHibernate.I.Utilities;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public abstract class BaseQueryTests : BaseRepositoryFixture<int, TestIntAuditLog>
     {
-        private IHbmMapping m_HbmMapping;
+        private IPpwHbmMapping m_PpwHbmMapping;
 
         protected override string CatalogName
         {
@@ -35,9 +36,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             get { return FixedConnectionString; }
         }
 
-        protected override IHbmMapping HbmMapping
+        protected override IPpwHbmMapping PpwHbmMapping
         {
-            get { return m_HbmMapping ?? (m_HbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
+            get { return m_PpwHbmMapping ?? (m_PpwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
         }
 
         protected override string IdentityName
@@ -47,7 +48,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 
         protected override IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
         {
-            get { yield return new TestHighLowPerTableAuxiliaryDatabaseObject(HbmMapping); }
+            get
+            {
+                yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping);
+                yield return new PpwSubclassCheckConstraintsAuxiliaryDatabaseObject(PpwHbmMapping);
+            }
         }
     }
 }

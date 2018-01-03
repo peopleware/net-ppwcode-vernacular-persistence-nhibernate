@@ -39,10 +39,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             INhInterceptor nhInterceptor, 
             INhProperties nhProperties, 
             IMappingAssemblies mappingAssemblies, 
-            IHbmMapping hbmMapping, 
+            IPpwHbmMapping ppwHbmMapping, 
             IRegisterEventListener[] registerEventListeners,
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
-            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, ppwHbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
         {
         }
 

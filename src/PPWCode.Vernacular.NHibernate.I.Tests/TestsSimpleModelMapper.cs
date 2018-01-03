@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,15 +34,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         {
         }
 
-        public override string DefaultSchemaName
-        {
-            get { return @"dbo"; }
-        }
+        protected override string DefaultSchemaName => @"dbo";
 
-        public override bool QuoteIdentifiers
-        {
-            get { return true; }
-        }
+        public override bool QuoteIdentifiers => false;
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
@@ -69,24 +63,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
     public class TestHighLowPerTableAuxiliaryDatabaseObject
         : HighLowPerTableAuxiliaryDatabaseObject
     {
-        public TestHighLowPerTableAuxiliaryDatabaseObject(IHbmMapping hbmMapping)
-            : base(hbmMapping)
+        public TestHighLowPerTableAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
+            : base(ppwHbmMapping)
         {
         }
 
-        protected override string GeneratorTableName
-        {
-            get { return TestsSimpleModelMapper.GeneratorTableName; }
-        }
+        protected override string GeneratorTableName => TestsSimpleModelMapper.GeneratorTableName;
 
-        protected override string GeneratorEntityNameColumnName
-        {
-            get { return TestsSimpleModelMapper.GeneratorEntityNameColumnName; }
-        }
+        protected override string GeneratorEntityNameColumnName => TestsSimpleModelMapper.GeneratorEntityNameColumnName;
 
-        protected override string GeneratorNextHiColumnName
-        {
-            get { return TestsSimpleModelMapper.GeneratorNextHiColumnName; }
-        }
+        protected override string GeneratorNextHiColumnName => TestsSimpleModelMapper.GeneratorNextHiColumnName;
     }
 }

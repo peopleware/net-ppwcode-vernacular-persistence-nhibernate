@@ -144,10 +144,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                         registerListener.Register(m_Configuration);
                     }
 
-                    IHbmMapping hbmMapping = HbmMapping;
-                    if (hbmMapping != null)
+                    IPpwHbmMapping ppwHbmMapping = PpwHbmMapping;
+                    if (ppwHbmMapping != null)
                     {
-                        m_Configuration.AddMapping(hbmMapping.GetHbmMapping());
+                        m_Configuration.AddMapping(ppwHbmMapping.HbmMapping);
                     }
 
                     foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
@@ -168,7 +168,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             m_ConnectionString = null;
         }
 
-        protected virtual IHbmMapping HbmMapping
+        protected virtual IPpwHbmMapping PpwHbmMapping
         {
             get { return null; }
         }

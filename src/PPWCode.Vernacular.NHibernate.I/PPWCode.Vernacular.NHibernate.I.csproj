@@ -106,7 +106,7 @@
     <Compile Include="Implementations\QueryOverRepository.cs" />
     <Compile Include="Implementations\RepositoryBase.cs" />
     <Compile Include="Interfaces\IPpwAuxiliaryDatabaseObject.cs" />
-    <Compile Include="Interfaces\IHbmMapping.cs" />
+    <Compile Include="Interfaces\IPpwHbmMapping.cs" />
     <Compile Include="Interfaces\ILinqRepository.cs" />
     <Compile Include="Interfaces\INhInterceptor.cs" />
     <Compile Include="Interfaces\IQueryOverRepository.cs" />

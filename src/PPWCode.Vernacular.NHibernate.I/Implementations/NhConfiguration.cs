@@ -30,10 +30,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             INhInterceptor nhInterceptor,
             INhProperties nhProperties,
             IMappingAssemblies mappingAssemblies,
-            IHbmMapping hbmMapping,
+            IPpwHbmMapping ppwHbmMapping,
             IRegisterEventListener[] registerEventListeners,
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
-            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, ppwHbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
         {
         }
 
@@ -77,7 +77,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                     registerListener.Register(configuration);
                 }
 
-                HbmMapping hbmMapping = HbmMapping.GetHbmMapping();
+                HbmMapping hbmMapping = PpwHbmMapping.HbmMapping;
                 if (hbmMapping != null)
                 {
                     configuration.AddMapping(hbmMapping);

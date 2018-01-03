@@ -36,9 +36,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public IctCompany()
         {
         }
+
+        [DataMember]
+        public virtual Address Address { get; set; }
+
+
     }
 
     public class IctCompanyMapper : SubclassMapping<IctCompany>
     {
+        public IctCompanyMapper()
+        {
+            Component(c => c.Address);
+
+        }
     }
 }

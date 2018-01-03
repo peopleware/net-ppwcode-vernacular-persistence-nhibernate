@@ -29,7 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         private readonly object m_Locker = new object();
         private readonly INhProperties m_NhProperties;
         private readonly IMappingAssemblies m_MappingAssemblies;
-        private readonly IHbmMapping m_HbmMapping;
+        private readonly IPpwHbmMapping m_PpwHbmMapping;
         private readonly IRegisterEventListener[] m_RegisterEventListeners;
         private volatile IAuxiliaryDatabaseObject[] m_AuxiliaryDatabaseObjects;
         private volatile Configuration m_Configuration;
@@ -39,14 +39,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             INhInterceptor nhInterceptor, 
             INhProperties nhProperties, 
             IMappingAssemblies mappingAssemblies, 
-            IHbmMapping hbmMapping, 
+            IPpwHbmMapping ppwHbmMapping, 
             IRegisterEventListener[] registerEventListeners,
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
         {
             m_NhInterceptor = nhInterceptor;
             m_NhProperties = nhProperties;
             m_MappingAssemblies = mappingAssemblies;
-            m_HbmMapping = hbmMapping;
+            m_PpwHbmMapping = ppwHbmMapping;
             m_RegisterEventListeners = registerEventListeners;
             m_AuxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
         }
@@ -68,9 +68,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             get { return m_NhInterceptor; }
         }
 
-        protected IHbmMapping HbmMapping
+        protected IPpwHbmMapping PpwHbmMapping
         {
-            get { return m_HbmMapping; }
+            get { return m_PpwHbmMapping; }
         }
 
         protected IMappingAssemblies MappingAssemblies
