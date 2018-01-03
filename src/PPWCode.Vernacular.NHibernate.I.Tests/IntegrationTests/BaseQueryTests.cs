@@ -51,7 +51,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
             get
             {
                 yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping);
-                yield return new PpwSubclassCheckConstraintsAuxiliaryDatabaseObject(PpwHbmMapping);
             }
         }
     }
