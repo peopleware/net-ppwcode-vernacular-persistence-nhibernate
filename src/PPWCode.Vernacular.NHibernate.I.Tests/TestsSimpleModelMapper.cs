@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 
 using NHibernate.Mapping.ByCode;
 
@@ -27,6 +28,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         public const string GeneratorTableName = "HIBERNATE_HI_LO";
         public const string GeneratorNextHiColumnName = "NEXT_HI";
         public const string GeneratorEntityNameColumnName = "ENTITY_NAME";
+        public const string GeneratorTableNameColumnName = "TABLE_NAME";
         public const int GeneratorMaxLo = 999;
 
         public TestsSimpleModelMapper(IMappingAssemblies mappingAssemblies)
@@ -73,5 +75,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         protected override string GeneratorEntityNameColumnName => TestsSimpleModelMapper.GeneratorEntityNameColumnName;
 
         protected override string GeneratorNextHiColumnName => TestsSimpleModelMapper.GeneratorNextHiColumnName;
+
+        protected override string GeneratorTableNameColumnName => TestsSimpleModelMapper.GeneratorTableNameColumnName;
     }
 }
