@@ -313,9 +313,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             if (value != null)
             {
                 IPersistentObject<TId> persistentObject = value as IPersistentObject<TId>;
-                return persistentObject != null
-                           ? persistentObject.Id.ToString()
-                           : value.ToString();
+                if (persistentObject != null)
+                {
+                    return persistentObject.Id.ToString();
+                }
+
+                IPpwAuditLog ppwAuditLog = value as IPpwAuditLog;
+                if (ppwAuditLog != null)
+                {
+                    return ppwAuditLog.AuditLogValue;
+                }
+
+                return value.ToString();
             }
 
             return null;

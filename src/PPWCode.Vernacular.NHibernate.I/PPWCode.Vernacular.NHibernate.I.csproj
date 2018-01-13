@@ -126,6 +126,7 @@
     <Compile Include="Utilities\AuditInterceptor.cs" />
     <Compile Include="Utilities\AuditLogEventListener.cs" />
     <Compile Include="Utilities\CivilizedEventListener.cs" />
+    <Compile Include="Utilities\IPpwAuditLog.cs" />
     <Compile Include="Utilities\HighLowPerTableAuxiliaryDatabaseObject.cs" />
     <Compile Include="Utilities\PpwAuxiliaryDatabaseObject.cs" />
     <Compile Include="Utilities\PPWDriverConnectionProvider.cs" />
