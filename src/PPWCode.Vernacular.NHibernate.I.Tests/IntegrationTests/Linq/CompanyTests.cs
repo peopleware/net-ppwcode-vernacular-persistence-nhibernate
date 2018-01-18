@@ -32,7 +32,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
         public void Can_Get_Company_with_Lazy_Identifications()
         {
             Company company = Repository.Get(qry => qry.Where(c => c.Name == "Peopleware NV"));
-
+            ((IctCompany)company).Address.Number = "19";
+            Session.Flush();
             Assert.That(company, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
         }

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,32 +57,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             m_UseUtc = useUtc;
         }
 
-        public IIdentityProvider IdentityProvider
-        {
-            get { return m_IdentityProvider; }
-        }
+        public IIdentityProvider IdentityProvider => m_IdentityProvider;
 
-        public ITimeProvider TimeProvider
-        {
-            get { return m_TimeProvider; }
-        }
+        public ITimeProvider TimeProvider => m_TimeProvider;
 
-        public bool UseUtc
-        {
-            get { return m_UseUtc; }
-        }
+        public bool UseUtc => m_UseUtc;
 
         public void Register(Configuration cfg)
         {
             cfg.EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { this }
-                .Concat(cfg.EventListeners.PostUpdateEventListeners)
-                .ToArray();
+                                                          .Concat(cfg.EventListeners.PostUpdateEventListeners)
+                                                          .ToArray();
             cfg.EventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { this }
-                .Concat(cfg.EventListeners.PostInsertEventListeners)
-                .ToArray();
+                                                          .Concat(cfg.EventListeners.PostInsertEventListeners)
+                                                          .ToArray();
             cfg.EventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { this }
-                .Concat(cfg.EventListeners.PostDeleteEventListeners)
-                .ToArray();
+                                                          .Concat(cfg.EventListeners.PostDeleteEventListeners)
+                                                          .ToArray();
         }
 
         public async Task OnPostInsertAsync(PostInsertEvent @event, CancellationToken cancellationToken)
@@ -171,35 +162,40 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
             string entityName = @event.Entity.GetType().Name;
 
-            List<TAuditEntity> auditLogs = new List<TAuditEntity>();
+            List<TAuditEntity> auditEntities = new List<TAuditEntity>();
             int length = @event.State.Length;
             for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
             {
-                string newValue = GetStringValueFromStateArray(@event, @event.State, fieldIndex);
-
                 string propertyName = @event.Persister.PropertyNames[fieldIndex];
                 AuditLogActionEnum auditLogAction;
                 if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
                 {
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
-                        auditLogs.Add(
-                            new TAuditEntity
-                            {
-                                EntryType = "I",
-                                EntityName = entityName,
-                                EntityId = @event.Id.ToString(),
-                                PropertyName = propertyName,
-                                OldValue = null,
-                                NewValue = newValue,
-                                CreatedBy = identityName,
-                                CreatedAt = now
-                            });
+                        PpwAuditLog[] auditLogs =
+                            GetValuesFromStateArray(propertyName, @event, @event.State, fieldIndex)
+                                .Where(l => l != null)
+                                .ToArray();
+                        foreach (PpwAuditLog auditLog in auditLogs)
+                        {
+                            auditEntities.Add(
+                                new TAuditEntity
+                                {
+                                    EntryType = "I",
+                                    EntityName = entityName,
+                                    EntityId = @event.Id.ToString(),
+                                    PropertyName = auditLog.PropertyName,
+                                    OldValue = null,
+                                    NewValue = auditLog.Value,
+                                    CreatedBy = identityName,
+                                    CreatedAt = now
+                                });
+                        }
                     }
                 }
             }
 
-            return auditLogs;
+            return auditEntities;
         }
 
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostUpdateEvent @event, AuditLogItem auditLogItem)
@@ -221,29 +217,48 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
             foreach (int dirtyFieldIndex in fieldIndices)
             {
-                string oldValue = GetStringValueFromStateArray(@event, @event.OldState, dirtyFieldIndex);
-                string newValue = GetStringValueFromStateArray(@event, @event.State, dirtyFieldIndex);
-
-                if (oldValue != newValue)
+                string propertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
+                AuditLogActionEnum auditLogAction;
+                if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
                 {
-                    string propertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
-                    AuditLogActionEnum auditLogAction;
-                    if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
+                    if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                     {
-                        if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
+                        Dictionary<string, PpwAuditLog> oldAuditLogs =
+                            GetValuesFromStateArray(propertyName, @event, @event.OldState, dirtyFieldIndex)
+                                .Where(l => l != null)
+                                .ToDictionary(l => l.PropertyName);
+                        PpwAuditLog[] newAuditLogs =
+                            GetValuesFromStateArray(propertyName, @event, @event.State, dirtyFieldIndex)
+                                .Where(l => l != null)
+                                .ToArray();
+                        if (newAuditLogs.Length != oldAuditLogs.Count)
                         {
-                            auditLogs.Add(
-                                new TAuditEntity
-                                {
-                                    EntryType = "U",
-                                    EntityName = entityName,
-                                    EntityId = @event.Id.ToString(),
-                                    PropertyName = propertyName,
-                                    OldValue = oldValue,
-                                    NewValue = newValue,
-                                    CreatedBy = identityName,
-                                    CreatedAt = now
-                                });
+                            throw new ProgrammingError($"Mismatch old/new count in entity {entityName} identified by {@event.Id}.");
+                        }
+
+                        foreach (PpwAuditLog newAuditLog in newAuditLogs)
+                        {
+                            PpwAuditLog oldAuditLog;
+                            if (!oldAuditLogs.TryGetValue(newAuditLog.PropertyName, out oldAuditLog))
+                            {
+                                throw new ProgrammingError($"Mismatch old/new propertyName for property {propertyName} in entity {entityName} identified by {@event.Id}.");
+                            }
+
+                            if (oldAuditLog.Value != newAuditLog.Value)
+                            {
+                                auditLogs.Add(
+                                    new TAuditEntity
+                                    {
+                                        EntryType = "U",
+                                        EntityName = entityName,
+                                        EntityId = @event.Id.ToString(),
+                                        PropertyName = newAuditLog.PropertyName,
+                                        OldValue = oldAuditLog.Value,
+                                        NewValue = newAuditLog.Value,
+                                        CreatedBy = identityName,
+                                        CreatedAt = now
+                                    });
+                            }
                         }
                     }
                 }
@@ -307,7 +322,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        protected virtual string GetStringValueFromStateArray(AbstractEvent @event, object[] stateArray, int position)
+        protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(string propertyName, AbstractEvent @event, object[] stateArray, int position)
         {
             object value = stateArray[position];
             if (value != null)
@@ -315,19 +330,35 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 IPersistentObject<TId> persistentObject = value as IPersistentObject<TId>;
                 if (persistentObject != null)
                 {
-                    return persistentObject.Id.ToString();
+                    yield return new PpwAuditLog(propertyName, persistentObject.Id.ToString());
                 }
-
-                IPpwAuditLog ppwAuditLog = value as IPpwAuditLog;
-                if (ppwAuditLog != null)
+                else
                 {
-                    return ppwAuditLog.AuditLogValue;
+                    IPpwAuditLog ppwAuditLog = value as IPpwAuditLog;
+                    if (ppwAuditLog != null)
+                    {
+                        if (ppwAuditLog.IsMultiLog)
+                        {
+                            foreach (PpwAuditLog auditLog in ppwAuditLog.GetMultiLogs(propertyName))
+                            {
+                                yield return auditLog;
+                            }
+                        }
+                        else
+                        {
+                            yield return ppwAuditLog.GetSingleLog(propertyName);
+                        }
+                    }
+                    else
+                    {
+                        yield return new PpwAuditLog(propertyName, value.ToString());
+                    }
                 }
-
-                return value.ToString();
             }
-
-            return null;
+            else
+            {
+                yield return new PpwAuditLog(propertyName, null);
+            }
         }
 
         protected class AuditLogItem

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
-
-using NHibernate.Mapping;
 
 using NUnit.Framework;
 
@@ -42,10 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
             WITH_2_CHILDREN
         }
 
-        protected Company CreatedCompany
-        {
-            get { return m_CreatedCompany; }
-        }
+        protected Company CreatedCompany => m_CreatedCompany;
 
         protected override void OnSetup()
         {
@@ -70,9 +64,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
         protected Company CreateCompany(CompanyCreationType companyCreationType)
         {
             Company company =
-                new Company
+                new IctCompany
                 {
-                    Name = "Peopleware NV"
+                    Name = "Peopleware NV",
+                    Address =
+                        new Address
+                        {
+                            Street = "Duwijckstraat",
+                            Number = "17"
+                        }
                 };
 
             if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)

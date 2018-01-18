@@ -12,14 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
+using System.Runtime.Serialization;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public interface IPpwAuditLog
+    [Serializable]
+    [DataContract]
+    public class PpwAuditLog
     {
-        bool IsMultiLog { get; }
-        IEnumerable<PpwAuditLog> GetMultiLogs(string propertyName);
-        PpwAuditLog GetSingleLog(string propertyName);
+        public PpwAuditLog(string propertyName, string value)
+        {
+            if (propertyName == null)
+            {
+                throw new ArgumentNullException(nameof(propertyName));
+            }
+
+            PropertyName = propertyName;
+            Value = value;
+        }
+
+        [DataMember]
+        public string PropertyName { get; }
+
+        [DataMember]
+        public string Value { get; }
     }
 }

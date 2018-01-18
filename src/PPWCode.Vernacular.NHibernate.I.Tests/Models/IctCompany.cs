@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         [DataMember]
         public virtual Address Address { get; set; }
-
-
     }
 
     public class IctCompanyMapper : SubclassMapping<IctCompany>
@@ -48,7 +46,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public IctCompanyMapper()
         {
             Component(c => c.Address);
-
         }
     }
 }
