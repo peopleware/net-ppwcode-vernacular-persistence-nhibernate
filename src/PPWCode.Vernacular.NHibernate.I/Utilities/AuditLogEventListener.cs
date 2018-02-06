@@ -63,17 +63,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         public bool UseUtc => m_UseUtc;
 
-        public void Register(Configuration cfg)
+        public virtual void Register(Configuration cfg)
         {
-            cfg.EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { this }
-                                                          .Concat(cfg.EventListeners.PostUpdateEventListeners)
-                                                          .ToArray();
-            cfg.EventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { this }
-                                                          .Concat(cfg.EventListeners.PostInsertEventListeners)
-                                                          .ToArray();
-            cfg.EventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { this }
-                                                          .Concat(cfg.EventListeners.PostDeleteEventListeners)
-                                                          .ToArray();
+            cfg.EventListeners.PostUpdateEventListeners =
+                new IPostUpdateEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostUpdateEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostInsertEventListeners =
+                new IPostInsertEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostInsertEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostDeleteEventListeners =
+                new IPostDeleteEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostDeleteEventListeners)
+                    .ToArray();
         }
 
         public async Task OnPostInsertAsync(PostInsertEvent @event, CancellationToken cancellationToken)
