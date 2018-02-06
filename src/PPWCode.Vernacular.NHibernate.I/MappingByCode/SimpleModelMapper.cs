@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 
 using NHibernate;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 
@@ -95,29 +96,49 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
-        protected virtual bool UseCamelCaseUnderScoreForDbObjects => false;
+        protected virtual bool UseCamelCaseUnderScoreForDbObjects
+            => false;
 
-        protected virtual bool DynamicInsert => false;
+        protected virtual bool DynamicInsert
+            => false;
 
-        protected virtual bool DynamicUpdate => false;
+        protected virtual bool DynamicUpdate
+            => false;
 
-        protected virtual int? ClassBatchSize => null;
+        protected virtual int? ClassBatchSize
+            => null;
 
-        protected virtual int? CollectionBatchSize => null;
+        protected virtual int? CollectionBatchSize
+            => null;
 
-        protected virtual string DefaultSchemaName => null;
+        protected virtual string DefaultSchemaName
+            => null;
 
-        protected virtual string DefaultCatalogName => null;
+        protected virtual string DefaultCatalogName
+            => null;
 
-        public override bool QuoteIdentifiers => false;
+        public override bool QuoteIdentifiers
+            => false;
 
-        protected virtual bool CreateIndexForForeignKey => true;
+        protected virtual bool CreateIndexForForeignKey
+            => true;
 
-        protected virtual KeyTypeEnum PrimaryKeyType => KeyTypeEnum.TYPE_ID;
+        protected virtual bool AdjustColumnForForeignGenerator
+            => false;
 
-        protected virtual KeyTypeEnum ForeignKeyType => KeyTypeEnum.TYPE_ID;
+        protected virtual KeyTypeEnum PrimaryKeyType
+            => KeyTypeEnum.TYPE_ID;
+
+        protected virtual KeyTypeEnum ForeignKeyType
+            => KeyTypeEnum.TYPE_ID;
 
         public override ICandidatePersistentMembersProvider MembersProvider { get; }
+
+        private PropertyInfo m_MapPropertyInfo;
+
+        protected PropertyInfo MapDocPropertyInfo
+            => m_MapPropertyInfo
+               ?? (m_MapPropertyInfo = typeof(ClassMapper).GetProperty("MapDoc", BindingFlags.Instance | BindingFlags.NonPublic));
 
         public virtual string CamelCaseToUnderscore(string camelCase)
         {
@@ -702,6 +723,42 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                 string keyColumnName = GetForeignKeyColumnName(modelinspector, member, null);
                 collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
+        }
+
+        protected override void OnAfterMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
+        {
+            base.OnAfterMapClass(modelInspector, type, classCustomizer);
+
+            if (AdjustColumnForForeignGenerator)
+            {
+                HbmMapping hbmMapping = TryGetHbmMapping(classCustomizer);
+                HbmClass rootEntity =
+                    hbmMapping
+                        ?.RootClasses
+                        .SingleOrDefault(c => string.Equals(c.Name, type.FullName, StringComparison.Ordinal)
+                                              && string.Equals(c.Id.generator.@class, "foreign", StringComparison.Ordinal));
+                HbmParam propertyParam =
+                    rootEntity
+                        ?.Id
+                        .generator
+                        .param.SingleOrDefault(p => string.Equals(p.name, "property"));
+                if (propertyParam != null && propertyParam.Text.Length == 1)
+                {
+                    string columnName = GetKeyColumnName(PrimaryKeyType, propertyParam.Text[0], null);
+                    classCustomizer.Id(m => m.Column(columnName));
+                }
+            }
+        }
+
+        protected virtual HbmMapping TryGetHbmMapping(object customizer)
+        {
+            ClassMapper classMapper = customizer as ClassMapper;
+            return
+                classMapper != null
+                    ? (MapDocPropertyInfo != null
+                           ? MapDocPropertyInfo.GetValue(classMapper) as HbmMapping
+                           : null)
+                    : null;
         }
     }
 }
