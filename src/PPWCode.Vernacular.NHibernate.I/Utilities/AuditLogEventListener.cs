@@ -220,34 +220,36 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
             foreach (int dirtyFieldIndex in fieldIndices)
             {
-                string propertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
+                string dirtyPropertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
                 AuditLogActionEnum auditLogAction;
-                if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
+                if (auditLogItem.Properties.TryGetValue(dirtyPropertyName, out auditLogAction))
                 {
                     if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                     {
                         Dictionary<string, PpwAuditLog> oldAuditLogs =
-                            GetValuesFromStateArray(propertyName, @event, @event.OldState, dirtyFieldIndex)
+                            GetValuesFromStateArray(dirtyPropertyName, @event, @event.OldState, dirtyFieldIndex)
                                 .Where(l => l != null)
                                 .ToDictionary(l => l.PropertyName);
-                        PpwAuditLog[] newAuditLogs =
-                            GetValuesFromStateArray(propertyName, @event, @event.State, dirtyFieldIndex)
+                        Dictionary<string, PpwAuditLog> newAuditLogs =
+                            GetValuesFromStateArray(dirtyPropertyName, @event, @event.State, dirtyFieldIndex)
                                 .Where(l => l != null)
-                                .ToArray();
-                        if (newAuditLogs.Length != oldAuditLogs.Count)
-                        {
-                            throw new ProgrammingError($"Mismatch old/new count in entity {entityName} identified by {@event.Id}.");
-                        }
+                                .ToDictionary(l => l.PropertyName);
 
-                        foreach (PpwAuditLog newAuditLog in newAuditLogs)
+                        HashSet<string> propertyNames =
+                            new HashSet<string>(
+                                oldAuditLogs
+                                    .Select(al => al.Key)
+                                    .Union(newAuditLogs.Select(al => al.Key)));
+
+                        foreach (string propertyName in propertyNames)
                         {
                             PpwAuditLog oldAuditLog;
-                            if (!oldAuditLogs.TryGetValue(newAuditLog.PropertyName, out oldAuditLog))
-                            {
-                                throw new ProgrammingError($"Mismatch old/new propertyName for property {propertyName} in entity {entityName} identified by {@event.Id}.");
-                            }
+                            oldAuditLogs.TryGetValue(propertyName, out oldAuditLog);
 
-                            if (oldAuditLog.Value != newAuditLog.Value)
+                            PpwAuditLog newAuditLog;
+                            newAuditLogs.TryGetValue(propertyName, out newAuditLog);
+
+                            if (oldAuditLog?.Value != newAuditLog?.Value)
                             {
                                 auditLogs.Add(
                                     new TAuditEntity
@@ -255,9 +257,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                                         EntryType = "U",
                                         EntityName = entityName,
                                         EntityId = @event.Id.ToString(),
-                                        PropertyName = newAuditLog.PropertyName,
-                                        OldValue = oldAuditLog.Value,
-                                        NewValue = newAuditLog.Value,
+                                        PropertyName = propertyName,
+                                        OldValue = oldAuditLog?.Value,
+                                        NewValue = newAuditLog?.Value,
                                         CreatedBy = identityName,
                                         CreatedAt = now
                                     });
