@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,27 +46,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             m_UseUtc = useUtc;
         }
 
-        public IIdentityProvider IdentityProvider
-        {
-            get { return m_IdentityProvider; }
-        }
+        public IIdentityProvider IdentityProvider => m_IdentityProvider;
 
-        public ITimeProvider TimeProvider
-        {
-            get { return m_TimeProvider; }
-        }
+        public ITimeProvider TimeProvider => m_TimeProvider;
 
-        public bool UseUtc
-        {
-            get { return m_UseUtc; }
-        }
+        public bool UseUtc => m_UseUtc;
 
-        protected ConcurrentDictionary<Property, int> IndexCache
-        {
-            get { return m_IndexCache; }
-        }
+        protected ConcurrentDictionary<Property, int> IndexCache => m_IndexCache;
 
-        private void Set(Type entityType, string[] propertyNames, object[] state, string propertyName, object value)
+        protected virtual bool CanAudit => true;
+
+        protected virtual void Set(Type entityType, string[] propertyNames, object[] state, string propertyName, object value)
         {
             int index = IndexCache.GetOrAdd(new Property(entityType, propertyName), k => Array.IndexOf(propertyNames, propertyName));
             if (index >= 0)
@@ -75,7 +65,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        private bool SetAuditInfo(object entity, object[] currentState, string[] propertyNames, bool onSave)
+        protected virtual bool SetAuditInfo(object entity, object[] currentState, string[] propertyNames, bool onSave)
         {
             IPersistentObject<T> persistentObject = entity as IPersistentObject<T>;
             if (persistentObject == null)
@@ -160,7 +150,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            return SetAuditInfo(entity, currentState, propertyNames, false);
+            return CanAudit && SetAuditInfo(entity, currentState, propertyNames, false);
         }
 
         /// <summary>
@@ -180,7 +170,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </returns>
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
-            return SetAuditInfo(entity, state, propertyNames, true);
+            return CanAudit && SetAuditInfo(entity, state, propertyNames, true);
         }
 
         protected struct Property : IEquatable<Property>
