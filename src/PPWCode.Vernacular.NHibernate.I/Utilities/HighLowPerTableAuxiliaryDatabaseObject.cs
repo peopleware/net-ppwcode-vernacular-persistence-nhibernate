@@ -20,6 +20,7 @@ using System.Text;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -70,10 +71,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                     string fullClassName = segments[0];
                     string tableName = RemoveBackTicks(hbmClass.table);
 
-                    script.AppendLine(
-                        $"INSERT INTO {generatorTableName}" + Environment.NewLine +
-                        $" ({GeneratorEntityNameColumnName}, {GeneratorNextHiColumnName}, {GeneratorTableNameColumnName})" + Environment.NewLine +
-                        $"VALUES ('{fullClassName}', 0, '{tableName}');");
+                    script.AppendLine($"INSERT INTO {generatorTableName} ({GeneratorEntityNameColumnName}, {GeneratorNextHiColumnName}, {GeneratorTableNameColumnName})");
+                    script.AppendLine($"VALUES ('{fullClassName}', 0, '{tableName}');");
                 }
 
                 if (isSqlserver)
@@ -98,6 +97,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected abstract string GeneratorTableNameColumnName { get; }
 
+        protected virtual IEnumerable<IGeneratorDef> GeneratorDefs
+        {
+            get { yield return Generators.HighLow; }
+        }
+
         protected virtual IEnumerable<string> SchemaNames
         {
             get { return HbmClasses.Select(c => c.schema).Distinct(); }
@@ -107,11 +111,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         {
             get
             {
+                ISet<string> generatorClasses =
+                    new HashSet<string>(GeneratorDefs.Select(g => g.Class));
+
                 return
                     PpwHbmMapping
                         .HbmMapping
                         .RootClasses
-                        .Where(c => !string.Equals(c.Id.generator.@class, "foreign"));
+                        .Where(c => generatorClasses.Contains(c.Id.generator.@class));
             }
         }
 
