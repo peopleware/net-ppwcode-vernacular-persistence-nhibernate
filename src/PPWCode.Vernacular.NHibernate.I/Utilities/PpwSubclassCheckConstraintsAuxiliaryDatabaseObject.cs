@@ -27,61 +27,61 @@ using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
-    public class PpwSubclassCheckConstraintsAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
-    {
-        public PpwSubclassCheckConstraintsAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
-            : base(ppwHbmMapping)
-        {
-        }
+    //public class PpwSubclassCheckConstraintsAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
+    //{
+    //    public PpwSubclassCheckConstraintsAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
+    //        : base(ppwHbmMapping)
+    //    {
+    //    }
 
-        protected virtual void AddCheckConstraintsFor(string tableName, string discriminatorColumnName, Subclass @class)
-        {
-            ICandidatePersistentMembersProvider membersProvider = PpwHbmMapping.MembersProvider;
-            Dictionary<string, Property> persistentPropertyNames =
-                @class
-                    .PropertyIterator
-                    .ToDictionary(p => p.Name, StringComparer.Ordinal);
-            IEnumerable<MemberInfo> subEntityMembers = membersProvider.GetSubEntityMembers(@class.MappedClass, @class.MappedClass.BaseType);
-            IDictionary<Property, MemberInfo> checkedProperties =
-                subEntityMembers
-                    .Where(p => persistentPropertyNames.ContainsKey(p.Name))
-                    .ToDictionary(p => persistentPropertyNames[p.Name]);
-            foreach (KeyValuePair<Property, MemberInfo> property in checkedProperties)
-            {
-            }
+    //    protected virtual void AddCheckConstraintsFor(string tableName, string discriminatorColumnName, Subclass @class)
+    //    {
+    //        ICandidatePersistentMembersProvider membersProvider = PpwHbmMapping.MembersProvider;
+    //        Dictionary<string, Property> persistentPropertyNames =
+    //            @class
+    //                .PropertyIterator
+    //                .ToDictionary(p => p.Name, StringComparer.Ordinal);
+    //        IEnumerable<MemberInfo> subEntityMembers = membersProvider.GetSubEntityMembers(@class.MappedClass, @class.MappedClass.BaseType);
+    //        IDictionary<Property, MemberInfo> checkedProperties =
+    //            subEntityMembers
+    //                .Where(p => persistentPropertyNames.ContainsKey(p.Name))
+    //                .ToDictionary(p => persistentPropertyNames[p.Name]);
+    //        foreach (KeyValuePair<Property, MemberInfo> property in checkedProperties)
+    //        {
+    //        }
 
-            foreach (Subclass subclass in @class.DirectSubclasses)
-            {
-                AddCheckConstraintsFor(tableName, discriminatorColumnName, subclass);
-            }
-        }
+    //        foreach (Subclass subclass in @class.DirectSubclasses)
+    //        {
+    //            AddCheckConstraintsFor(tableName, discriminatorColumnName, subclass);
+    //        }
+    //    }
 
-        public override string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
-        {
-            StringBuilder sb = new StringBuilder();
+    //    public override string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+    //    {
+    //        StringBuilder sb = new StringBuilder();
 
-            IEnumerable<PersistentClass> rootClassesWithSubclasses =
-                Configuration
-                    .ClassMappings
-                    .Where(c => c.HasSubclasses);
-            foreach (PersistentClass @class in rootClassesWithSubclasses)
-            {
-                string tableName = GetTableNameFor(@class.MappedClass);
-                string discriminatorColumnName = GetDiscriminatorColumnNameFor(@class.MappedClass);
-                foreach (Subclass subclass in @class.DirectSubclasses)
-                {
-                    AddCheckConstraintsFor(tableName, discriminatorColumnName, subclass);
-                }
-            }
+    //        IEnumerable<PersistentClass> rootClassesWithSubclasses =
+    //            Configuration
+    //                .ClassMappings
+    //                .Where(c => c.HasSubclasses);
+    //        foreach (PersistentClass @class in rootClassesWithSubclasses)
+    //        {
+    //            string tableName = GetTableNameFor(@class.MappedClass);
+    //            string discriminatorColumnName = GetDiscriminatorColumnNameFor(@class.MappedClass);
+    //            foreach (Subclass subclass in @class.DirectSubclasses)
+    //            {
+    //                AddCheckConstraintsFor(tableName, discriminatorColumnName, subclass);
+    //            }
+    //        }
 
-            return sb.ToString();
-        }
+    //        return sb.ToString();
+    //    }
 
-        public override string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
-        {
-            StringBuilder sb = new StringBuilder();
+    //    public override string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
+    //    {
+    //        StringBuilder sb = new StringBuilder();
 
-            return sb.ToString();
-        }
-    }
+    //        return sb.ToString();
+    //    }
+    //}
 }

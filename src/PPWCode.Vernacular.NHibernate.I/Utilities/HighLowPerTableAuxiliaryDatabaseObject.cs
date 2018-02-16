@@ -32,7 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         {
         }
 
-        public override string SqlCreateString(Dialect dialect, IMapping p, string defaultCatalog, string defaultSchema)
+        public override string SqlCreateString(Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema)
         {
             bool isSqlserver = dialect is MsSql2000Dialect;
 
@@ -49,13 +49,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 }
 
                 script.AppendLine();
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorEntityNameColumnName} VARCHAR(128) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorEntityNameColumnName} VARCHAR({dialect.MaxAliasLength}) NOT NULL;");
                 if (isSqlserver)
                 {
                     script.AppendLine("GO");
                 }
 
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorTableNameColumnName} VARCHAR(128) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorTableNameColumnName} VARCHAR({dialect.MaxAliasLength}) NOT NULL;");
                 if (isSqlserver)
                 {
                     script.AppendLine("GO");

@@ -30,6 +30,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         : AbstractAuxiliaryDatabaseObject,
           IPpwAuxiliaryDatabaseObject
     {
+        protected static string[] EmptyStringArray = new string[0];
+
         private Configuration m_Configuration;
         public IPpwHbmMapping PpwHbmMapping { get; }
 
@@ -58,15 +60,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             return GetPersistentClassFor(type)?.Table.Name;
         }
 
-        protected virtual string GetDiscriminatorColumnNameFor(Type type)
+        protected virtual string[] GetDiscriminatorColumnNameFor(Type type)
         {
-            Column column =
+            return
                 GetPersistentClassFor(type)
                     ?.Discriminator
                     ?.ColumnIterator
                     .OfType<Column>()
-                    .FirstOrDefault();
-            return column?.Name;
+                    .Select(c => c.Name)
+                    .ToArray();
         }
 
         protected virtual string[] GetDiscriminatorValuesFor(Type type)
@@ -110,7 +112,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 }
             }
 
-            return new string[0];
+            return EmptyStringArray;
+        }
+
+        protected virtual string[] GetIdentifierColumns(Type type)
+        {
+            PersistentClass persistentClass = GetPersistentClassFor(type);
+            if (persistentClass != null)
+            {
+                return
+                    persistentClass
+                        .Identifier
+                        .ColumnIterator
+                        .OfType<Column>()
+                        .Select(c => c.Name)
+                        .ToArray();
+
+            }
+
+            return EmptyStringArray;
         }
 
         protected virtual PropertyInfo GetPropertyInfo<TSource>(Expression<Func<TSource, object>> propertyLambda)
