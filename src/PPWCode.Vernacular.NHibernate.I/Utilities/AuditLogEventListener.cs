@@ -159,11 +159,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected abstract bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction);
 
+        protected virtual TAuditEntity CreateAuditEntity(string entryType, string entityName, string entityId, PpwAuditLog old, PpwAuditLog @new)
+        {
+            return
+                new TAuditEntity
+                {
+                    EntryType = entryType,
+                    EntityName = entityName,
+                    EntityId = entityId,
+                    PropertyName = @new?.PropertyName ?? old?.PropertyName,
+                    OldValue = old?.Value,
+                    NewValue = @new?.Value,
+                    CreatedBy = IdentityProvider.IdentityName,
+                    CreatedAt = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now
+                };
+        }
+
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostInsertEvent @event, AuditLogItem auditLogItem)
         {
-            string identityName = IdentityProvider.IdentityName;
-            DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
             string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
 
             List<TAuditEntity> auditEntities = new List<TAuditEntity>();
             int length = @event.State.Length;
@@ -179,21 +194,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                             GetValuesFromStateArray(propertyName, @event, @event.State, fieldIndex)
                                 .Where(l => l != null)
                                 .ToArray();
-                        foreach (PpwAuditLog auditLog in auditLogs)
-                        {
-                            auditEntities.Add(
-                                new TAuditEntity
-                                {
-                                    EntryType = "I",
-                                    EntityName = entityName,
-                                    EntityId = @event.Id.ToString(),
-                                    PropertyName = auditLog.PropertyName,
-                                    OldValue = null,
-                                    NewValue = auditLog.Value,
-                                    CreatedBy = identityName,
-                                    CreatedAt = now
-                                });
-                        }
+                        auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, null, auditLog)));
                     }
                 }
             }
@@ -203,9 +204,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostUpdateEvent @event, AuditLogItem auditLogItem)
         {
-            string identityName = IdentityProvider.IdentityName;
-            DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
             string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
 
             if (@event.OldState == null)
             {
@@ -251,18 +251,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
                             if (oldAuditLog?.Value != newAuditLog?.Value)
                             {
-                                auditLogs.Add(
-                                    new TAuditEntity
-                                    {
-                                        EntryType = "U",
-                                        EntityName = entityName,
-                                        EntityId = @event.Id.ToString(),
-                                        PropertyName = propertyName,
-                                        OldValue = oldAuditLog?.Value,
-                                        NewValue = newAuditLog?.Value,
-                                        CreatedBy = identityName,
-                                        CreatedAt = now
-                                    });
+                                auditLogs.Add(CreateAuditEntity("U", entityName, entityId, oldAuditLog, newAuditLog));
                             }
                         }
                     }
@@ -274,21 +263,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostDeleteEvent @event)
         {
-            string identityName = IdentityProvider.IdentityName;
-            DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
             string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
 
             List<TAuditEntity> auditLogs =
                 new List<TAuditEntity>
                 {
-                    new TAuditEntity
-                    {
-                        EntryType = "D",
-                        EntityName = entityName,
-                        EntityId = @event.Id.ToString(),
-                        CreatedBy = identityName,
-                        CreatedAt = now
-                    }
+                    CreateAuditEntity("D", entityName, entityId, null, null)
                 };
 
             return auditLogs;
