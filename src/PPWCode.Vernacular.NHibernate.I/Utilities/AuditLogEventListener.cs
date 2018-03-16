@@ -347,8 +347,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        protected virtual PpwAuditLog CreatePpwAuditLog(string entityName, string entityId, string propertyName, object value) 
-            => new PpwAuditLog(propertyName, value.ToString());
+        protected virtual PpwAuditLog CreatePpwAuditLog(string entityName, string entityId, string propertyName, object value)
+        {
+            if (value is DateTime)
+            {
+                DateTime dt = (DateTime)value;
+                return new PpwAuditLog(propertyName, dt.ToString("u"));
+            }
+
+            return new PpwAuditLog(propertyName, value.ToString());
+        }
 
         protected class AuditLogItem
         {
