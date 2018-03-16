@@ -191,7 +191,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
                         PpwAuditLog[] auditLogs =
-                            GetValuesFromStateArray(propertyName, @event, @event.State, fieldIndex)
+                            GetValuesFromStateArray(entityName, entityId, propertyName, @event.State, fieldIndex)
                                 .Where(l => l != null)
                                 .ToArray();
                         auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, null, auditLog)));
@@ -227,11 +227,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                     if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                     {
                         Dictionary<string, PpwAuditLog> oldAuditLogs =
-                            GetValuesFromStateArray(dirtyPropertyName, @event, @event.OldState, dirtyFieldIndex)
+                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.OldState, dirtyFieldIndex)
                                 .Where(l => l != null)
                                 .ToDictionary(l => l.PropertyName);
                         Dictionary<string, PpwAuditLog> newAuditLogs =
-                            GetValuesFromStateArray(dirtyPropertyName, @event, @event.State, dirtyFieldIndex)
+                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.State, dirtyFieldIndex)
                                 .Where(l => l != null)
                                 .ToDictionary(l => l.PropertyName);
 
@@ -308,7 +308,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(string propertyName, AbstractEvent @event, object[] stateArray, int position)
+        protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(string entityName, string entityId, string propertyName, object[] stateArray, int position)
         {
             object value = stateArray[position];
             if (value != null)
@@ -337,7 +337,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                     }
                     else
                     {
-                        yield return new PpwAuditLog(propertyName, value.ToString());
+                        yield return CreatePpwAuditLog(entityName, entityId, propertyName, value);
                     }
                 }
             }
@@ -346,6 +346,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 yield return new PpwAuditLog(propertyName, null);
             }
         }
+
+        protected virtual PpwAuditLog CreatePpwAuditLog(string entityName, string entityId, string propertyName, object value) 
+            => new PpwAuditLog(propertyName, value.ToString());
 
         protected class AuditLogItem
         {
