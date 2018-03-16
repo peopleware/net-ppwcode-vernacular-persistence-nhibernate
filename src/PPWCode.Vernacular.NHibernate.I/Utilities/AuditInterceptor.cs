@@ -54,7 +54,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
         protected ConcurrentDictionary<Property, int> IndexCache => m_IndexCache;
 
-        protected virtual bool CanAudit => true;
+        protected virtual bool CanAudit(object entity, object id) => true;
 
         protected virtual void Set(Type entityType, string[] propertyNames, object[] state, string propertyName, object value)
         {
@@ -150,7 +150,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
         {
-            return CanAudit && SetAuditInfo(entity, currentState, propertyNames, false);
+            return CanAudit(entity, id) && SetAuditInfo(entity, currentState, propertyNames, false);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         /// </returns>
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
-            return CanAudit && SetAuditInfo(entity, state, propertyNames, true);
+            return CanAudit(entity, id) && SetAuditInfo(entity, state, propertyNames, true);
         }
 
         protected struct Property : IEquatable<Property>
