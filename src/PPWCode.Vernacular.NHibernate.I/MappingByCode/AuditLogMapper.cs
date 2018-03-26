@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,13 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             Property(x => x.PropertyName);
             Property(x => x.OldValue, m => m.Type(NHibernateUtil.StringClob));
             Property(x => x.NewValue, m => m.Type(NHibernateUtil.StringClob));
-            Property(
-                x => x.CreatedAt,
-                m =>
-                {
-                    m.Type(NHibernateUtil.UtcDateTime);
-                    m.NotNullable(true);
-                });
+            Property(x => x.CreatedAt, m => m.NotNullable(true));
             Property(x => x.CreatedBy, m => m.NotNullable(true));
         }
     }
