@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
     [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
-        private static readonly IInternalLogger s_Log = LoggerProvider.LoggerFor(typeof(PPWDriverConnectionProvider));
+        private static readonly INHibernateLogger s_Log = NHibernateLogger.For(typeof(PPWDriverConnectionProvider));
 
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
@@ -46,15 +46,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             {
                 base.CloseConnection(conn);
             }
-            else if (s_Log.IsWarnEnabled)
+            else if (s_Log.IsWarnEnabled())
             {
-                StringBuilder sb = new StringBuilder()
-                    .AppendLine("CloseConnection called with <null> conn.")
-                    .AppendLine()
-                    .AppendLine("Stack Trace :")
-                    .AppendLine()
-                    .AppendLine(Environment.StackTrace)
-                    .AppendLine();
+                StringBuilder sb =
+                    new StringBuilder()
+                        .AppendLine("CloseConnection called with <null> conn.")
+                        .AppendLine()
+                        .AppendLine("Stack Trace :")
+                        .AppendLine()
+                        .AppendLine(Environment.StackTrace)
+                        .AppendLine();
                 s_Log.Warn(sb.ToString());
             }
         }

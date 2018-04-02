@@ -39,8 +39,10 @@
       - Unit tests: more tests to illustrate NHibernate functionality
 3.0.1 Fix nuspec file: dependency version
 4.0.0 Upgrades
-      - Upgrade NHibernate to 5.0.3
+      - Upgrade NHibernate to 5.1 (and his dependencies)
       - Upgrade Castle.Core to 4.2.1
+      - Improve AuditLogEventListener, AuditInterceptor, SimpleModelMapper
+      - Introduce IPpwAuxiliaryDatabaseObject
     </releaseNotes>
 
     <copyright>Copyright 2014-2017 by PeopleWare n.v.</copyright>
@@ -50,8 +52,11 @@
     <!-- explicit dependencies -->
     <dependencies>
       <dependency id="Castle.Core" version="[4.2.1,5)" />
-      <dependency id="NHibernate" version="[5.0.3,6)" />
-      <dependency id="Iesi.Collections" version="[4.0.2,5)" />
+      <dependency id="NHibernate" version="[5.1,5.2)" />
+      <dependency id="Iesi.Collections" version="[4.0.4,5)" />
+      <dependency id="Antlr3.Runtime" version="[3.5.1,4)" />
+      <dependency id="Remotion.Linq" version="[2.1.2,3)" />
+      <dependency id="Remotion.Linq.EagerFetching" version="[2.1,3)" />
       <dependency id="PPWCode.Util.OddsAndEnds.II" version="[1.3,2)" />
       <dependency id="PPWCode.Vernacular.Persistence.II" version="[3,4)" />
       <dependency id="PPWCode.Vernacular.Semantics.II" version="[1,2)" />
