@@ -279,7 +279,15 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 
         public virtual object GetDiscriminatorValue(IModelInspector modelInspector, Type type)
         {
-            return CamelCaseToUnderscore(type.Name);
+            string discriminatorValue = type.Name;
+            if (type.IsGenericType 
+                && type.GenericTypeArguments[0].IsEnum 
+                && discriminatorValue.EndsWith("Enum"))
+            {
+                discriminatorValue = discriminatorValue.Substring(0, discriminatorValue.Length - "Enum".Length);
+            }
+
+            return CamelCaseToUnderscore(discriminatorValue);
         }
 
         protected virtual string DefaultVersionColumnName => "PersistenceVersion";
