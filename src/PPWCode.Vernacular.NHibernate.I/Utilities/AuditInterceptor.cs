@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,27 +34,32 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         private const string LastModifiedAtPropertyName = "LastModifiedAt";
         private const string LastModifiedByPropertyName = "LastModifiedBy";
 
-        private readonly IIdentityProvider m_IdentityProvider;
-        private readonly ConcurrentDictionary<Property, int> m_IndexCache = new ConcurrentDictionary<Property, int>();
-        private readonly ITimeProvider m_TimeProvider;
-        private readonly bool m_UseUtc;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly ConcurrentDictionary<Property, int> _indexCache = new ConcurrentDictionary<Property, int>();
+        private readonly ITimeProvider _timeProvider;
+        private readonly bool _useUtc;
 
         public AuditInterceptor(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
-            m_IdentityProvider = identityProvider;
-            m_TimeProvider = timeProvider;
-            m_UseUtc = useUtc;
+            _identityProvider = identityProvider;
+            _timeProvider = timeProvider;
+            _useUtc = useUtc;
         }
 
-        public IIdentityProvider IdentityProvider => m_IdentityProvider;
+        public IIdentityProvider IdentityProvider
+            => _identityProvider;
 
-        public ITimeProvider TimeProvider => m_TimeProvider;
+        public ITimeProvider TimeProvider
+            => _timeProvider;
 
-        public bool UseUtc => m_UseUtc;
+        public bool UseUtc
+            => _useUtc;
 
-        protected ConcurrentDictionary<Property, int> IndexCache => m_IndexCache;
+        protected ConcurrentDictionary<Property, int> IndexCache
+            => _indexCache;
 
-        protected virtual bool CanAudit(object entity, object id) => true;
+        protected virtual bool CanAudit(object entity, object id)
+            => true;
 
         protected virtual void Set(Type entityType, string[] propertyNames, object[] state, string propertyName, object value)
         {
@@ -75,7 +80,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             IInsertAuditable insertAuditable = entity as IInsertAuditable;
             IUpdateAuditable updateAuditable = entity as IUpdateAuditable;
-            if (insertAuditable == null && updateAuditable == null)
+            if ((insertAuditable == null) && (updateAuditable == null))
             {
                 return false;
             }
@@ -89,7 +94,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             Type entityType = entity.GetType();
 
-            if (insertAuditable != null && (onSave || persistentObject.IsTransient))
+            if ((insertAuditable != null) && (onSave || persistentObject.IsTransient))
             {
                 IInsertAuditableProperties insertAuditableProperties = entity as IInsertAuditableProperties;
                 string createdAtPropertyName =
@@ -149,9 +154,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     A boolean indicating whether the user modified the  <paramref name="currentState" /> in any way.
         /// </returns>
         public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
-        {
-            return CanAudit(entity, id) && SetAuditInfo(entity, currentState, propertyNames, false);
-        }
+            => CanAudit(entity, id) && SetAuditInfo(entity, currentState, propertyNames, false);
 
         /// <summary>
         ///     Called before an object is saved.
@@ -169,29 +172,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     A boolean indicating whether the user modified the <c>state</c> in any way.
         /// </returns>
         public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
-        {
-            return CanAudit(entity, id) && SetAuditInfo(entity, state, propertyNames, true);
-        }
+            => CanAudit(entity, id) && SetAuditInfo(entity, state, propertyNames, true);
 
         protected struct Property : IEquatable<Property>
         {
-            private readonly Type m_EntityType;
-            private readonly string m_PropertyName;
+            private readonly Type _entityType;
+            private readonly string _propertyName;
 
             public static bool operator ==(Property left, Property right)
-            {
-                return left.Equals(right);
-            }
+                => left.Equals(right);
 
             public static bool operator !=(Property left, Property right)
-            {
-                return !left.Equals(right);
-            }
+                => !left.Equals(right);
 
             public Property(Type entityType, string propertyName)
             {
-                m_EntityType = entityType;
-                m_PropertyName = propertyName;
+                _entityType = entityType;
+                _propertyName = propertyName;
             }
 
             /// <summary>
@@ -202,10 +199,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             /// </returns>
             /// <param name="other">An object to compare with this object.</param>
             public bool Equals(Property other)
-            {
-                return ReferenceEquals(m_EntityType, other.m_EntityType)
-                       && string.Equals(m_PropertyName, other.m_PropertyName);
-            }
+                => ReferenceEquals(_entityType, other._entityType)
+                   && string.Equals(_propertyName, other._propertyName);
 
             /// <summary>
             ///     Indicates whether this instance and a specified object are equal.
@@ -235,7 +230,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             {
                 unchecked
                 {
-                    return (m_EntityType.GetHashCode() * 397) ^ m_PropertyName.GetHashCode();
+                    return (_entityType.GetHashCode() * 397) ^ _propertyName.GetHashCode();
                 }
             }
         }

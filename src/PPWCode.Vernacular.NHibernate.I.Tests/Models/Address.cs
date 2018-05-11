@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         : IEquatable<Address>,
           IPpwAuditLog
     {
+        [DataMember]
+        [Required]
+        [StringLength(128)]
+        public virtual string Street { get; set; }
+
+        [DataMember]
+        [Required]
+        [StringLength(16)]
+        public virtual string Number { get; set; }
+
+        [DataMember]
+        [StringLength(16)]
+        public virtual string Box { get; set; }
+
+        [DataMember]
+        public virtual Country Country { get; set; }
+
         public bool Equals(Address other)
         {
             if (ReferenceEquals(null, other))
@@ -45,6 +62,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                    && string.Equals(Number, other.Number, StringComparison.CurrentCulture)
                    && string.Equals(Box, other.Box, StringComparison.CurrentCulture)
                    && Equals(Country, other.Country);
+        }
+
+        public bool IsMultiLog
+            => true;
+
+        public IEnumerable<PpwAuditLog> GetMultiLogs(string propertyName)
+        {
+            yield return new PpwAuditLog($"{propertyName}.{nameof(Street)}", Street);
+            yield return new PpwAuditLog($"{propertyName}.{nameof(Number)}", Number);
+            yield return new PpwAuditLog($"{propertyName}.{nameof(Box)}", Box);
+            yield return new PpwAuditLog($"{propertyName}.{nameof(Country)}", Country?.Id.ToString());
+        }
+
+        public PpwAuditLog GetSingleLog(string propertyName)
+        {
+            throw new NotImplementedException();
         }
 
         public override bool Equals(object obj)
@@ -80,47 +113,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         public static bool operator ==(Address left, Address right)
-        {
-            return Equals(left, right);
-        }
+            => Equals(left, right);
 
         public static bool operator !=(Address left, Address right)
-        {
-            return !Equals(left, right);
-        }
-
-        [DataMember]
-        [Required]
-        [StringLength(128)]
-        public virtual string Street { get; set; }
-
-        [DataMember]
-        [Required]
-        [StringLength(16)]
-        public virtual string Number { get; set; }
-
-        [DataMember]
-        [StringLength(16)]
-        public virtual string Box { get; set; }
-
-        [DataMember]
-        public virtual Country Country { get; set; }
-
-        public bool IsMultiLog
-            => true;
-
-        public IEnumerable<PpwAuditLog> GetMultiLogs(string propertyName)
-        {
-            yield return new PpwAuditLog($"{propertyName}.{nameof(Street)}", Street);
-            yield return new PpwAuditLog($"{propertyName}.{nameof(Number)}", Number);
-            yield return new PpwAuditLog($"{propertyName}.{nameof(Box)}", Box);
-            yield return new PpwAuditLog($"{propertyName}.{nameof(Country)}", Country?.Id.ToString());
-        }
-
-        public PpwAuditLog GetSingleLog(string propertyName)
-        {
-            throw new NotImplementedException();
-        }
+            => !Equals(left, right);
     }
 
     public class AddressMapper : ComponentMapping<Address>

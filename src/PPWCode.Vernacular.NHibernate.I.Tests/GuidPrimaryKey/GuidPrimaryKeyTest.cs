@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,49 +25,40 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {
     public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
-        private IQueryOverRepository<Car, Guid> m_Repository;
-        private IPpwHbmMapping m_PpwHbmMapping;
+        private IQueryOverRepository<Car, Guid> _repository;
+        private IPpwHbmMapping _ppwHbmMapping;
 
         protected IQueryOverRepository<Car, Guid> Repository
-        {
-            get { return m_Repository; }
-        }
+            => _repository;
 
         protected override string CatalogName
-        {
-            get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
-        }
+            => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
 
+        /// <inheritdoc />
         protected override string ConnectionString
-        {
-            get { return FixedConnectionString; }
-        }
+            => FixedConnectionString;
 
         protected override IPpwHbmMapping PpwHbmMapping
-        {
-            get { return m_PpwHbmMapping ?? (m_PpwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
-        }
+            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
         protected override string IdentityName
-        {
-            get { return "Test - IdentityName"; }
-        }
+            => "Test - IdentityName";
 
         protected virtual Func<IQueryOverRepository<Car, Guid>> RepositoryFactory
         {
-            get { return () => new CarRepository(Session); }
+            get { return () => new CarRepository(SessionProvider); }
         }
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            m_Repository = RepositoryFactory();
+            _repository = RepositoryFactory();
         }
 
         protected override void OnTeardown()
         {
-            m_Repository = null;
+            _repository = null;
 
             base.OnTeardown();
         }

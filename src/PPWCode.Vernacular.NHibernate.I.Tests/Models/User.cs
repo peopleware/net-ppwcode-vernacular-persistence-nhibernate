@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     public class User : AuditableVersionedPersistentObject<int, int>
     {
         private readonly ISet<Role> m_Roles = new HashSet<Role>();
-        private string m_Name;
         private Gender? m_Gender;
         private bool m_HasBlueEyes;
+        private string m_Name;
 
         public User(int id, int persistenceVersion)
             : base(id, persistenceVersion)
@@ -66,11 +66,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<Role> Roles => m_Roles;
+        public virtual ISet<Role> Roles
+            => m_Roles;
 
         public virtual void AddRole(Role role)
         {
-            if (role != null && m_Roles.Add(role))
+            if ((role != null) && m_Roles.Add(role))
             {
                 role.AddUser(this);
             }
@@ -78,7 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void RemoveRole(Role role)
         {
-            if (role != null && m_Roles.Remove(role))
+            if ((role != null) && m_Roles.Remove(role))
             {
                 role.RemoveUser(this);
             }

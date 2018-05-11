@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,13 +30,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq
     {
         protected override Func<ILinqRepository<Ship, int>> RepositoryFactory
         {
-            get { return () => new ShipRepository(Session); }
+            get { return () => new ShipRepository(SessionProvider); }
         }
 
         public ShipRepository ShipRepository
-        {
-            get { return new ShipRepository(Session); }
-        }
+            => new ShipRepository(SessionProvider);
 
         /// <summary>
         ///     Override this method for setup code that needs to run for each test separately.
@@ -58,62 +56,64 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq
             int i = 0;
             while (i++ < 3)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("C{0:D}", i),
-                        Load = 25 * i,
-                        Ship = ship1
-                    };
+                // ReSharper disable once ObjectCreationAsStatement
+                new CargoContainer
+                {
+                    Code = $"C{i:D}",
+                    Load = 25 * i,
+                    Ship = ship1
+                };
             }
 
             // second batch of containers "S"
             i = 0;
             while (i++ < 3)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("S{0:D}", i),
-                        Load = 10 * i,
-                        Ship = ship1
-                    };
+                // ReSharper disable once ObjectCreationAsStatement
+                new CargoContainer
+                {
+                    Code = $"S{i:D}",
+                    Load = 10 * i,
+                    Ship = ship1
+                };
             }
 
-            Ship ship2 = new Ship
-                         {
-                             Code = "X2"
-                         };
+            Ship ship2 =
+                new Ship
+                {
+                    Code = "X2"
+                };
 
             // third batch of containers "C"
             i = 5;
             while (i++ < 10)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("C{0:D}", i),
-                        Load = 15 * i,
-                        Ship = ship2
-                    };
+                // ReSharper disable once ObjectCreationAsStatement
+                new CargoContainer
+                {
+                    Code = $"C{i:D}",
+                    Load = 15 * i,
+                    Ship = ship2
+                };
             }
 
-            Ship ship3 = new Ship
-                         {
-                             Code = "Z1"
-                         };
+            Ship ship3 =
+                new Ship
+                {
+                    Code = "Z1"
+                };
 
             // fourth batch of containers "S"
             i = 10;
             while (i++ < 13)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("S{0:D}", i),
-                        Load = 100 * i,
-                        Ship = ship3
-                    };
+                // ReSharper disable once ObjectCreationAsStatement
+                new CargoContainer
+                {
+                    Code = $"S{i:D}",
+                    Load = 100 * i,
+                    Ship = ship3
+                };
             }
 
             // persist
@@ -131,23 +131,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq
         public void TestAddingShipsAndContainers()
         {
             GenerateShipAndContainers();
-        }
-
-        [Test]
-        public void TestDtoMappingShipsZ()
-        {
-            GenerateShipAndContainers();
-
-            IList<ContainerDto> dtos = null;
-
-            RunInsideTransaction(
-                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("Z"); },
-                true);
-
-            Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
-            Assert.AreEqual(3, dtos.Count);
-            Assert.IsTrue(dtos.Select(d => d.Load).All(l => l == 1100 || l == 1200 || l == 1300));
-            Assert.IsTrue(dtos.Select(d => d.ContainerCode).All(c => c == "S11" || c == "S12" || c == "S13"));
         }
 
         [Test]
@@ -176,6 +159,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq
                 true);
 
             Assert.IsTrue(dtos.Items.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
+        }
+
+        [Test]
+        public void TestDtoMappingShipsZ()
+        {
+            GenerateShipAndContainers();
+
+            IList<ContainerDto> dtos = null;
+
+            RunInsideTransaction(
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("Z"); },
+                true);
+
+            Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
+            Assert.AreEqual(3, dtos.Count);
+            Assert.IsTrue(dtos.Select(d => d.Load).All(l => (l == 1100) || (l == 1200) || (l == 1300)));
+            Assert.IsTrue(dtos.Select(d => d.ContainerCode).All(c => (c == "S11") || (c == "S12") || (c == "S13")));
         }
     }
 }

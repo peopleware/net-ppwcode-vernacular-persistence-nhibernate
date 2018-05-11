@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
     public abstract class NhFasterConfiguration : NhConfiguration
     {
         private const string ConfigFile = "hibernate.cfg.xml";
-        private ILogger m_Logger = new NullLogger();
+        private ILogger _logger = NullLogger.Instance;
 
         protected NhFasterConfiguration(
-            INhInterceptor nhInterceptor, 
-            INhProperties nhProperties, 
-            IMappingAssemblies mappingAssemblies, 
-            IPpwHbmMapping ppwHbmMapping, 
+            INhInterceptor nhInterceptor,
+            INhProperties nhProperties,
+            IMappingAssemblies mappingAssemblies,
+            IPpwHbmMapping ppwHbmMapping,
             IRegisterEventListener[] registerEventListeners,
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
             : base(nhInterceptor, nhProperties, mappingAssemblies, ppwHbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
@@ -60,8 +60,28 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 FileInfo serializedConfigInfo = new FileInfo(SerializedConfiguration);
                 FileInfo nHibernateConfigFileInfo = new FileInfo(ConfigFile);
 
-                return serializedConfigInfo.LastWriteTime >= maxDate
-                       && serializedConfigInfo.LastWriteTime >= nHibernateConfigFileInfo.LastWriteTime;
+                return (serializedConfigInfo.LastWriteTime >= maxDate)
+                       && (serializedConfigInfo.LastWriteTime >= nHibernateConfigFileInfo.LastWriteTime);
+            }
+        }
+
+        private string SerializedConfiguration
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin");
+
+        protected abstract string Namespace { get; }
+
+        protected override Configuration Configuration
+        {
+            get
+            {
+                Configuration result = LoadConfigurationFromFile();
+                if (result == null)
+                {
+                    result = base.Configuration;
+                    SaveConfigurationToFile(result);
+                }
+
+                return result;
             }
         }
 
@@ -93,28 +113,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(file, configuration);
-            }
-        }
-
-        private string SerializedConfiguration
-        {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin"); }
-        }
-
-        protected abstract string Namespace { get; }
-
-        protected override Configuration Configuration
-        {
-            get
-            {
-                Configuration result = LoadConfigurationFromFile();
-                if (result == null)
-                {
-                    result = base.Configuration;
-                    SaveConfigurationToFile(result);
-                }
-
-                return result;
             }
         }
     }

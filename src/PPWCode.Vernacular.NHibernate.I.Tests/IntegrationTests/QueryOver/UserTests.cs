@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,62 +18,53 @@ using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Tests.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
+using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
 {
     public class UserTests : BaseUserTests
     {
-        private RoleQueryOverRepository m_RoleRepository;
+        private RoleQueryOverRepository _roleRepository;
 
         protected RoleQueryOverRepository RoleRepository
-        {
-            get { return m_RoleRepository; }
-        }
+            => _roleRepository;
 
         protected IUserQueryOverRepository UserRepository
-        {
-            get { return (IUserQueryOverRepository)Repository; }
-        }
+            => (IUserQueryOverRepository)Repository;
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            m_RoleRepository = new RoleQueryOverRepository(Session);
+            _roleRepository = new RoleQueryOverRepository(SessionProvider);
         }
 
         protected override void OnTeardown()
         {
-            m_RoleRepository = null;
+            _roleRepository = null;
 
             base.OnTeardown();
         }
 
         protected User CreateUser(string name = @"Ruben", Gender gender = Gender.MALE)
-        {
-            return
-                new User
-                {
-                    Name = name,
-                    Gender = gender
-                };
-        }
+            => new User
+               {
+                   Name = name,
+                   Gender = gender
+               };
 
         protected Role CreateRole(string name)
-        {
-            return
-                new Role
-                {
-                    Name = name
-                };
-        }
+            => new Role
+               {
+                   Name = name
+               };
 
         [Test]
-        public void CreateUserWithoutRoles()
+        public void CanNotAddDuplicateUserName()
         {
             RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
 
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+            Assert.That(() => Repository.Merge(CreateUser()), Throws.TypeOf<DbUniqueConstraintException>());
         }
 
         [Test]
@@ -91,20 +82,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         }
 
         [Test]
-        public void CreateUserWithTwoRoles()
+        public void CreateUserWithoutRoles()
         {
-            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
+            RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
+
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
-
-            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
-
-            User user = CreateUser();
-            user.AddRole(role1);
-            user.AddRole(role2);
-
-            RunInsideTransaction(() => Repository.Merge(user), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
         [Test]
@@ -152,6 +134,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
                     savedUser.RemoveRole(savedUser.Roles.Single(r => r.Name == "Developer"));
                     Repository.Merge(savedUser);
                 }, true);
+        }
+
+        [Test]
+        public void CreateUserWithTwoRoles()
+        {
+            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+
+            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
+
+            User user = CreateUser();
+            user.AddRole(role1);
+            user.AddRole(role2);
+
+            RunInsideTransaction(() => Repository.Merge(user), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
         [Test]

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using NUnit.Framework;
@@ -26,17 +27,16 @@ using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOver
 {
+    [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Bi-directional associations")]
     public class DtoMappingTests : BaseRepositoryTests<Ship>
     {
         protected override Func<IQueryOverRepository<Ship, int>> RepositoryFactory
         {
-            get { return () => new ShipRepository(Session); }
+            get { return () => new ShipRepository(SessionProvider); }
         }
 
         public ShipRepository ShipRepository
-        {
-            get { return new ShipRepository(Session); }
-        }
+            => new ShipRepository(SessionProvider);
 
         /// <summary>
         ///     Override this method for setup code that needs to run for each test separately.
@@ -58,26 +58,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             int i = 0;
             while (i++ < 3)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("C{0:D}", i),
-                        Load = 25 * i,
-                        Ship = ship1
-                    };
+                new CargoContainer
+                {
+                    Code = $"C{i:D}",
+                    Load = 25 * i,
+                    Ship = ship1
+                };
             }
 
             // second batch of containers "S"
             i = 0;
             while (i++ < 3)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("S{0:D}", i),
-                        Load = 10 * i,
-                        Ship = ship1
-                    };
+                new CargoContainer
+                {
+                    Code = $"S{i:D}",
+                    Load = 10 * i,
+                    Ship = ship1
+                };
             }
 
             Ship ship2 = new Ship
@@ -89,13 +87,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             i = 5;
             while (i++ < 10)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("C{0:D}", i),
-                        Load = 15 * i,
-                        Ship = ship2
-                    };
+                new CargoContainer
+                {
+                    Code = $"C{i:D}",
+                    Load = 15 * i,
+                    Ship = ship2
+                };
             }
 
             Ship ship3 = new Ship
@@ -107,13 +104,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             i = 10;
             while (i++ < 13)
             {
-                CargoContainer cargoContainer =
-                    new CargoContainer
-                    {
-                        Code = string.Format("S{0:D}", i),
-                        Load = 100 * i,
-                        Ship = ship3
-                    };
+                new CargoContainer
+                {
+                    Code = $"S{i:D}",
+                    Load = 100 * i,
+                    Ship = ship3
+                };
             }
 
             // persist
@@ -134,26 +130,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
         }
 
         [Test]
-        public void TestDtoMappingShipsZ()
-        {
-            GenerateShipAndContainers();
-
-            IList<ContainerDto> dtos = null;
-
-            RunInsideTransaction(
-                () =>
-                {
-                    dtos = ShipRepository.FindContainersFromShipsMatchingCode("Z");
-                },
-                true);
-
-            Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
-            Assert.AreEqual(3, dtos.Count);
-            Assert.IsTrue(dtos.Select(d => d.Load).All(l => l == 1100 || l == 1200 || l == 1300));
-            Assert.IsTrue(dtos.Select(d => d.ContainerCode).All(c => c == "S11" || c == "S12" || c == "S13"));
-        }
-
-        [Test]
         public void TestDtoMappingShipsX()
         {
             GenerateShipAndContainers();
@@ -161,10 +137,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             IList<ContainerDto> dtos = null;
 
             RunInsideTransaction(
-                () =>
-                {
-                    dtos = ShipRepository.FindContainersFromShipsMatchingCode("X");
-                },
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("X"); },
                 true);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
@@ -178,13 +151,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             PagedList<ContainerDto> dtos = null;
 
             RunInsideTransaction(
-                () =>
-                {
-                    dtos = ShipRepository.FindContainersFromShipsMatchingCodePaged(2, 10, "X");
-                },
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCodePaged(2, 10, "X"); },
                 true);
 
             Assert.IsTrue(dtos.Items.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
+        }
+
+        [Test]
+        public void TestDtoMappingShipsZ()
+        {
+            GenerateShipAndContainers();
+
+            IList<ContainerDto> dtos = null;
+
+            RunInsideTransaction(
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("Z"); },
+                true);
+
+            Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
+            Assert.AreEqual(3, dtos.Count);
+            Assert.IsTrue(dtos.Select(d => d.Load).All(l => (l == 1100) || (l == 1200) || (l == 1300)));
+            Assert.IsTrue(dtos.Select(d => d.ContainerCode).All(c => (c == "S11") || (c == "S12") || (c == "S13")));
         }
     }
 }

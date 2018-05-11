@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,37 +21,35 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     public class NHibernateSessionFactory : INHibernateSessionFactory
     {
-        private readonly object m_Locker = new object();
-        private readonly INhConfiguration m_NhConfiguration;
-        private volatile ISessionFactory m_SessionFactory;
+        private readonly object _locker = new object();
+        private readonly INhConfiguration _nhConfiguration;
+        private volatile ISessionFactory _sessionFactory;
 
         public NHibernateSessionFactory(INhConfiguration nhConfiguration)
         {
-            m_NhConfiguration = nhConfiguration;
+            _nhConfiguration = nhConfiguration;
         }
 
         protected Configuration Configuration
-        {
-            get { return m_NhConfiguration.GetConfiguration(); }
-        }
+            => _nhConfiguration.GetConfiguration();
 
         public virtual ISessionFactory SessionFactory
         {
             get
             {
-                if (m_SessionFactory == null)
+                if (_sessionFactory == null)
                 {
-                    lock (m_Locker)
+                    lock (_locker)
                     {
-                        if (m_SessionFactory == null)
+                        if (_sessionFactory == null)
                         {
-                            m_SessionFactory = Configuration.BuildSessionFactory();
-                            OnAfterCreateSessionFactory(m_SessionFactory);
+                            _sessionFactory = Configuration.BuildSessionFactory();
+                            OnAfterCreateSessionFactory(_sessionFactory);
                         }
                     }
                 }
 
-                return m_SessionFactory;
+                return _sessionFactory;
             }
         }
 

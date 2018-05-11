@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,58 +23,40 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
 {
     public class UserTests : BaseUserTests
     {
-        private RoleLinqRepository m_RoleRepository;
+        private RoleLinqRepository _roleRepository;
 
         protected RoleLinqRepository RoleRepository
-        {
-            get { return m_RoleRepository; }
-        }
+            => _roleRepository;
 
         protected IUserLinqRepository UserRepository
-        {
-            get { return (IUserLinqRepository)Repository; }
-        }
+            => (IUserLinqRepository)Repository;
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            m_RoleRepository = new RoleLinqRepository(Session);
+            _roleRepository = new RoleLinqRepository(SessionProvider);
         }
 
         protected override void OnTeardown()
         {
-            m_RoleRepository = null;
+            _roleRepository = null;
 
             base.OnTeardown();
         }
 
         protected User CreateUser(string name = @"Ruben", Gender gender = Gender.MALE)
-        {
-            return
-                new User
-                {
-                    Name = name,
-                    Gender = gender
-                };
-        }
+            => new User
+               {
+                   Name = name,
+                   Gender = gender
+               };
 
         protected Role CreateRole(string name)
-        {
-            return
-                new Role
-                {
-                    Name = name
-                };
-        }
-
-        [Test]
-        public void CreateUserWithoutRoles()
-        {
-            RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
-
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
-        }
+            => new Role
+               {
+                   Name = name
+               };
 
         [Test]
         public void CreateUserWithOneRole()
@@ -91,20 +73,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
         }
 
         [Test]
-        public void CreateUserWithTwoRoles()
+        public void CreateUserWithoutRoles()
         {
-            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
+            RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
+
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
-
-            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
-
-            User user = CreateUser();
-            user.AddRole(role1);
-            user.AddRole(role2);
-
-            RunInsideTransaction(() => Repository.Merge(user), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
         [Test]
@@ -152,6 +125,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
                     savedUser.RemoveRole(savedUser.Roles.Single(r => r.Name == "Developer"));
                     Repository.Merge(savedUser);
                 }, true);
+        }
+
+        [Test]
+        public void CreateUserWithTwoRoles()
+        {
+            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+
+            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
+
+            User user = CreateUser();
+            user.AddRole(role1);
+            user.AddRole(role2);
+
+            RunInsideTransaction(() => Repository.Merge(user), true);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
         [Test]

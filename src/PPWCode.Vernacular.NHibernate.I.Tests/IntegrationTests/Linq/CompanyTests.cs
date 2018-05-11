@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,12 +29,31 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
     public class CompanyTests : BaseCompanyTests
     {
         [Test]
-        public void Can_Get_Company_with_Lazy_Identifications()
+        public void Can_Find_All_Companies()
         {
-            Company company = Repository.Get(qry => qry.Where(c => c.Name == "Peopleware NV"));
-            Session.Flush();
-            Assert.That(company, Is.Not.Null);
-            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
+            IList<Company> companies = Repository.FindAll();
+
+            Assert.That(companies, Is.Not.Null);
+            Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
+        }
+
+        [Test]
+        public void Can_FindPaged_Company()
+        {
+            IPagedList<Company> pagedList =
+                Repository
+                    .FindPaged(
+                        1,
+                        20,
+                        qry => qry.Where(c => c.Name == "Peopleware NV")
+                            .OrderBy(c => c.Name));
+
+            Assert.That(pagedList, Is.Not.Null);
+            Assert.That(pagedList.HasPreviousPage, Is.False);
+            Assert.That(pagedList.HasNextPage, Is.False);
+            Assert.That(pagedList.Items.Count, Is.EqualTo(1));
+            Assert.That(pagedList.TotalCount, Is.EqualTo(1));
+            Assert.That(pagedList.TotalPages, Is.EqualTo(1));
         }
 
         [Test]
@@ -42,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
         {
             Company company = Repository.Get(
                 qry => qry.Where(c => c.Name == "Peopleware NV")
-                          .FetchMany(c => c.Identifications));
+                    .FetchMany(c => c.Identifications));
 
             Assert.That(company, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.True);
@@ -62,40 +81,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
         {
             Company company = Repository.Get(
                 qry => qry.SelectMany(c => c.Identifications, (c, ci) => new { c, ci })
-                          .Where(t => t.ci.Identification == "1")
-                          .Select(t => t.c)
-                          .Distinct());
+                    .Where(t => t.ci.Identification == "1")
+                    .Select(t => t.c)
+                    .Distinct());
 
             Assert.That(company, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
         }
 
         [Test]
-        public void Can_Find_All_Companies()
+        public void Can_Get_Company_with_Lazy_Identifications()
         {
-            IList<Company> companies = Repository.FindAll();
-
-            Assert.That(companies, Is.Not.Null);
-            Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
-        }
-
-        [Test]
-        public void Can_FindPaged_Company()
-        {
-            IPagedList<Company> pagedList =
-                Repository
-                    .FindPaged(
-                        1,
-                        20,
-                        qry => qry.Where(c => c.Name == "Peopleware NV")
-                                  .OrderBy(c => c.Name));
-
-            Assert.That(pagedList, Is.Not.Null);
-            Assert.That(pagedList.HasPreviousPage, Is.False);
-            Assert.That(pagedList.HasNextPage, Is.False);
-            Assert.That(pagedList.Items.Count, Is.EqualTo(1));
-            Assert.That(pagedList.TotalCount, Is.EqualTo(1));
-            Assert.That(pagedList.TotalPages, Is.EqualTo(1));
+            Company company = Repository.Get(qry => qry.Where(c => c.Name == "Peopleware NV"));
+            SessionProvider.Flush();
+            Assert.That(company, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.False);
         }
 
         [Test]

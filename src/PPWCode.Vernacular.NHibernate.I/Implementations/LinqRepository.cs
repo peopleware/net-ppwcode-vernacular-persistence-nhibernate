@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,89 +30,57 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
-        protected LinqRepository(ISession session)
-            : base(session)
+        protected LinqRepository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
         }
 
         public virtual T Get(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return Execute("Get", () => GetInternal(func));
-        }
+            => Execute(nameof(Get), () => GetInternal(func));
 
         public virtual T GetAtIndex(Func<IQueryable<T>, IQueryable<T>> func, int index)
-        {
-            return Execute("GetAtIndex", () => GetAtIndexInternal(func, index));
-        }
+            => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
         public virtual IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return Execute("Find", () => FindInternal(func));
-        }
-
-        public virtual IList<R> Find<R>(Func<IQueryable<T>, IQueryable<R>> func)
-        {
-            return Execute("Find", () => FindInternal(func));
-        }
-
-        public virtual IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, int? skip, int? count)
-        {
-            return Execute("Find", () => FindInternal(func, skip, count));
-        }
-
-        public virtual IList<R> Find<R>(Func<IQueryable<T>, IQueryable<R>> func, int? skip, int? count)
-        {
-            return Execute("Find", () => FindInternal(func, skip, count));
-        }
+            => Execute(nameof(Find), () => FindInternal(func));
 
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return Execute("FindPaged", () => FindPagedInternal(pageIndex, pageSize, func));
-        }
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func));
+
+        public virtual IList<R> Find<R>(Func<IQueryable<T>, IQueryable<R>> func)
+            => Execute(nameof(Find), () => FindInternal(func));
+
+        public virtual IList<T> Find(Func<IQueryable<T>, IQueryable<T>> func, int? skip, int? count)
+            => Execute(nameof(Find), () => FindInternal(func, skip, count));
+
+        public virtual IList<R> Find<R>(Func<IQueryable<T>, IQueryable<R>> func, int? skip, int? count)
+            => Execute(nameof(Find), () => FindInternal(func, skip, count));
 
         public virtual IPagedList<R> FindPaged<R>(int pageIndex, int pageSize, Func<IQueryable<T>, IQueryable<R>> func)
-        {
-            return Execute("FindPaged", () => FindPagedInternal(pageIndex, pageSize, func));
-        }
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func));
 
         protected virtual T GetInternal(Func<IQueryable<T>, IQueryable<T>> func)
         {
-            if (func == null)
-            {
-                return default(T);
-            }
-
-            T result = func(CreateQueryable()).SingleOrDefault();
+            T result = func?.Invoke(CreateQueryable()).SingleOrDefault();
 
             return result;
         }
 
         protected virtual T GetAtIndexInternal(Func<IQueryable<T>, IQueryable<T>> func, int index)
         {
-            if (func == null)
-            {
-                return default(T);
-            }
-
-            T result = func(CreateQueryable()).Skip(index).Take(1).SingleOrDefault();
+            T result = func?.Invoke(CreateQueryable()).Skip(index).Take(1).SingleOrDefault();
 
             return result;
         }
 
         protected override IList<T> FindAllInternal()
-        {
-            return FindInternal(null);
-        }
+            => FindInternal(null);
 
         protected virtual IList<T> FindInternal(Func<IQueryable<T>, IQueryable<T>> func)
-        {
-            return FindInternal(func, null, null);
-        }
+            => FindInternal(func, null, null);
 
         protected virtual IList<R> FindInternal<R>(Func<IQueryable<T>, IQueryable<R>> func)
-        {
-            return FindInternal(func, null, null);
-        }
+            => FindInternal(func, null, null);
 
         protected virtual IList<T> FindInternal(Func<IQueryable<T>, IQueryable<T>> func, int? skip, int? count)
         {
@@ -187,8 +155,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         }
 
         protected virtual IQueryable<T> CreateQueryable()
-        {
-            return Session.Query<T>();
-        }
+            => Session.Query<T>();
     }
 }

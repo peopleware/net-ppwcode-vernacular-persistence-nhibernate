@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +30,39 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         protected HighLowPerTableAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
             : base(ppwHbmMapping)
         {
+        }
+
+        protected abstract string GeneratorTableName { get; }
+
+        protected abstract string GeneratorEntityNameColumnName { get; }
+
+        protected abstract string GeneratorNextHiColumnName { get; }
+
+        protected abstract string GeneratorTableNameColumnName { get; }
+
+        protected virtual IEnumerable<IGeneratorDef> GeneratorDefs
+        {
+            get { yield return Generators.HighLow; }
+        }
+
+        protected virtual IEnumerable<string> SchemaNames
+        {
+            get { return HbmClasses.Select(c => c.schema).Distinct(); }
+        }
+
+        protected virtual IEnumerable<HbmClass> HbmClasses
+        {
+            get
+            {
+                ISet<string> generatorClasses =
+                    new HashSet<string>(GeneratorDefs.Select(g => g.Class));
+
+                return
+                    PpwHbmMapping
+                        .HbmMapping
+                        .RootClasses
+                        .Where(c => generatorClasses.Contains(c.Id.generator.@class));
+            }
         }
 
         public override string SqlCreateString(Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema)
@@ -85,54 +117,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         }
 
         public override string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
-        {
-            return string.Empty;
-        }
-
-        protected abstract string GeneratorTableName { get; }
-
-        protected abstract string GeneratorEntityNameColumnName { get; }
-
-        protected abstract string GeneratorNextHiColumnName { get; }
-
-        protected abstract string GeneratorTableNameColumnName { get; }
-
-        protected virtual IEnumerable<IGeneratorDef> GeneratorDefs
-        {
-            get { yield return Generators.HighLow; }
-        }
-
-        protected virtual IEnumerable<string> SchemaNames
-        {
-            get { return HbmClasses.Select(c => c.schema).Distinct(); }
-        }
-
-        protected virtual IEnumerable<HbmClass> HbmClasses
-        {
-            get
-            {
-                ISet<string> generatorClasses =
-                    new HashSet<string>(GeneratorDefs.Select(g => g.Class));
-
-                return
-                    PpwHbmMapping
-                        .HbmMapping
-                        .RootClasses
-                        .Where(c => generatorClasses.Contains(c.Id.generator.@class));
-            }
-        }
+            => string.Empty;
 
         private string RemoveBackTicks(string identifier)
-        {
-            return identifier?.Replace("`", string.Empty);
-        }
+            => identifier?.Replace("`", string.Empty);
 
         private string GetTableName(Dialect dialect, string schemaName, string tableName)
-        {
-            return
-                string.IsNullOrWhiteSpace(schemaName)
-                    ? QuoteTableName(dialect, RemoveBackTicks(tableName))
-                    : $"{QuoteSchemaName(dialect, RemoveBackTicks(schemaName))}.{QuoteTableName(dialect, RemoveBackTicks(tableName))}";
-        }
+            => string.IsNullOrWhiteSpace(schemaName)
+                   ? QuoteTableName(dialect, RemoveBackTicks(tableName))
+                   : $"{QuoteSchemaName(dialect, RemoveBackTicks(schemaName))}.{QuoteTableName(dialect, RemoveBackTicks(tableName))}";
     }
 }

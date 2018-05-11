@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ using System.Globalization;
 
 using NHibernate;
 using NHibernate.Cfg;
-using NHibernate.Dialect;
 using NHibernate.Driver;
 using NHibernate.Event;
 using NHibernate.Mapping;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+using PPWCode.Vernacular.NHibernate.I.Implementations.Dialects;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
@@ -46,45 +46,32 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             protected override bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction)
-            {
-                return true;
-            }
+                => true;
         }
 
-        private Configuration m_Configuration;
-        private string m_ConnectionString;
+        private Configuration _configuration;
+        private string _connectionString;
 
         protected abstract string CatalogName { get; }
         protected abstract bool UseUtc { get; }
 
         protected virtual string ConnectionString
-        {
-            get
-            {
-                if (m_ConnectionString == null)
-                {
-                    m_ConnectionString = RandomizedConnectionString;
-                }
-
-                return m_ConnectionString;
-            }
-        }
+            => _connectionString ?? (_connectionString = RandomizedConnectionString);
 
         protected virtual string RandomizedConnectionString
         {
             get
             {
-                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(FixedConnectionString);
+                SqlConnectionStringBuilder builder =
+                    new SqlConnectionStringBuilder(FixedConnectionString);
                 long ticks = DateTime.Now.Ticks;
-                builder.InitialCatalog = string.Format("{0}.{1}", builder.InitialCatalog, ticks.ToString(CultureInfo.InvariantCulture));
+                builder.InitialCatalog = $"{builder.InitialCatalog}.{ticks.ToString(CultureInfo.InvariantCulture)}";
                 return builder.ToString();
             }
         }
 
         protected virtual string FixedConnectionString
-        {
-            get { return ConfigHelper.GetConnectionString(CatalogName) ?? DefaultFixedConnectionString; }
-        }
+            => ConfigHelper.GetConnectionString(CatalogName) ?? DefaultFixedConnectionString;
 
         protected virtual string DefaultFixedConnectionString
         {
@@ -105,29 +92,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         {
             get
             {
-                if (m_Configuration == null)
+                if (_configuration == null)
                 {
-                    m_Configuration = new Configuration()
-                                      .DataBaseIntegration(
-                                          db =>
-                                          {
-                                              db.Dialect<MsSql2008Dialect>();
-                                              db.Driver<Sql2008ClientDriver>();
-                                          })
-                                      .Configure()
-                                      .DataBaseIntegration(
-                                          db =>
-                                          {
-                                              db.Dialect<MsSql2008Dialect>();
-                                              db.Driver<Sql2008ClientDriver>();
-                                              db.ConnectionString = ConnectionString;
-                                              db.IsolationLevel = IsolationLevel.ReadCommitted;
-                                          })
-                                      .SetProperty(Environment.ShowSql, ShowSql.ToString())
-                                      .SetProperty(Environment.FormatSql, FormatSql.ToString())
-                                      .SetProperty(Environment.GenerateStatistics, GenerateStatistics.ToString());
+                    _configuration = new Configuration()
+                        .DataBaseIntegration(
+                            db =>
+                            {
+                                db.Dialect<PpwMsSqlServerDialect>();
+                                db.Driver<Sql2008ClientDriver>();
+                                db.ConnectionString = ConnectionString;
+                                db.IsolationLevel = IsolationLevel.ReadCommitted;
+                                db.BatchSize = 0;
+                            })
+                        .Configure()
+                        .SetProperty(Environment.ShowSql, ShowSql.ToString())
+                        .SetProperty(Environment.FormatSql, FormatSql.ToString())
+                        .SetProperty(Environment.GenerateStatistics, GenerateStatistics.ToString());
 
-                    IDictionary<string, string> props = m_Configuration.Properties;
+                    IDictionary<string, string> props = _configuration.Properties;
                     if (props.ContainsKey(Environment.ConnectionStringName))
                     {
                         props.Remove(Environment.ConnectionStringName);
@@ -136,42 +118,40 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     IInterceptor interceptor = Interceptor?.GetInterceptor();
                     if (interceptor != null)
                     {
-                        m_Configuration.SetInterceptor(interceptor);
+                        _configuration.SetInterceptor(interceptor);
                     }
 
                     foreach (IRegisterEventListener registerListener in RegisterEventListeners)
                     {
-                        registerListener.Register(m_Configuration);
+                        registerListener.Register(_configuration);
                     }
 
                     IPpwHbmMapping ppwHbmMapping = PpwHbmMapping;
                     if (ppwHbmMapping != null)
                     {
-                        m_Configuration.AddMapping(ppwHbmMapping.HbmMapping);
+                        _configuration.AddMapping(ppwHbmMapping.HbmMapping);
                     }
 
                     foreach (IAuxiliaryDatabaseObject auxiliaryDatabaseObject in AuxiliaryDatabaseObjects)
                     {
                         IPpwAuxiliaryDatabaseObject ppwAuxiliaryDatabaseObject = auxiliaryDatabaseObject as IPpwAuxiliaryDatabaseObject;
-                        ppwAuxiliaryDatabaseObject?.SetConfiguration(m_Configuration);
-                        m_Configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
+                        ppwAuxiliaryDatabaseObject?.SetConfiguration(_configuration);
+                        _configuration.AddAuxiliaryDatabaseObject(auxiliaryDatabaseObject);
                     }
                 }
 
-                return m_Configuration;
+                return _configuration;
             }
         }
 
         protected virtual void ResetConfiguration()
         {
-            m_Configuration = null;
-            m_ConnectionString = null;
+            _configuration = null;
+            _connectionString = null;
         }
 
         protected virtual IPpwHbmMapping PpwHbmMapping
-        {
-            get { return null; }
-        }
+            => null;
 
         protected virtual IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
         {
@@ -188,9 +168,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         }
 
         protected virtual INhInterceptor Interceptor
-        {
-            get { return null; }
-        }
+            => null;
 
         protected virtual void CreateCatalog()
         {

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -194,56 +194,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         }
 
         [Test]
-        public void Check_BiDirectionality_Remove_Child_From_Parent()
-        {
-            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
-
-            Company updatedCompany =
-                RunInsideTransaction(
-                    () =>
-                    {
-                        Company mergedCompany = Repository.Merge(company);
-
-                        CompanyIdentification companyIdentification =
-                            mergedCompany
-                                .Identifications
-                                .SingleOrDefault(i => i.Identification == "1");
-                        Assert.IsNotNull(companyIdentification);
-                        mergedCompany.RemoveIdentification(companyIdentification);
-
-                        return mergedCompany;
-                    },
-                    true);
-
-            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
-            Assert.AreEqual(1, selectedCompany.Identifications.Count);
-        }
-
-        [Test]
-        public void Check_BiDirectionality_Remove_Childs_From_Parent()
-        {
-            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
-
-            Company updatedCompany =
-                RunInsideTransaction(
-                    () =>
-                    {
-                        Company mergedCompany = Repository.Merge(company);
-
-                        foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
-                        {
-                            mergedCompany.RemoveIdentification(identification);
-                        }
-
-                        return mergedCompany;
-                    },
-                    true);
-
-            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
-            Assert.IsFalse(selectedCompany.Identifications.Any());
-        }
-
-        [Test]
         public void Check_BiDirectionality_FailedCompany_Add_FailedCompany_To_Company()
         {
             Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
@@ -315,6 +265,56 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
             Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
             Assert.IsNull(selectedCompany.FailedCompany);
             Assert.IsFalse(selectedCompany.IsFailed);
+        }
+
+        [Test]
+        public void Check_BiDirectionality_Remove_Child_From_Parent()
+        {
+            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
+
+                        CompanyIdentification companyIdentification =
+                            mergedCompany
+                                .Identifications
+                                .SingleOrDefault(i => i.Identification == "1");
+                        Assert.IsNotNull(companyIdentification);
+                        mergedCompany.RemoveIdentification(companyIdentification);
+
+                        return mergedCompany;
+                    },
+                    true);
+
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
+            Assert.AreEqual(1, selectedCompany.Identifications.Count);
+        }
+
+        [Test]
+        public void Check_BiDirectionality_Remove_Childs_From_Parent()
+        {
+            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+
+            Company updatedCompany =
+                RunInsideTransaction(
+                    () =>
+                    {
+                        Company mergedCompany = Repository.Merge(company);
+
+                        foreach (CompanyIdentification identification in mergedCompany.Identifications.ToList())
+                        {
+                            mergedCompany.RemoveIdentification(identification);
+                        }
+
+                        return mergedCompany;
+                    },
+                    true);
+
+            Company selectedCompany = RunInsideTransaction(() => Repository.GetById(updatedCompany.Id), false);
+            Assert.IsFalse(selectedCompany.Identifications.Any());
         }
     }
 }

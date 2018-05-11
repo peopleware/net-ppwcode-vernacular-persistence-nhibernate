@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data;
-
-using NHibernate;
-
 using PPWCode.Vernacular.NHibernate.I.Implementations;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
@@ -26,14 +23,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Repositories
           ITestQueryOverRepository<T>
         where T : class, IIdentity<int>
     {
-        protected TestQueryOverRepository(ISession session)
-            : base(session)
+        protected TestQueryOverRepository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
-        }
-
-        protected override IsolationLevel IsolationLevel
-        {
-            get { return IsolationLevel.ReadCommitted; }
         }
     }
 }

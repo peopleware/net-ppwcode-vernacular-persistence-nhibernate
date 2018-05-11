@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     public class CompanyIdentification : AuditablePersistentObject<int>
     {
         [DataMember]
+        private Company m_Company;
+
+        [DataMember]
         private string m_Identification;
 
         [DataMember]
         private int m_Number;
-
-        [DataMember]
-        private Company m_Company;
 
         [Required]
         [StringLength(256)]

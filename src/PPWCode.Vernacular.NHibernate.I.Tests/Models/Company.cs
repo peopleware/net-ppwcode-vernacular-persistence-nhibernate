@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     [AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
+        [DataMember]
+        private FailedCompany m_FailedCompany;
+
+        [DataMember]
+        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
+
+        [DataMember]
+        private string m_Name;
+
         public Company(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -42,15 +51,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public Company()
         {
         }
-
-        [DataMember]
-        private string m_Name;
-
-        [DataMember]
-        private FailedCompany m_FailedCompany;
-
-        [DataMember]
-        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
 
         [Required]
         [StringLength(128)]
@@ -84,14 +84,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
         }
 
-        public virtual bool IsFailed => FailedCompany != null;
+        public virtual bool IsFailed
+            => FailedCompany != null;
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<CompanyIdentification> Identifications => m_Identifications;
+        public virtual ISet<CompanyIdentification> Identifications
+            => m_Identifications;
 
         public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {
-            if (companyIdentification != null && m_Identifications.Remove(companyIdentification))
+            if ((companyIdentification != null) && m_Identifications.Remove(companyIdentification))
             {
                 companyIdentification.Company = null;
             }
@@ -99,7 +101,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void AddIdentification(CompanyIdentification companyIdentification)
         {
-            if (companyIdentification != null && m_Identifications.Add(companyIdentification))
+            if ((companyIdentification != null) && m_Identifications.Add(companyIdentification))
             {
                 companyIdentification.Company = this;
             }
@@ -118,7 +120,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                 r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
 
             OneToOne(
-                c => c.FailedCompany, 
+                c => c.FailedCompany,
                 m =>
                 {
                     m.ForeignKey(null);

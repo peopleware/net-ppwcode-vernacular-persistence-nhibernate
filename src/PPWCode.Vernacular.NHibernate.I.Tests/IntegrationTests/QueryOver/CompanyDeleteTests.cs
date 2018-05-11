@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,20 +35,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         }
 
         [Test]
-        public void Can_Not_Delete_A_Stale_Company()
-        {
-            RunInsideTransaction(
-                () =>
-                {
-                    CreatedCompany.Name = string.Concat(CreatedCompany.Name, " 2");
-                    Repository.Merge(CreatedCompany);
-                },
-                true);
-
-            Assert.That(() => Repository.Delete(CreatedCompany), Throws.TypeOf<ObjectAlreadyChangedException>());
-        }
-
-        [Test]
         public void Can_Delete_A_None_Existing_Company()
         {
             Company noneExistingCompany =
@@ -64,6 +50,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         {
             Company transientCompany = new Company();
             Repository.Delete(transientCompany);
+        }
+
+        [Test]
+        public void Can_Not_Delete_A_Stale_Company()
+        {
+            RunInsideTransaction(
+                () =>
+                {
+                    CreatedCompany.Name = string.Concat(CreatedCompany.Name, " 2");
+                    Repository.Merge(CreatedCompany);
+                },
+                true);
+
+            Assert.That(() => Repository.Delete(CreatedCompany), Throws.TypeOf<ObjectAlreadyChangedException>());
         }
     }
 }

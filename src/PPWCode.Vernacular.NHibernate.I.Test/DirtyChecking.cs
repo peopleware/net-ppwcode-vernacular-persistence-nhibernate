@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,24 +39,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         }
 
         protected Configuration Configuration
-        {
-            get { return m_Configuration; }
-        }
+            => m_Configuration;
 
         protected Action<string> FailCallback
-        {
-            get { return m_FailCallback; }
-        }
+            => m_FailCallback;
 
         protected Action<string> InconclusiveCallback
-        {
-            get { return m_InconclusiveCallback; }
-        }
+            => m_InconclusiveCallback;
 
         protected ISessionFactory SessionFactory
-        {
-            get { return m_SessionFactory; }
-        }
+            => m_SessionFactory;
 
         public void Test()
         {

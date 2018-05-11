@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,11 +50,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<User> Users => m_Users;
+        public virtual ISet<User> Users
+            => m_Users;
 
         public virtual void AddUser(User user)
         {
-            if (user != null && m_Users.Add(user))
+            if ((user != null) && m_Users.Add(user))
             {
                 user.AddRole(this);
             }
@@ -62,7 +63,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void RemoveUser(User user)
         {
-            if (user != null && m_Users.Remove(user))
+            if ((user != null) && m_Users.Remove(user))
             {
                 user.RemoveRole(this);
             }

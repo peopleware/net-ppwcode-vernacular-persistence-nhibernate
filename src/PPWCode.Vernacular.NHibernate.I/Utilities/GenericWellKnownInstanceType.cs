@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,19 +26,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
     public abstract class GenericWellKnownInstanceType<T, TId> : ImmutableUserTypeBase
         where T : class
     {
-        private readonly Func<T, TId> m_IdGetter;
-        private readonly IDictionary<TId, T> m_Repository;
+        private readonly Func<T, TId> _idGetter;
+        private readonly IDictionary<TId, T> _repository;
 
         protected GenericWellKnownInstanceType(IDictionary<TId, T> repository, Func<T, TId> idGetter)
         {
-            m_Repository = repository;
-            m_IdGetter = idGetter;
+            _repository = repository;
+            _idGetter = idGetter;
         }
 
         public override Type ReturnedType
-        {
-            get { return typeof(T); }
-        }
+            => typeof(T);
 
         public override object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor sessionImplementor, object owner)
         {
@@ -50,13 +48,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             TId key = (TId)rs.GetValue(index0);
             T value;
-            m_Repository.TryGetValue(key, out value);
+            _repository.TryGetValue(key, out value);
             return value;
         }
 
         public override void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor sessionImplementor)
         {
-            cmd.Parameters[index].Value = value == null ? (object)DBNull.Value : m_IdGetter((T)value);
+            cmd.Parameters[index].Value = value == null ? (object)DBNull.Value : _idGetter((T)value);
         }
     }
 }

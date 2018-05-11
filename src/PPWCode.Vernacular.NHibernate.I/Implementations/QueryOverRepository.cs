@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,59 +30,59 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
-        protected QueryOverRepository(ISession session)
-            : base(session)
+        protected QueryOverRepository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
         }
 
         public virtual T Get(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("Get", () => GetInternal(alias, func));
+            return Execute(nameof(Get), () => GetInternal(alias, func));
         }
 
         public virtual T Get(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("Get", () => GetInternal(func));
+            return Execute(nameof(Get), () => GetInternal(func));
         }
 
         public virtual T GetAtIndex(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
         {
-            return Execute("GetAtIndex", () => GetAtIndexInternal(func, index));
+            return Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
         }
 
         public virtual T GetAtIndex(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index)
         {
-            return Execute("GetAtIndex", () => GetAtIndexInternal(alias, func, index));
+            return Execute(nameof(GetAtIndex), () => GetAtIndexInternal(alias, func, index));
         }
 
         public virtual IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("Find", () => FindInternal(func));
+            return Execute(nameof(Find), () => FindInternal(func));
         }
 
         public virtual IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("Find", () => FindInternal(alias, func));
+            return Execute(nameof(Find), () => FindInternal(alias, func));
         }
 
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("FindPaged", () => FindPagedInternal(pageIndex, pageSize, func));
+            return Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func));
         }
 
         public virtual IPagedList<T> FindPaged(int pageIndex, int pageSize, Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
         {
-            return Execute("FindPaged", () => FindPagedInternal(pageIndex, pageSize, alias, func));
+            return Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, alias, func));
         }
 
         public virtual IList<T> Find(Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
         {
-            return Execute("Find", () => FindInternal(func, skip, count));
+            return Execute(nameof(Find), () => FindInternal(func, skip, count));
         }
 
         public virtual IList<T> Find(Expression<Func<T>> alias, Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count)
         {
-            return Execute("Find", () => FindInternal(alias, func, skip, count));
+            return Execute(nameof(Find), () => FindInternal(alias, func, skip, count));
         }
 
         protected virtual T GetInternal(Func<IQueryOver<T, T>, IQueryOver<T, T>> func)
@@ -186,14 +186,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         }
 
         protected virtual PagedList<T> FindPagedInternal(int pageIndex, int pageSize, Func<IQueryOver<T, T>> queryFactory)
-        {
-            return FindPagedInternal<T, T>(pageIndex, pageSize, queryFactory);
-        }
+            => FindPagedInternal<T, T>(pageIndex, pageSize, queryFactory);
 
         protected virtual PagedList<R> FindPagedInternal<R>(int pageIndex, int pageSize, Func<IQueryOver<T, T>> queryFactory)
-        {
-            return FindPagedInternal<R, T>(pageIndex, pageSize, queryFactory);
-        }
+            => FindPagedInternal<R, T>(pageIndex, pageSize, queryFactory);
 
         protected virtual PagedList<R> FindPagedInternal<R, X>(int pageIndex, int pageSize, Func<IQueryOver<T, X>> queryFactory)
         {
@@ -223,8 +219,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         }
 
         protected virtual IQueryOver<T, T> CreateQueryOver(Expression<Func<T>> alias)
-        {
-            return Session.QueryOver(alias);
-        }
+            => Session.QueryOver(alias);
     }
 }

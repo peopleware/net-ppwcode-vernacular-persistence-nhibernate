@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
     public class Ship : PersistentObject<int>
     {
         [DataMember]
-        private string m_Code;
+        private ISet<CargoContainer> m_CargoContainers = new HashSet<CargoContainer>();
 
         [DataMember]
-        private ISet<CargoContainer> m_CargoContainers = new HashSet<CargoContainer>();
+        private string m_Code;
 
         public Ship()
         {
@@ -48,11 +48,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
             set { m_Code = value; }
         }
 
-        public virtual ISet<CargoContainer> CargoContainers => m_CargoContainers;
+        public virtual ISet<CargoContainer> CargoContainers
+            => m_CargoContainers;
 
         public virtual void AddCargoContainer(CargoContainer cargoContainer)
         {
-            if (cargoContainer != null && m_CargoContainers.Add(cargoContainer))
+            if ((cargoContainer != null) && m_CargoContainers.Add(cargoContainer))
             {
                 cargoContainer.Ship = this;
             }
@@ -60,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 
         public virtual void RemoveCargoContainer(CargoContainer cargoContainer)
         {
-            if (cargoContainer != null && m_CargoContainers.Remove(cargoContainer))
+            if ((cargoContainer != null) && m_CargoContainers.Remove(cargoContainer))
             {
                 cargoContainer.Ship = null;
             }

@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,15 +26,15 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
     public abstract class ModelMapperBase : IPpwHbmMapping
     {
-        private readonly object m_Locker = new object();
-        private readonly IMappingAssemblies m_MappingAssemblies;
-        private readonly ModelMapper m_ModelMapper;
-        private HbmMapping m_HbmMapping;
+        private readonly object _locker = new object();
+        private readonly IMappingAssemblies _mappingAssemblies;
+        private readonly ModelMapper _modelMapper;
+        private HbmMapping _hbmMapping;
 
         protected ModelMapperBase(IMappingAssemblies mappingAssemblies)
         {
-            m_MappingAssemblies = mappingAssemblies;
-            m_ModelMapper = new ModelMapper();
+            _mappingAssemblies = mappingAssemblies;
+            _modelMapper = new ModelMapper();
 
             ModelMapper.BeforeMapAny += OnBeforeMapAny;
             ModelMapper.BeforeMapBag += OnBeforeMapBag;
@@ -77,29 +77,43 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.AfterMapUnionSubclass += OnAfterMapUnionSubclass;
         }
 
+        protected IModelInspector ModelInspector
+            => ModelMapper.ModelInspector;
+
+        protected virtual IEnumerable<Type> MappingTypes
+            => null;
+
+        protected virtual string DefaultAccess
+            => null;
+
+        protected virtual bool DefaultLazy
+            => true;
+
+        protected virtual string DefaultCascade
+            => null;
+
         public abstract ICandidatePersistentMembersProvider MembersProvider { get; }
 
         public abstract bool QuoteIdentifiers { get; }
 
-        public ModelMapper ModelMapper => m_ModelMapper;
-
-        protected IModelInspector ModelInspector => ModelMapper.ModelInspector;
+        public ModelMapper ModelMapper
+            => _modelMapper;
 
         public HbmMapping HbmMapping
         {
             get
             {
-                if (m_HbmMapping == null)
+                if (_hbmMapping == null)
                 {
-                    lock (m_Locker)
+                    lock (_locker)
                     {
-                        if (m_HbmMapping == null)
+                        if (_hbmMapping == null)
                         {
                             IEnumerable<Type> mappingTypes =
                                 MappingTypes
-                                ?? m_MappingAssemblies
-                                   .GetAssemblies()
-                                   .SelectMany(a => a.GetExportedTypes());
+                                ?? _mappingAssemblies
+                                    .GetAssemblies()
+                                    .SelectMany(a => a.GetExportedTypes());
                             ModelMapper.AddMappings(mappingTypes);
 
                             HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
@@ -115,22 +129,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                                 hbmMapping.defaultcascade = DefaultCascade;
                             }
 
-                            m_HbmMapping = hbmMapping;
+                            _hbmMapping = hbmMapping;
                         }
                     }
                 }
 
-                return m_HbmMapping;
+                return _hbmMapping;
             }
         }
-
-        protected virtual IEnumerable<Type> MappingTypes => null;
-
-        protected virtual string DefaultAccess => null;
-
-        protected virtual bool DefaultLazy => true;
-
-        protected virtual string DefaultCascade => null;
 
         protected virtual void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
         {

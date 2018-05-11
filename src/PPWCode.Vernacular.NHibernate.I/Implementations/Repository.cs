@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
 using System;
 using System.Collections.Generic;
 
-using NHibernate;
-
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
@@ -28,34 +26,32 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
-        protected Repository(ISession session)
-            : base(session)
+        protected Repository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
         }
 
         public virtual T GetById(TId id)
         {
-            return Execute("GetById", () => GetByIdInternal(id));
+            return Execute(nameof(GetById), () => GetByIdInternal(id));
         }
 
         public virtual IList<T> FindAll()
-        {
-            return Execute("FindAll", FindAllInternal);
-        }
+            => Execute(nameof(FindAll), FindAllInternal);
 
         public virtual T Merge(T entity)
         {
-            return Execute("Merge", () => MergeInternal(entity));
+            return Execute(nameof(Merge), () => MergeInternal(entity));
         }
 
         public virtual void SaveOrUpdate(T entity)
         {
-            Execute("SaveOrUpdate", () => SaveOrUpdateInternal(entity));
+            Execute(nameof(SaveOrUpdate), () => SaveOrUpdateInternal(entity));
         }
 
         public virtual void Delete(T entity)
         {
-            Execute("Delete", () => DeleteInternal(entity));
+            Execute(nameof(Delete), () => DeleteInternal(entity));
         }
 
         protected virtual T GetByIdInternal(TId id)
@@ -71,7 +67,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         {
             // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
             // NHibernate MERGE transforms an UPDATE for a not-found-PK into a CREATE
-            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
+            if ((entity != null) && !entity.IsTransient && (GetById(entity.Id) == null))
             {
                 throw new NotFoundException("Merge executed for an entity that no longer exists in the database.");
             }
@@ -84,7 +80,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         protected virtual void SaveOrUpdateInternal(T entity)
         {
             // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
-            if (entity != null && !entity.IsTransient && GetById(entity.Id) == null)
+            if ((entity != null) && !entity.IsTransient && (GetById(entity.Id) == null))
             {
                 throw new NotFoundException("SaveOrUpdate executed for an entity that no longer exists in the database.");
             }

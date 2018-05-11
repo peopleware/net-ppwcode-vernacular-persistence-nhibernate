@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
     [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
-        private static readonly INHibernateLogger s_Log = NHibernateLogger.For(typeof(PPWDriverConnectionProvider));
+        private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(PPWDriverConnectionProvider));
 
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
@@ -46,7 +46,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             {
                 base.CloseConnection(conn);
             }
-            else if (s_Log.IsWarnEnabled())
+            else if (_log.IsWarnEnabled())
             {
                 StringBuilder sb =
                     new StringBuilder()
@@ -56,7 +56,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         .AppendLine()
                         .AppendLine(Environment.StackTrace)
                         .AppendLine();
-                s_Log.Warn(sb.ToString());
+                _log.Warn(sb.ToString());
             }
         }
     }

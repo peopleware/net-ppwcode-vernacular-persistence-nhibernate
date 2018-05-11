@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
     public class Keyword : PersistentObject<int>
     {
-        private string m_Name;
         private readonly ISet<Book> m_Books = new HashSet<Book>();
+        private string m_Name;
 
         public Keyword()
         {
@@ -41,11 +41,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
             set { m_Name = value; }
         }
 
-        public virtual ISet<Book> Books => m_Books;
+        public virtual ISet<Book> Books
+            => m_Books;
 
         public virtual void AddBook(Book book)
         {
-            if (book != null && m_Books.Add(book))
+            if ((book != null) && m_Books.Add(book))
             {
                 book.AddKeyword(this);
             }
@@ -53,7 +54,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveBook(Book book)
         {
-            if (book != null && m_Books.Remove(book))
+            if ((book != null) && m_Books.Remove(book))
             {
                 book.RemoveKeyword(this);
             }

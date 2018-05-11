@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,9 +35,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         {
         }
 
-        protected override string DefaultSchemaName => @"dbo";
+        protected override string DefaultSchemaName
+            => @"dbo";
 
-        public override bool QuoteIdentifiers => false;
+        public override bool QuoteIdentifiers
+            => false;
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
@@ -69,12 +71,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests
         {
         }
 
-        protected override string GeneratorTableName => TestsSimpleModelMapper.GeneratorTableName;
+        protected override string GeneratorTableName
+            => TestsSimpleModelMapper.GeneratorTableName;
 
-        protected override string GeneratorEntityNameColumnName => TestsSimpleModelMapper.GeneratorEntityNameColumnName;
+        protected override string GeneratorEntityNameColumnName
+            => TestsSimpleModelMapper.GeneratorEntityNameColumnName;
 
-        protected override string GeneratorNextHiColumnName => TestsSimpleModelMapper.GeneratorNextHiColumnName;
+        protected override string GeneratorNextHiColumnName
+            => TestsSimpleModelMapper.GeneratorNextHiColumnName;
 
-        protected override string GeneratorTableNameColumnName => TestsSimpleModelMapper.GeneratorTableNameColumnName;
+        protected override string GeneratorTableNameColumnName
+            => TestsSimpleModelMapper.GeneratorTableNameColumnName;
     }
 }

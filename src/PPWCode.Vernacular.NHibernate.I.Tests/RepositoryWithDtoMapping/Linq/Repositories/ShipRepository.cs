@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using NHibernate;
-
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
 using PPWCode.Vernacular.Persistence.II;
@@ -26,20 +25,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq.Re
 {
     public class ShipRepository : TestLinqRepository<Ship>
     {
-        public ShipRepository(ISession session)
-            : base(session)
+        public ShipRepository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
         }
 
         public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
-        {
-            return Find(FindContainersQuery(code));
-        }
+            => Find(FindContainersQuery(code));
 
         public IPagedList<ContainerDto> FindContainersFromShipsMatchingCodePaged(int pageIndex, int pageSize, string code)
-        {
-            return FindPaged(pageIndex, pageSize, FindContainersQuery(code));
-        }
+            => FindPaged(pageIndex, pageSize, FindContainersQuery(code));
 
         protected virtual Func<IQueryable<Ship>, IQueryable<ContainerDto>> FindContainersQuery(string code)
         {

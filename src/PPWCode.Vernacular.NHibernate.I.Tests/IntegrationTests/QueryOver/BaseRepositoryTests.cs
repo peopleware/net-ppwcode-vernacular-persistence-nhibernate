@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,26 +22,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
     public abstract class BaseRepositoryTests<T> : BaseQueryTests
         where T : class, IIdentity<int>
     {
-        private IQueryOverRepository<T, int> m_Repository;
+        private IQueryOverRepository<T, int> _repository;
 
         protected abstract Func<IQueryOverRepository<T, int>> RepositoryFactory { get; }
 
         protected IQueryOverRepository<T, int> Repository
-        {
-            get { return m_Repository; }
-        }
+            => _repository;
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            m_Repository = RepositoryFactory();
+            _repository = RepositoryFactory();
             SessionFactory.Statistics.Clear();
         }
 
         protected override void OnTeardown()
         {
-            m_Repository = null;
+            _repository = null;
 
             base.OnTeardown();
         }

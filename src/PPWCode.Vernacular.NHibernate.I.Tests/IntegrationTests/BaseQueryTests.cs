@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,41 +18,28 @@ using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
-using PPWCode.Vernacular.NHibernate.I.Utilities;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests
 {
     public abstract class BaseQueryTests : BaseRepositoryFixture<int, TestIntAuditLog>
     {
-        private IPpwHbmMapping m_PpwHbmMapping;
+        private IPpwHbmMapping _ppwHbmMapping;
 
         protected override string CatalogName
-        {
-            get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
-        }
+            => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
 
         protected override string ConnectionString
-        {
-            get { return FixedConnectionString; }
-        }
+            => FixedConnectionString;
 
         protected override IPpwHbmMapping PpwHbmMapping
-        {
-            get { return m_PpwHbmMapping ?? (m_PpwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies())); }
-        }
+            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
         protected override string IdentityName
-        {
-            get { return "Test - IdentityName"; }
-        }
+            => "Test - IdentityName";
 
         protected override IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
         {
-            get
-            {
-                yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping);
-                //yield return new PpwSubclassCheckConstraintsAuxiliaryDatabaseObject(PpwHbmMapping);
-            }
+            get { yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping); }
         }
     }
 }

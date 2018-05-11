@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,91 +25,79 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class NhConfigurationBase : INhConfiguration
     {
-        private readonly INhInterceptor m_NhInterceptor;
-        private readonly object m_Locker = new object();
-        private readonly INhProperties m_NhProperties;
-        private readonly IMappingAssemblies m_MappingAssemblies;
-        private readonly IPpwHbmMapping m_PpwHbmMapping;
-        private readonly IRegisterEventListener[] m_RegisterEventListeners;
-        private volatile IAuxiliaryDatabaseObject[] m_AuxiliaryDatabaseObjects;
-        private volatile Configuration m_Configuration;
-        private ILogger m_Logger = NullLogger.Instance;
+        private readonly object _locker = new object();
+        private readonly IMappingAssemblies _mappingAssemblies;
+        private readonly INhInterceptor _nhInterceptor;
+        private readonly INhProperties _nhProperties;
+        private readonly IPpwHbmMapping _ppwHbmMapping;
+        private readonly IRegisterEventListener[] _registerEventListeners;
+        private volatile IAuxiliaryDatabaseObject[] _auxiliaryDatabaseObjects;
+        private volatile Configuration _configuration;
+        private ILogger _logger = NullLogger.Instance;
 
         protected NhConfigurationBase(
-            INhInterceptor nhInterceptor, 
-            INhProperties nhProperties, 
-            IMappingAssemblies mappingAssemblies, 
-            IPpwHbmMapping ppwHbmMapping, 
+            INhInterceptor nhInterceptor,
+            INhProperties nhProperties,
+            IMappingAssemblies mappingAssemblies,
+            IPpwHbmMapping ppwHbmMapping,
             IRegisterEventListener[] registerEventListeners,
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
         {
-            m_NhInterceptor = nhInterceptor;
-            m_NhProperties = nhProperties;
-            m_MappingAssemblies = mappingAssemblies;
-            m_PpwHbmMapping = ppwHbmMapping;
-            m_RegisterEventListeners = registerEventListeners;
-            m_AuxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
+            _nhInterceptor = nhInterceptor;
+            _nhProperties = nhProperties;
+            _mappingAssemblies = mappingAssemblies;
+            _ppwHbmMapping = ppwHbmMapping;
+            _registerEventListeners = registerEventListeners;
+            _auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
         }
 
         protected INhProperties NhProperties
-        {
-            get { return m_NhProperties; }
-        }
+            => _nhProperties;
 
         protected IEnumerable<IRegisterEventListener> RegisterEventListeners
-        {
-            get { return m_RegisterEventListeners; }
-        }
+            => _registerEventListeners;
 
         protected abstract Configuration Configuration { get; }
 
         protected INhInterceptor NhInterceptor
-        {
-            get { return m_NhInterceptor; }
-        }
+            => _nhInterceptor;
 
         protected IPpwHbmMapping PpwHbmMapping
-        {
-            get { return m_PpwHbmMapping; }
-        }
+            => _ppwHbmMapping;
 
         protected IMappingAssemblies MappingAssemblies
-        {
-            get { return m_MappingAssemblies; }
-        }
+            => _mappingAssemblies;
 
         protected IAuxiliaryDatabaseObject[] AuxiliaryDatabaseObjects
-        {
-            get { return m_AuxiliaryDatabaseObjects; }
-        }
+            => _auxiliaryDatabaseObjects;
 
         public ILogger Logger
         {
-            get { return m_Logger; }
+            get { return _logger; }
             set
             {
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (value != null)
                 {
-                    m_Logger = value;
+                    _logger = value;
                 }
             }
         }
 
         public Configuration GetConfiguration()
         {
-            if (m_Configuration == null)
+            if (_configuration == null)
             {
-                lock (m_Locker)
+                lock (_locker)
                 {
-                    if (m_Configuration == null)
+                    if (_configuration == null)
                     {
-                        m_Configuration = Configuration;
+                        _configuration = Configuration;
                     }
                 }
             }
 
-            return m_Configuration;
+            return _configuration;
         }
     }
 }

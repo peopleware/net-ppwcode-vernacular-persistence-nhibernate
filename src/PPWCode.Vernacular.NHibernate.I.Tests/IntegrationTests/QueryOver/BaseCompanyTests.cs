@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
 {
     public abstract class BaseCompanyTests : BaseRepositoryTests<Company>
     {
-        private Company m_CreatedCompany;
+        private Company _createdCompany;
 
         protected enum CompanyCreationType
         {
@@ -40,27 +40,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         }
 
         protected Company CreatedCompany
-        {
-            get { return m_CreatedCompany; }
-        }
+            => _createdCompany;
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            m_CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+            _createdCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
         }
 
         protected override void OnTeardown()
         {
-            m_CreatedCompany = null;
+            _createdCompany = null;
 
             base.OnTeardown();
         }
 
         protected override Func<IQueryOverRepository<Company, int>> RepositoryFactory
         {
-            get { return () => new CompanyQueryOverRepository(Session); }
+            get { return () => new CompanyQueryOverRepository(SessionProvider); }
         }
 
         protected Company CreateCompany(CompanyCreationType companyCreationType)

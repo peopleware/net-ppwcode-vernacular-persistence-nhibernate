@@ -90,8 +90,7 @@
       <HintPath>..\packages\PPWCode.Vernacular.Exceptions.II.1.0.0\lib\net45\PPWCode.Vernacular.Exceptions.II.dll</HintPath>
     </Reference>
     <Reference Include="PPWCode.Vernacular.Persistence.II, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.3.0.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.3.0.1-rc0200016\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
     </Reference>
     <Reference Include="PPWcode.Vernacular.Semantics.II">
       <HintPath>..\packages\PPWcode.Vernacular.Semantics.II.1.0.0\lib\net45\PPWcode.Vernacular.Semantics.II.dll</HintPath>

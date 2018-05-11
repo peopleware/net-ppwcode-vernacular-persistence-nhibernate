@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         : AbstractAuxiliaryDatabaseObject,
           IPpwAuxiliaryDatabaseObject
     {
-        protected static string[] EmptyStringArray = new string[0];
+        protected static readonly string[] EmptyStringArray = new string[0];
 
-        private Configuration m_Configuration;
-        public IPpwHbmMapping PpwHbmMapping { get; }
-
-        protected Configuration Configuration => m_Configuration;
+        private Configuration _configuration;
 
         protected PpwAuxiliaryDatabaseObject(IPpwHbmMapping ppwHbmMapping)
         {
             PpwHbmMapping = ppwHbmMapping;
         }
 
+        public IPpwHbmMapping PpwHbmMapping { get; }
+
+        protected Configuration Configuration
+            => _configuration;
+
         public void SetConfiguration(Configuration configuration)
         {
-            m_Configuration = configuration;
+            _configuration = configuration;
         }
 
         protected virtual PersistentClass GetPersistentClassFor(Type type)
@@ -56,9 +58,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         }
 
         protected virtual string GetTableNameFor(Type type)
-        {
-            return GetPersistentClassFor(type)?.Table.Name;
-        }
+            => GetPersistentClassFor(type)?.Table.Name;
 
         protected virtual string[] GetDiscriminatorColumnNameFor(Type type)
         {
@@ -77,12 +77,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 Configuration
                     .ClassMappings
                     .SelectMany(classMapping => classMapping.DirectSubclasses, (classMapping, subclass) => new { classMapping, subclass })
-                    .Where(t => t.classMapping.MappedClass == type && !t.subclass.MappedClass.IsAbstract)
+                    .Where(t => (t.classMapping.MappedClass == type) && !t.subclass.MappedClass.IsAbstract)
                     .Select(t => t.subclass.DiscriminatorValue)
                     .Union(
                         Configuration
                             .ClassMappings
-                            .Where(m => m.MappedClass == type && !m.MappedClass.IsAbstract)
+                            .Where(m => (m.MappedClass == type) && !m.MappedClass.IsAbstract)
                             .Select(m => m.DiscriminatorValue))
                     .ToArray();
         }
@@ -127,7 +127,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                         .OfType<Column>()
                         .Select(c => c.Name)
                         .ToArray();
-
             }
 
             return EmptyStringArray;
@@ -138,7 +137,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             Expression body = propertyLambda.Body;
             MemberExpression member = body as MemberExpression;
             UnaryExpression unary = body as UnaryExpression;
-            if (member == null && !(unary != null && (member = unary.Operand as MemberExpression) != null))
+            if ((member == null) && !((unary != null) && ((member = unary.Operand as MemberExpression) != null)))
             {
                 throw new ProgrammingError($"Expression \'{propertyLambda}\' does not refer to a property.");
             }
@@ -150,7 +149,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
 
             Type type = typeof(TSource);
-            if (propInfo.DeclaringType != null && !propInfo.DeclaringType.IsAssignableFrom(type))
+            if ((propInfo.DeclaringType != null) && !propInfo.DeclaringType.IsAssignableFrom(type))
             {
                 throw new ProgrammingError($"Expression \'{propertyLambda}\' refers to a property that is not from type \'{{type}}\'.");
             }
@@ -159,18 +158,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         }
 
         protected virtual string QuoteColumnName(Dialect dialect, string identifier)
-        {
-            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForColumnName(identifier) : identifier;
-        }
+            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForColumnName(identifier) : identifier;
 
         protected virtual string QuoteTableName(Dialect dialect, string identifier)
-        {
-            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForTableName(identifier) : identifier;
-        }
+            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForTableName(identifier) : identifier;
 
         protected virtual string QuoteSchemaName(Dialect dialect, string identifier)
-        {
-            return PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForSchemaName(identifier) : identifier;
-        }
-	}
+            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForSchemaName(identifier) : identifier;
+    }
 }

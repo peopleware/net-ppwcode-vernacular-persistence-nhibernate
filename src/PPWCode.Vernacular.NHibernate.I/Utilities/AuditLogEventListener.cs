@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,40 +43,53 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         where TId : IEquatable<TId>
         where TAuditEntity : AuditLog<TId>, new()
     {
-        private static readonly ConcurrentDictionary<Type, AuditLogItem> s_DomainTypes =
+        private static readonly ConcurrentDictionary<Type, AuditLogItem> _domainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
 
-        private readonly IIdentityProvider m_IdentityProvider;
-        private readonly ITimeProvider m_TimeProvider;
-        private readonly bool m_UseUtc;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly ITimeProvider _timeProvider;
+        private readonly bool _useUtc;
 
         protected AuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
-            m_IdentityProvider = identityProvider;
-            m_TimeProvider = timeProvider;
-            m_UseUtc = useUtc;
+            _identityProvider = identityProvider;
+            _timeProvider = timeProvider;
+            _useUtc = useUtc;
         }
 
-        public IIdentityProvider IdentityProvider => m_IdentityProvider;
+        public IIdentityProvider IdentityProvider
+            => _identityProvider;
 
-        public ITimeProvider TimeProvider => m_TimeProvider;
+        public ITimeProvider TimeProvider
+            => _timeProvider;
 
-        public bool UseUtc => m_UseUtc;
+        public bool UseUtc
+            => _useUtc;
 
-        public virtual void Register(Configuration cfg)
+        public async Task OnPostDeleteAsync(PostDeleteEvent @event, CancellationToken cancellationToken)
         {
-            cfg.EventListeners.PostUpdateEventListeners =
-                new IPostUpdateEventListener[] { this }
-                    .Concat(cfg.EventListeners.PostUpdateEventListeners)
-                    .ToArray();
-            cfg.EventListeners.PostInsertEventListeners =
-                new IPostInsertEventListener[] { this }
-                    .Concat(cfg.EventListeners.PostInsertEventListeners)
-                    .ToArray();
-            cfg.EventListeners.PostDeleteEventListeners =
-                new IPostDeleteEventListener[] { this }
-                    .Concat(cfg.EventListeners.PostDeleteEventListeners)
-                    .ToArray();
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        public virtual void OnPostDelete(PostDeleteEvent @event)
+        {
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    SaveAuditLogs(@event, auditLogs);
+                }
+            }
         }
 
         public async Task OnPostInsertAsync(PostInsertEvent @event, CancellationToken cancellationToken)
@@ -131,49 +144,36 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             }
         }
 
-        public async Task OnPostDeleteAsync(PostDeleteEvent @event, CancellationToken cancellationToken)
+        public virtual void Register(Configuration cfg)
         {
-            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
-            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
-            {
-                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
-                {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
-                }
-            }
-        }
-
-        public virtual void OnPostDelete(PostDeleteEvent @event)
-        {
-            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
-            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
-            {
-                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
-                {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                    SaveAuditLogs(@event, auditLogs);
-                }
-            }
+            cfg.EventListeners.PostUpdateEventListeners =
+                new IPostUpdateEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostUpdateEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostInsertEventListeners =
+                new IPostInsertEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostInsertEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostDeleteEventListeners =
+                new IPostDeleteEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostDeleteEventListeners)
+                    .ToArray();
         }
 
         protected abstract bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction);
 
         protected virtual TAuditEntity CreateAuditEntity(string entryType, string entityName, string entityId, PpwAuditLog old, PpwAuditLog @new)
-        {
-            return
-                new TAuditEntity
-                {
-                    EntryType = entryType,
-                    EntityName = entityName,
-                    EntityId = entityId,
-                    PropertyName = @new?.PropertyName ?? old?.PropertyName,
-                    OldValue = old?.Value,
-                    NewValue = @new?.Value,
-                    CreatedBy = IdentityProvider.IdentityName,
-                    CreatedAt = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now
-                };
-        }
+            => new TAuditEntity
+               {
+                   EntryType = entryType,
+                   EntityName = entityName,
+                   EntityId = entityId,
+                   PropertyName = @new?.PropertyName ?? old?.PropertyName,
+                   OldValue = old?.Value,
+                   NewValue = @new?.Value,
+                   CreatedBy = IdentityProvider.IdentityName,
+                   CreatedAt = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now
+               };
 
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostInsertEvent @event, AuditLogItem auditLogItem)
         {
@@ -372,7 +372,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             public static AuditLogItem Find(Type t)
             {
-                AuditLogItem result = s_DomainTypes
+                AuditLogItem result = _domainTypes
                     .GetOrAdd(
                         t,
                         type =>
