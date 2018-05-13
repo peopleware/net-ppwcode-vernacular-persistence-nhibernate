@@ -51,10 +51,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation
             RunInsideTransaction(
                 () =>
                 {
-                    GenderEnumTranslation tr = new GenderEnumTranslation();
-                    tr.Code = GenderEnum.MALE;
-                    tr.TranslationFr = "Homme";
-                    tr.TranslationNl = "Man";
+                    GenderEnumTranslation tr =
+                        new GenderEnumTranslation
+                        {
+                            Code = GenderEnum.MALE,
+                            TranslationFr = "Homme",
+                            TranslationNl = "Man"
+                        };
 
                     GenderEnumTranslationRepository.Merge(tr);
                 },
