@@ -39,9 +39,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.ViolatedConstraintName
             => _dbConstraints.GetByConstraintName(constraintName);
 
         /// <inheritdoc />
-        public void Initialize(IDictionary<string, string> connectionStringSettings)
+        public void Initialize(IDictionary<string, string> properties)
         {
-            _dbConstraints.Initialize(connectionStringSettings);
+            _dbConstraints.Initialize(properties);
         }
 
         /// <inheritdoc />
