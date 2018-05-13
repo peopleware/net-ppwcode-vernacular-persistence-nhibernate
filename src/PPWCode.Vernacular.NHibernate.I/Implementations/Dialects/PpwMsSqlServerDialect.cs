@@ -22,16 +22,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.Dialects
 {
     public class PpwMsSqlServerDialect : MsSql2012Dialect
     {
-        private static readonly IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
-
-        static PpwMsSqlServerDialect()
-        {
-            _violatedConstraintNameExtracter = new PpwSqlServerViolatedConstraintNameExtracter();
-        }
+        private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
 
         /// <inheritdoc />
         public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
-            => _violatedConstraintNameExtracter;
+            => _violatedConstraintNameExtracter
+               ?? (_violatedConstraintNameExtracter = new PpwSqlServerViolatedConstraintNameExtracter());
 
         /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()

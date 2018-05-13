@@ -31,23 +31,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         private static readonly ISet<DbConstraintMetadata> _emptyDbConstraintMetadatas =
             new HashSet<DbConstraintMetadata>();
 
-        private static volatile object _locker = new object();
-        private static volatile IDictionary<string, DbConstraintMetadata> _constraints;
+        private volatile IDictionary<string, DbConstraintMetadata> _constraints;
         protected abstract string ProviderInvariantName { get; }
 
         public ISet<DbConstraintMetadata> Constraints
-        {
-            get
-            {
-                lock (_locker)
-                {
-                    return
-                        _constraints != null
-                            ? new HashSet<DbConstraintMetadata>(_constraints.Values)
-                            : _emptyDbConstraintMetadatas;
-                }
-            }
-        }
+            => _constraints != null
+                   ? new HashSet<DbConstraintMetadata>(_constraints.Values)
+                   : _emptyDbConstraintMetadatas;
 
         public DbConstraintMetadata GetByConstraintName(string constraintName)
         {
@@ -65,13 +55,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         {
             if (_constraints == null)
             {
-                lock (_locker)
-                {
-                    if (_constraints == null)
-                    {
-                        OnInitialize(properties);
-                    }
-                }
+                OnInitialize(properties);
             }
         }
 

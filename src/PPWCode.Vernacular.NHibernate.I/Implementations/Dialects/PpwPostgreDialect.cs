@@ -22,16 +22,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.Dialects
 {
     public class PpwPostgreDialect : PostgreSQL83Dialect
     {
-        private static readonly IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
-
-        static PpwPostgreDialect()
-        {
-            _violatedConstraintNameExtracter = new PpwPostgreViolatedConstraintNameExtracter();
-        }
+        private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
 
         /// <inheritdoc />
         public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
-            => _violatedConstraintNameExtracter;
+            => _violatedConstraintNameExtracter
+               ?? (_violatedConstraintNameExtracter = new PpwPostgreViolatedConstraintNameExtracter());
 
         /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
