@@ -82,11 +82,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
                     DbConnection dbConnection = factory.CreateConnection();
                     if (dbConnection != null)
                     {
-                        string connectionString = properties[Environment.ConnectionString];
+                        string connectionString = 
+                            properties.ContainsKey(Environment.ConnectionString) 
+                                ? properties[Environment.ConnectionString] 
+                                : null;
                         if (connectionString == null)
                         {
-                            string connectionStringName = properties[Environment.ConnectionStringName];
-                            connectionString = ConfigHelper.GetConnectionString(connectionStringName);
+                            string connectionStringName =
+                                properties.ContainsKey(Environment.ConnectionStringName)
+                                    ? properties[Environment.ConnectionStringName]
+                                    : null;
+                            connectionString =
+                                connectionStringName != null
+                                    ? ConfigHelper.GetConnectionString(connectionStringName)
+                                    : null;
                         }
 
                         dbConnection.ConnectionString = connectionString;
