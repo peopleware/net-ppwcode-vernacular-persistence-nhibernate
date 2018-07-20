@@ -28,5 +28,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         /// <inheritdoc />
         protected override string ProviderInvariantName
             => "System.Data.SqlClient";
-    }
+
+        /// <inheritdoc />
+        protected override string SqlCommand
+            => @"
+select tc.CONSTRAINT_NAME,
+       tc.TABLE_NAME,
+       tc.TABLE_SCHEMA,
+       tc.CONSTRAINT_TYPE
+  from INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+ where tc.CONSTRAINT_CATALOG = 'Phoenix'
+   and tc.CONSTRAINT_SCHEMA in ('dbo')
+union all
+select i.[name] as CONSTRAINT_NAME,
+       o.[name] as TABLE_NAME,
+       schema_name(o.schema_id) as TABLE_SCHEMA,
+       'UNIQUE' as CONSTRAINT_TYPE
+  from sys.indexes i
+       join sys.objects o on i.object_id = o.object_id 
+ where i.is_unique = 1
+   and i.is_unique_constraint = 0
+   and i.is_primary_key = 0
+   and o.type = 'U'";    }
 }

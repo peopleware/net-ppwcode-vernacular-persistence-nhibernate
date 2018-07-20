@@ -28,10 +28,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         /// </summary>
         protected abstract IEnumerable<string> Schemas { get; }
 
-        /// <inheritdoc />
-        protected override DbCommand GetCommand(DbConnection connection, DbTransaction transaction)
-        {
-            string commandText = @"
+        protected virtual string SqlCommand
+            => @"
 select tc.CONSTRAINT_NAME,
        tc.TABLE_NAME,
        tc.TABLE_SCHEMA,
@@ -40,11 +38,14 @@ select tc.CONSTRAINT_NAME,
  where tc.CONSTRAINT_CATALOG = @catalog
    and tc.CONSTRAINT_SCHEMA in ({0})";
 
+        /// <inheritdoc />
+        protected override DbCommand GetCommand(DbConnection connection, DbTransaction transaction)
+        {
             DbCommand command = connection.CreateCommand();
             try
             {
                 string sqlSchemasFragment = string.Join(", ", Schemas.Select(s => $"'{s}'"));
-                command.CommandText = string.Format(commandText, sqlSchemasFragment);
+                command.CommandText = string.Format(SqlCommand, sqlSchemasFragment);
                 command.CommandType = CommandType.Text;
                 command.Transaction = transaction;
 
