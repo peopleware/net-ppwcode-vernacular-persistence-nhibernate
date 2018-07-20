@@ -43,9 +43,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         {
             if (_constraints != null)
             {
-                DbConstraintMetadata contraint;
-                _constraints.TryGetValue(constraintName, out contraint);
-                return contraint;
+                DbConstraintMetadata constraint;
+                _constraints.TryGetValue(constraintName, out constraint);
+                return constraint;
             }
 
             return null;
