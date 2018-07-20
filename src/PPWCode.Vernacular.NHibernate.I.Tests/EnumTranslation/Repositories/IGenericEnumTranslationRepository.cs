@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Repositories
 {
-    public interface IGenericEnumTranslationRepository<T, X> : ITestRepository<T>
+    public interface IGenericEnumTranslationRepository<T, in X> : ITestQueryOverRepository<T>
         where T : GenericEnumTranslation<X>
         where X : struct, IComparable, IConvertible, IFormattable
     {

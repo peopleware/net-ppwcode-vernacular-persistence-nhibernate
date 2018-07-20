@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
 using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
+using PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint;
+using PPWCode.Vernacular.NHibernate.I.Implementations.Providers;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Utilities;
 using PPWCode.Vernacular.Persistence.II;
@@ -33,51 +35,41 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
     public abstract class NHibernateFixture<TId> : BaseFixture
         where TId : IEquatable<TId>
     {
-        private ISessionFactory m_SessionFactory;
-        private ISession m_Session;
+        private ISessionFactory _sessionFactory;
+        private ISessionProvider _sessionProvider;
 
         protected abstract Configuration Configuration { get; }
         protected abstract string IdentityName { get; }
         protected abstract DateTime UtcNow { get; }
 
         protected virtual bool UseProfiler
-        {
-            get { return ConfigHelper.GetAppSetting("UseProfiler", false); }
-        }
+            => ConfigHelper.GetAppSetting("UseProfiler", false);
 
         protected virtual bool SuppressProfilingWhileCreatingSchema
-        {
-            get { return ConfigHelper.GetAppSetting("SuppressProfilingWhileCreatingSchema", true); }
-        }
+            => ConfigHelper.GetAppSetting("SuppressProfilingWhileCreatingSchema", true);
 
         protected virtual bool ShowSql
-        {
-            get { return ConfigHelper.GetAppSetting("ShowSql", true); }
-        }
+            => ConfigHelper.GetAppSetting("ShowSql", true);
 
         protected virtual bool FormatSql
-        {
-            get { return ConfigHelper.GetAppSetting("FormatSql", true); }
-        }
+            => ConfigHelper.GetAppSetting("FormatSql", true);
 
         protected virtual bool GenerateStatistics
-        {
-            get { return ConfigHelper.GetAppSetting("GenerateStatistics", true); }
-        }
+            => ConfigHelper.GetAppSetting("GenerateStatistics", true);
 
         protected virtual ISessionFactory SessionFactory
-        {
-            get { return m_SessionFactory ?? (m_SessionFactory = Configuration.BuildSessionFactory()); }
-        }
+            => _sessionFactory ?? (_sessionFactory = Configuration.BuildSessionFactory());
 
         protected virtual ISession OpenSession()
         {
-            Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
+            Mock<IIdentityProvider> identityProvider =
+                new Mock<IIdentityProvider>();
             identityProvider
                 .Setup(ip => ip.IdentityName)
                 .Returns(IdentityName);
 
-            Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
+            Mock<ITimeProvider> timeProvider =
+                new Mock<ITimeProvider>();
             timeProvider
                 .Setup(tp => tp.Now)
                 .Returns(UtcNow.ToLocalTime);
@@ -85,14 +77,24 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                 .Setup(tp => tp.UtcNow)
                 .Returns(UtcNow);
 
-            AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
-            return SessionFactory.OpenSession(sessionLocalInterceptor);
+            AuditInterceptor<TId> sessionLocalInterceptor =
+                new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
+
+            return
+                SessionFactory
+                    .WithOptions()
+                    .Interceptor(sessionLocalInterceptor)
+                    .OpenSession();
         }
 
-        protected virtual ISession Session
-        {
-            get { return m_Session ?? (m_Session = OpenSession()); }
-        }
+        protected virtual ISessionProvider SessionProvider
+            => _sessionProvider
+               ?? (_sessionProvider =
+                       new SessionProvider(
+                           OpenSession(),
+                           new TransactionProvider(),
+                           new SafeEnvironmentProvider(new ExceptionTranslator()),
+                           IsolationLevel.ReadCommitted));
 
         protected virtual void BuildSchema()
         {
@@ -112,44 +114,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected virtual void CloseSessionFactory()
         {
-            if (m_SessionFactory != null)
-            {
-                m_SessionFactory.Close();
-                m_SessionFactory = null;
-            }
+            _sessionFactory?.Close();
+            _sessionFactory = null;
         }
 
         protected virtual void CloseSession()
         {
-            if (m_Session != null)
-            {
-                m_Session.Close();
-                m_Session = null;
-            }
+            _sessionProvider?.Session?.Close();
+            _sessionProvider = null;
         }
 
         protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
         {
-            T result;
-            ITransaction transaction = Session.BeginTransaction(IsolationLevel.ReadCommitted);
-            try
-            {
-                result = func();
-                transaction.Commit();
-            }
-            catch
-            {
-                transaction.Rollback();
-                throw;
-            }
-            finally
-            {
-                transaction.Dispose();
-            }
+            T result =
+                SessionProvider
+                    .TransactionProvider
+                    .Run(SessionProvider.Session, SessionProvider.IsolationLevel, func);
 
             if (clearSession)
             {
-                Session.Clear();
+                SessionProvider.Session.Clear();
             }
 
             return result;
@@ -157,13 +141,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected void RunInsideTransaction(Action action, bool clearSession)
         {
-            RunInsideTransaction(
-                () =>
-                {
-                    action();
-                    return 0;
-                },
-                clearSession);
+            SessionProvider
+                .TransactionProvider
+                .Run(SessionProvider.Session, SessionProvider.IsolationLevel, action);
+
+            if (clearSession)
+            {
+                SessionProvider.Session.Clear();
+            }
         }
     }
 }

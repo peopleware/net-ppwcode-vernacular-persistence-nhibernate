@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Castle.Core.Logging;
 
 using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -32,35 +33,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
     public abstract class NhFasterConfiguration : NhConfiguration
     {
         private const string ConfigFile = "hibernate.cfg.xml";
-        private ILogger m_Logger = new NullLogger();
+        private ILogger _logger = NullLogger.Instance;
 
-        protected NhFasterConfiguration(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
-            : base(nhInterceptor, nhProperties, mappingAssemblies, hbmMapping, registerEventListeners)
+        protected NhFasterConfiguration(
+            INhInterceptor nhInterceptor,
+            INhProperties nhProperties,
+            IMappingAssemblies mappingAssemblies,
+            IPpwHbmMapping ppwHbmMapping,
+            IRegisterEventListener[] registerEventListeners,
+            IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
+            : base(nhInterceptor, nhProperties, mappingAssemblies, ppwHbmMapping, registerEventListeners, auxiliaryDatabaseObjects)
         {
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Logger != null);
-        }
-
-        public ILogger Logger
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ILogger>() != null);
-
-                return m_Logger;
-            }
-
-            set
-            {
-                Contract.Requires(value != null);
-                Contract.Ensures(value == Logger);
-
-                m_Logger = value;
-            }
         }
 
         [Pure]
@@ -77,15 +60,33 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 FileInfo serializedConfigInfo = new FileInfo(SerializedConfiguration);
                 FileInfo nHibernateConfigFileInfo = new FileInfo(ConfigFile);
 
-                return serializedConfigInfo.LastWriteTime >= maxDate
-                       && serializedConfigInfo.LastWriteTime >= nHibernateConfigFileInfo.LastWriteTime;
+                return (serializedConfigInfo.LastWriteTime >= maxDate)
+                       && (serializedConfigInfo.LastWriteTime >= nHibernateConfigFileInfo.LastWriteTime);
+            }
+        }
+
+        private string SerializedConfiguration
+            => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin");
+
+        protected abstract string Namespace { get; }
+
+        protected override Configuration Configuration
+        {
+            get
+            {
+                Configuration result = LoadConfigurationFromFile();
+                if (result == null)
+                {
+                    result = base.Configuration;
+                    SaveConfigurationToFile(result);
+                }
+
+                return result;
             }
         }
 
         private Configuration LoadConfigurationFromFile()
         {
-            Contract.Ensures(!IsConfigurationFileValid || Contract.Result<Configuration>() != null);
-
             Configuration result = null;
             if (IsConfigurationFileValid)
             {
@@ -112,28 +113,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(file, configuration);
-            }
-        }
-
-        private string SerializedConfiguration
-        {
-            get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Namespace, "hibernate.cfg.bin"); }
-        }
-
-        protected abstract string Namespace { get; }
-
-        protected override Configuration Configuration
-        {
-            get
-            {
-                Configuration result = LoadConfigurationFromFile();
-                if (result == null)
-                {
-                    result = base.Configuration;
-                    SaveConfigurationToFile(result);
-                }
-
-                return result;
             }
         }
     }

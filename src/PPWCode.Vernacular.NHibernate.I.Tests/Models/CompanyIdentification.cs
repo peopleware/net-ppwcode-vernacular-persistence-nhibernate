@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,22 +14,19 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.Semantics;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class CompanyIdentification : AuditablePersistentObject<int>
     {
-        [ContractInvariantMethod]
-        private void ObjectsInvariant()
-        {
-            Contract.Invariant(AssociationContracts.BiDirChildToParent(this, Company, c => c.Identifications));
-        }
+        [DataMember]
+        private Company m_Company;
 
         [DataMember]
         private string m_Identification;
@@ -37,30 +34,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         [DataMember]
         private int m_Number;
 
-        [DataMember]
-        private Company m_Company;
-
-        [Required, StringLength(256)]
+        [Required]
+        [StringLength(256)]
         public virtual string Identification
         {
             get { return m_Identification; }
-            set
-            {
-                Contract.Ensures(Identification == value);
-
-                m_Identification = value;
-            }
+            set { m_Identification = value; }
         }
 
         public virtual int Number
         {
             get { return m_Number; }
-            set
-            {
-                Contract.Ensures(Number == value);
-
-                m_Number = value;
-            }
+            set { m_Number = value; }
         }
 
         [Required]
@@ -69,11 +54,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             get { return m_Company; }
             set
             {
-                Contract.Ensures(Company == value);
-                // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || !Contract.OldValue(Company).Identifications.Contains(this));
-                Contract.Ensures(Company == null || Company.Identifications.Contains(this));
-
                 if (m_Company != value)
                 {
                     if (m_Company != null)
@@ -90,6 +70,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
                     }
                 }
             }
+        }
+    }
+
+    public class CompanyIdentificationMapper : AuditablePersistentObjectMapper<CompanyIdentification, int>
+    {
+        public CompanyIdentificationMapper()
+        {
+            Property(ci => ci.Identification);
+            Property(ci => ci.Number);
+            ManyToOne(ci => ci.Company);
         }
     }
 }

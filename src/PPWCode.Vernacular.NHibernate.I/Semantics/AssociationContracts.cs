@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,50 +28,47 @@ namespace PPWCode.Vernacular.NHibernate.I.Semantics
             where M : class
             where O : class
         {
-            return many != null && (!NHibernateUtil.IsInitialized(many) || many.All(x => x != null && toOne(x) == one));
+            return (many != null) && (!NHibernateUtil.IsInitialized(many) || many.All(x => (x != null) && (toOne(x) == one)));
         }
 
         [Pure]
         public static bool BiDirParentToChild<O, M>(O one, ISet<M> many, Func<M, O> toOne)
             where M : class
             where O : class
-        {
-            return BiDirOneToMany(one, many, toOne);
-        }
+            => BiDirOneToMany(one, many, toOne);
 
         [Pure]
         public static bool BiDirManyToOne<O, M>(M many, O one, Func<O, ISet<M>> toMany)
             where M : class
             where O : class
         {
-            return one == null || !NHibernateUtil.IsInitialized(one) || toMany(one).Any(x => x == many);
+            return (one == null) || !NHibernateUtil.IsInitialized(one) || toMany(one).Any(x => x == many);
         }
 
         [Pure]
         public static bool BiDirChildToParent<O, M>(M many, O one, Func<O, ISet<M>> toMany)
             where M : class
             where O : class
-        {
-            return BiDirManyToOne(many, one, toMany);
-        }
+            => BiDirManyToOne(many, one, toMany);
 
         [Pure]
         public static bool BiDirManyToMany<Morigin, Mdestination>(Morigin origin, ISet<Mdestination> destinations, Func<Mdestination, ISet<Morigin>> toOrigin)
             where Morigin : class
             where Mdestination : class
         {
-            return destinations != null
+            return (destinations != null)
                    && (!NHibernateUtil.IsInitialized(destinations)
-                       || destinations.All(x =>
-                                           {
-                                               if (x != null)
-                                               {
-                                                   ISet<Morigin> origins = toOrigin(x);
-                                                   return origins == null || !NHibernateUtil.IsInitialized(origins) || origins.Contains(origin);
-                                               }
-                                               
-                                               return true;
-                                           }));
+                       || destinations.All(
+                           x =>
+                           {
+                               if (x != null)
+                               {
+                                   ISet<Morigin> origins = toOrigin(x);
+                                   return (origins == null) || !NHibernateUtil.IsInitialized(origins) || origins.Contains(origin);
+                               }
+
+                               return true;
+                           }));
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,12 +13,16 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
     public class WebBasedIctCompany : IctCompany
     {
         [DataMember]
@@ -38,6 +42,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
+        [Required]
         public virtual string WebBased
         {
             get { return m_WebBased; }
@@ -47,6 +52,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
                 m_WebBased = value;
             }
+        }
+    }
+
+    public class WebBasedIctCompanyMapper : SubclassMapping<WebBasedIctCompany>
+    {
+        public WebBasedIctCompanyMapper()
+        {
+            Property(c => c.WebBased);
         }
     }
 }

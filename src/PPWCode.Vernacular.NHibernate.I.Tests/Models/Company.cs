@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,17 +15,29 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.Semantics;
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
+    [AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
+        [DataMember]
+        private FailedCompany m_FailedCompany;
+
+        [DataMember]
+        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
+
+        [DataMember]
+        private string m_Name;
+
         public Company(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -40,46 +52,20 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Identifications != null);
-            Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Identifications, i => i.Company));
-            Contract.Invariant(FailedCompany == null || FailedCompany.Company == this);
-            Contract.Invariant(IsFailed == (FailedCompany != null));
-        }
-
-        [DataMember]
-        private string m_Name;
-
-        [DataMember]
-        private FailedCompany m_FailedCompany;
-
-        [DataMember]
-        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
-
-        [Required, StringLength(128)]
+        [Required]
+        [StringLength(128)]
         public virtual string Name
         {
             get { return m_Name; }
-            set
-            {
-                Contract.Ensures(Name == value);
-
-                m_Name = value;
-            }
+            set { m_Name = value; }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual FailedCompany FailedCompany
         {
             get { return m_FailedCompany; }
             set
             {
-                Contract.Ensures(FailedCompany == value);
-                // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(FailedCompany) == null || Contract.OldValue(FailedCompany) == value || Contract.OldValue(FailedCompany).Company != this);
-                Contract.Ensures(FailedCompany == null || FailedCompany.Company == this);
-
                 if (m_FailedCompany != value)
                 {
                     if (m_FailedCompany != null)
@@ -99,25 +85,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         public virtual bool IsFailed
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<bool>() == (FailedCompany != null));
+            => FailedCompany != null;
 
-                return FailedCompany != null;
-            }
-        }
-
+        [AuditLogPropertyIgnore]
         public virtual ISet<CompanyIdentification> Identifications
-        {
-            get { return m_Identifications; }
-        }
+            => m_Identifications;
 
         public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {
-            Contract.Ensures(!Identifications.Contains(companyIdentification));
-
-            if (companyIdentification != null && m_Identifications.Remove(companyIdentification))
+            if ((companyIdentification != null) && m_Identifications.Remove(companyIdentification))
             {
                 companyIdentification.Company = null;
             }
@@ -125,12 +101,31 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void AddIdentification(CompanyIdentification companyIdentification)
         {
-            Contract.Ensures(Identifications.Contains(companyIdentification));
-
-            if (companyIdentification != null && m_Identifications.Add(companyIdentification))
+            if ((companyIdentification != null) && m_Identifications.Add(companyIdentification))
             {
                 companyIdentification.Company = this;
             }
+        }
+    }
+
+    public class CompanyMapper : AuditableVersionedPersistentObjectMapper<Company, int, int>
+    {
+        public CompanyMapper()
+        {
+            Property(c => c.Name);
+
+            Set(
+                c => c.Identifications,
+                c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
+                r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
+
+            OneToOne(
+                c => c.FailedCompany,
+                m =>
+                {
+                    m.ForeignKey(null);
+                    m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+                });
         }
     }
 }

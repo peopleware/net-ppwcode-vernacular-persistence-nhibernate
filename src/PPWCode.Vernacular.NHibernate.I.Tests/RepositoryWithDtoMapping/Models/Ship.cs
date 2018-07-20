@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,22 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Ship : PersistentObject<int>
     {
         [DataMember]
-        private string m_Code;
+        private ISet<CargoContainer> m_CargoContainers = new HashSet<CargoContainer>();
 
         [DataMember]
-        private ISet<CargoContainer> m_CargoContainers = new HashSet<CargoContainer>();
+        private string m_Code;
 
         public Ship()
         {
@@ -45,13 +49,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
         }
 
         public virtual ISet<CargoContainer> CargoContainers
-        {
-            get { return m_CargoContainers; }
-        }
+            => m_CargoContainers;
 
         public virtual void AddCargoContainer(CargoContainer cargoContainer)
         {
-            if (cargoContainer != null && m_CargoContainers.Add(cargoContainer))
+            if ((cargoContainer != null) && m_CargoContainers.Add(cargoContainer))
             {
                 cargoContainer.Ship = this;
             }
@@ -59,10 +61,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 
         public virtual void RemoveCargoContainer(CargoContainer cargoContainer)
         {
-            if (cargoContainer != null && m_CargoContainers.Remove(cargoContainer))
+            if ((cargoContainer != null) && m_CargoContainers.Remove(cargoContainer))
             {
                 cargoContainer.Ship = null;
             }
+        }
+    }
+
+    public class ShipMapper : PersistentObjectMapper<Ship, int>
+    {
+        public ShipMapper()
+        {
+            Property(s => s.Code);
+
+            Set(
+                s => s.CargoContainers,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.All | Cascade.Merge);
+                },
+                r => r.OneToMany());
         }
     }
 }

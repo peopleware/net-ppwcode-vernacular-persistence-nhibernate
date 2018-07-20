@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
 using System;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode.Conformist;
+
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
     public class IctCompany : Company
     {
         public IctCompany(int id, int persistenceVersion)
@@ -32,6 +35,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public IctCompany()
         {
+        }
+
+        [DataMember]
+        public virtual Address Address { get; set; }
+    }
+
+    public class IctCompanyMapper : SubclassMapping<IctCompany>
+    {
+        public IctCompanyMapper()
+        {
+            Component(c => c.Address);
         }
     }
 }

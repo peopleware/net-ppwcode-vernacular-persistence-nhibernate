@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
 // limitations under the License.
 
 using System;
+
+using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Type;
 
 using PPWCode.Vernacular.Exceptions.II;
 
@@ -40,6 +43,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         {
             get { return m_Code; }
             set { m_Code = value; }
+        }
+    }
+
+    public abstract class GenericEnumTranslationMapper<T> : SubclassMapping<GenericEnumTranslation<T>>
+        where T : struct, IComparable, IConvertible, IFormattable
+    {
+        protected GenericEnumTranslationMapper()
+        {
+            Property(
+                e => e.Code,
+                m => { m.Type<EnumStringType<T>>(); });
         }
     }
 }

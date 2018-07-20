@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,38 +13,31 @@
 // limitations under the License.
 
 using System;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
+using NHibernate.Mapping.ByCode;
+
 using PPWCode.Vernacular.Exceptions.II;
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 {
-    [DataContract(IsReference = true), Serializable]
+    [DataContract(IsReference = true)]
+    [Serializable]
+    [AuditLog(AuditLogAction = AuditLogActionEnum.ALL)]
     public class FailedCompany : InsertAuditablePersistentObject<int>
     {
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Company == null || Company.FailedCompany == this);
-        }
+        [DataMember]
+        private Company m_Company;
 
         [DataMember]
         private DateTime m_FailingDate;
 
-        [DataMember]
-        private Company m_Company;
-
         public virtual DateTime FailingDate
         {
             get { return m_FailingDate; }
-            set
-            {
-                Contract.Ensures(FailingDate == value);
-
-                m_FailingDate = value;
-            }
+            set { m_FailingDate = value; }
         }
 
         public virtual Company Company
@@ -52,11 +45,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             get { return m_Company; }
             set
             {
-                Contract.Ensures(Company == value);
-                // ReSharper disable once PossibleNullReferenceException
-                Contract.Ensures(Contract.OldValue(Company) == null || Contract.OldValue(Company) == value || Contract.OldValue(Company).FailedCompany != this);
-                Contract.Ensures(Company == null || Company.FailedCompany == this);
-
                 if (m_Company != value)
                 {
                     if (m_Company != null)
@@ -85,6 +73,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             }
 
             return sce;
+        }
+    }
+
+    public class FailedCompanyMapper : InsertAuditablePersistentObjectMapper<FailedCompany, int>
+    {
+        public FailedCompanyMapper()
+        {
+            Id(fc => fc.Id, m => m.Generator(Generators.Foreign<FailedCompany>(fc => fc.Company)));
+            Property(fc => fc.FailingDate);
+            OneToOne(fc => fc.Company, m => m.Constrained(true));
         }
     }
 }

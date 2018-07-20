@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+
+using Castle.Core.Logging;
 
 using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
@@ -23,111 +25,79 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
 {
     public abstract class NhConfigurationBase : INhConfiguration
     {
-        private readonly INhInterceptor m_NhInterceptor;
-        private readonly object m_Locker = new object();
-        private readonly INhProperties m_NhProperties;
-        private readonly IMappingAssemblies m_MappingAssemblies;
-        private readonly IHbmMapping m_HbmMapping;
-        private readonly IRegisterEventListener[] m_RegisterEventListeners;
-        private volatile Configuration m_Configuration;
+        private readonly object _locker = new object();
+        private readonly IMappingAssemblies _mappingAssemblies;
+        private readonly INhInterceptor _nhInterceptor;
+        private readonly INhProperties _nhProperties;
+        private readonly IPpwHbmMapping _ppwHbmMapping;
+        private readonly IRegisterEventListener[] _registerEventListeners;
+        private volatile IAuxiliaryDatabaseObject[] _auxiliaryDatabaseObjects;
+        private volatile Configuration _configuration;
+        private ILogger _logger = NullLogger.Instance;
 
-        protected NhConfigurationBase(INhInterceptor nhInterceptor, INhProperties nhProperties, IMappingAssemblies mappingAssemblies, IHbmMapping hbmMapping, IRegisterEventListener[] registerEventListeners)
+        protected NhConfigurationBase(
+            INhInterceptor nhInterceptor,
+            INhProperties nhProperties,
+            IMappingAssemblies mappingAssemblies,
+            IPpwHbmMapping ppwHbmMapping,
+            IRegisterEventListener[] registerEventListeners,
+            IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects)
         {
-            Contract.Requires(nhInterceptor != null);
-            Contract.Requires(nhProperties != null);
-            Contract.Requires(mappingAssemblies != null);
-            Contract.Requires(hbmMapping != null);
-            Contract.Requires(registerEventListeners != null);
-
-            Contract.Ensures(NhInterceptor == nhInterceptor);
-            Contract.Ensures(NhProperties == nhProperties);
-            Contract.Ensures(MappingAssemblies == mappingAssemblies);
-            Contract.Ensures(HbmMapping == hbmMapping);
-            Contract.Ensures(RegisterEventListeners == registerEventListeners);
-
-            m_NhInterceptor = nhInterceptor;
-            m_NhProperties = nhProperties;
-            m_MappingAssemblies = mappingAssemblies;
-            m_HbmMapping = hbmMapping;
-            m_RegisterEventListeners = registerEventListeners;
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(NhProperties != null);
-            Contract.Invariant(RegisterEventListeners != null);
-            Contract.Invariant(NhInterceptor != null);
-            Contract.Invariant(HbmMapping != null);
-            Contract.Invariant(MappingAssemblies != null);
+            _nhInterceptor = nhInterceptor;
+            _nhProperties = nhProperties;
+            _mappingAssemblies = mappingAssemblies;
+            _ppwHbmMapping = ppwHbmMapping;
+            _registerEventListeners = registerEventListeners;
+            _auxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
         }
 
         protected INhProperties NhProperties
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<INhProperties>() != null);
-
-                return m_NhProperties;
-            }
-        }
+            => _nhProperties;
 
         protected IEnumerable<IRegisterEventListener> RegisterEventListeners
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IEnumerable<IRegisterEventListener>>() != null);
-
-                return m_RegisterEventListeners;
-            }
-        }
+            => _registerEventListeners;
 
         protected abstract Configuration Configuration { get; }
 
         protected INhInterceptor NhInterceptor
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<INhInterceptor>() != null);
+            => _nhInterceptor;
 
-                return m_NhInterceptor;
-            }
-        }
-
-        protected IHbmMapping HbmMapping
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IHbmMapping>() != null);
-
-                return m_HbmMapping;
-            }
-        }
+        protected IPpwHbmMapping PpwHbmMapping
+            => _ppwHbmMapping;
 
         protected IMappingAssemblies MappingAssemblies
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IMappingAssemblies>() != null);
+            => _mappingAssemblies;
 
-                return m_MappingAssemblies;
+        protected IAuxiliaryDatabaseObject[] AuxiliaryDatabaseObjects
+            => _auxiliaryDatabaseObjects;
+
+        public ILogger Logger
+        {
+            get { return _logger; }
+            set
+            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if (value != null)
+                {
+                    _logger = value;
+                }
             }
         }
 
         public Configuration GetConfiguration()
         {
-            if (m_Configuration == null)
+            if (_configuration == null)
             {
-                lock (m_Locker)
+                lock (_locker)
                 {
-                    if (m_Configuration == null)
+                    if (_configuration == null)
                     {
-                        m_Configuration = Configuration;
+                        _configuration = Configuration;
                     }
                 }
             }
 
-            return m_Configuration;
+            return _configuration;
         }
     }
 }

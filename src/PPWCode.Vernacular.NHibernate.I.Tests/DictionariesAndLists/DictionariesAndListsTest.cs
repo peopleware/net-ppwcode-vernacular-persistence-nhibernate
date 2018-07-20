@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,15 +19,15 @@ using NUnit.Framework;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests;
+using PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists
 {
     public class DictionariesAndListsTest : BaseRepositoryTests<Tower>
     {
-        protected override Func<IRepository<Tower, int>> RepositoryFactory
+        protected override Func<IQueryOverRepository<Tower, int>> RepositoryFactory
         {
-            get { return () => new TowerRepository(Session); }
+            get { return () => new TowerRepository(SessionProvider); }
         }
 
         /// <summary>
@@ -47,35 +47,38 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.DictionariesAndLists
                 {
                     Tower tower = new Tower();
 
-                    tower.Sections.Add(new Plane
-                                       {
-                                           Normal = new Vector3D
-                                                    {
-                                                        X = 0.123,
-                                                        Y = 0.456,
-                                                        Z = 0.789
-                                                    },
-                                           Translation = 0.197
-                                       });
+                    tower.Sections.Add(
+                        new Plane
+                        {
+                            Normal = new Vector3D
+                                     {
+                                         X = 0.123,
+                                         Y = 0.456,
+                                         Z = 0.789
+                                     },
+                            Translation = 0.197
+                        });
                     tower.Sides[SideEnum.NORTH] =
                         new ClippingPlane
                         {
-                            Plane = new Plane
-                                    {
-                                        Normal = new Vector3D
-                                                 {
-                                                     X = 0.123,
-                                                     Y = 0.456,
-                                                     Z = 0.789
-                                                 },
-                                        Translation = 0.197
-                                    },
-                            MeshTranslation = new Vector3D
-                                              {
-                                                  X = 0.321,
-                                                  Y = 0.654,
-                                                  Z = 0.987
-                                              }
+                            Plane =
+                                new Plane
+                                {
+                                    Normal = new Vector3D
+                                             {
+                                                 X = 0.123,
+                                                 Y = 0.456,
+                                                 Z = 0.789
+                                             },
+                                    Translation = 0.197
+                                },
+                            MeshTranslation =
+                                new Vector3D
+                                {
+                                    X = 0.321,
+                                    Y = 0.654,
+                                    Z = 0.987
+                                }
                         };
                 },
                 true);

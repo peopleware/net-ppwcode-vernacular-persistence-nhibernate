@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 using NHibernate;
 using NHibernate.Cfg;
@@ -34,180 +35,46 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
-    public abstract class AuditLogEventListener<TId, TAuditEntity> :
-        IRegisterEventListener,
-        IPostUpdateEventListener,
-        IPostInsertEventListener,
-        IPostDeleteEventListener
+    public abstract class AuditLogEventListener<TId, TAuditEntity>
+        : IRegisterEventListener,
+          IPostUpdateEventListener,
+          IPostInsertEventListener,
+          IPostDeleteEventListener
         where TId : IEquatable<TId>
         where TAuditEntity : AuditLog<TId>, new()
     {
-        private static readonly ConcurrentDictionary<Type, AuditLogItem> s_DomainTypes =
+        private static readonly ConcurrentDictionary<Type, AuditLogItem> _domainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
 
-        private readonly IIdentityProvider m_IdentityProvider;
-        private readonly ITimeProvider m_TimeProvider;
-        private readonly bool m_UseUtc;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly ITimeProvider _timeProvider;
+        private readonly bool _useUtc;
 
         protected AuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
         {
-            Contract.Requires(identityProvider != null);
-            Contract.Requires(timeProvider != null);
-            Contract.Ensures(IdentityProvider == identityProvider);
-            Contract.Ensures(TimeProvider == timeProvider);
-            Contract.Ensures(UseUtc == useUtc);
-
-            m_IdentityProvider = identityProvider;
-            m_TimeProvider = timeProvider;
-            m_UseUtc = useUtc;
-        }
-
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(IdentityProvider != null);
-            Contract.Invariant(TimeProvider != null);
+            _identityProvider = identityProvider;
+            _timeProvider = timeProvider;
+            _useUtc = useUtc;
         }
 
         public IIdentityProvider IdentityProvider
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IIdentityProvider>() != null);
-
-                return m_IdentityProvider;
-            }
-        }
+            => _identityProvider;
 
         public ITimeProvider TimeProvider
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ITimeProvider>() != null);
-
-                return m_TimeProvider;
-            }
-        }
+            => _timeProvider;
 
         public bool UseUtc
-        {
-            get { return m_UseUtc; }
-        }
+            => _useUtc;
 
-        public void Register(Configuration cfg)
-        {
-            cfg.EventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { this }
-                .Concat(cfg.EventListeners.PostUpdateEventListeners)
-                .ToArray();
-            cfg.EventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { this }
-                .Concat(cfg.EventListeners.PostInsertEventListeners)
-                .ToArray();
-            cfg.EventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { this }
-                .Concat(cfg.EventListeners.PostDeleteEventListeners)
-                .ToArray();
-        }
-
-        public virtual void OnPostUpdate(PostUpdateEvent @event)
+        public async Task OnPostDeleteAsync(PostDeleteEvent @event, CancellationToken cancellationToken)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
-            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
             {
-                string identityName = IdentityProvider.IdentityName;
-                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
-                string entityName = @event.Entity.GetType().Name;
-
-                if (@event.OldState == null)
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
                 {
-                    throw new ProgrammingError(
-                        string.Format(
-                            "No old state available for entity type '{1}'.{0}Make sure you're loading it into Session before modifying and saving it.",
-                            Environment.NewLine,
-                            entityName));
-                }
-
-                List<TAuditEntity> auditLogs = new List<TAuditEntity>();
-                int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
-                foreach (int dirtyFieldIndex in fieldIndices)
-                {
-                    string oldValue = GetStringValueFromStateArray(@event.OldState, dirtyFieldIndex);
-                    string newValue = GetStringValueFromStateArray(@event.State, dirtyFieldIndex);
-
-                    if (oldValue != newValue)
-                    {
-                        string propertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
-                        AuditLogActionEnum auditLogAction;
-                        if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
-                        {
-                            if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
-                            {
-                                auditLogs.Add(
-                                    new TAuditEntity
-                                    {
-                                        EntryType = "U",
-                                        EntityName = entityName,
-                                        EntityId = @event.Id.ToString(),
-                                        PropertyName = propertyName,
-                                        OldValue = oldValue,
-                                        NewValue = newValue,
-                                        CreatedBy = identityName,
-                                        CreatedAt = now
-                                    });
-                            }
-                        }
-                    }
-                }
-
-                if (auditLogs.Count > 0)
-                {
-                    ISession session = @event.Session.GetSession(EntityMode.Poco);
-                    auditLogs.ForEach(o => session.Save(o));
-                    session.Flush();
-                }
-            }
-        }
-
-        public virtual void OnPostInsert(PostInsertEvent @event)
-        {
-            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
-            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
-            {
-                string identityName = IdentityProvider.IdentityName;
-                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
-                string entityName = @event.Entity.GetType().Name;
-
-                List<TAuditEntity> auditLogs = new List<TAuditEntity>();
-                int length = @event.State.Count();
-                for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
-                {
-                    string newValue = GetStringValueFromStateArray(@event.State, fieldIndex);
-
-                    string propertyName = @event.Persister.PropertyNames[fieldIndex];
-                    AuditLogActionEnum auditLogAction;
-                    if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
-                    {
-                        if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
-                        {
-                            auditLogs.Add(
-                                new TAuditEntity
-                                {
-                                    EntryType = "I",
-                                    EntityName = entityName,
-                                    EntityId = @event.Id.ToString(),
-                                    PropertyName = propertyName,
-                                    OldValue = null,
-                                    NewValue = newValue,
-                                    CreatedBy = identityName,
-                                    CreatedAt = now
-                                });
-                        }
-                    }
-                }
-
-                if (auditLogs.Count > 0)
-                {
-                    ISession session = @event.Session.GetSession(EntityMode.Poco);
-                    auditLogs.ForEach(o => session.Save(o));
-                    session.Flush();
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -217,28 +84,278 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
             {
-                string identityName = IdentityProvider.IdentityName;
-                DateTime now = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now;
-                string entityName = @event.Entity.GetType().Name;
-
-                ISession session = @event.Session.GetSession(EntityMode.Poco);
-                session.Save(
-                    new TAuditEntity
-                    {
-                        EntryType = "D",
-                        EntityName = entityName,
-                        EntityId = @event.Id.ToString(),
-                        CreatedBy = identityName,
-                        CreatedAt = now
-                    });
-                session.Flush();
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
+                    SaveAuditLogs(@event, auditLogs);
+                }
             }
         }
 
-        protected static string GetStringValueFromStateArray(object[] stateArray, int position)
+        public async Task OnPostInsertAsync(PostInsertEvent @event, CancellationToken cancellationToken)
+        {
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        public virtual void OnPostInsert(PostInsertEvent @event)
+        {
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    SaveAuditLogs(@event, auditLogs);
+                }
+            }
+        }
+
+        public async Task OnPostUpdateAsync(PostUpdateEvent @event, CancellationToken cancellationToken)
+        {
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        public virtual void OnPostUpdate(PostUpdateEvent @event)
+        {
+            AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
+            if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
+            {
+                if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
+                {
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
+                    SaveAuditLogs(@event, auditLogs);
+                }
+            }
+        }
+
+        public virtual void Register(Configuration cfg)
+        {
+            cfg.EventListeners.PostUpdateEventListeners =
+                new IPostUpdateEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostUpdateEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostInsertEventListeners =
+                new IPostInsertEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostInsertEventListeners)
+                    .ToArray();
+            cfg.EventListeners.PostDeleteEventListeners =
+                new IPostDeleteEventListener[] { this }
+                    .Concat(cfg.EventListeners.PostDeleteEventListeners)
+                    .ToArray();
+        }
+
+        protected abstract bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction);
+
+        protected virtual TAuditEntity CreateAuditEntity(string entryType, string entityName, string entityId, PpwAuditLog old, PpwAuditLog @new)
+            => new TAuditEntity
+               {
+                   EntryType = entryType,
+                   EntityName = entityName,
+                   EntityId = entityId,
+                   PropertyName = @new?.PropertyName ?? old?.PropertyName,
+                   OldValue = old?.Value,
+                   NewValue = @new?.Value,
+                   CreatedBy = IdentityProvider.IdentityName,
+                   CreatedAt = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now
+               };
+
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostInsertEvent @event, AuditLogItem auditLogItem)
+        {
+            string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
+
+            List<TAuditEntity> auditEntities = new List<TAuditEntity>();
+            int length = @event.State.Length;
+            for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
+            {
+                string propertyName = @event.Persister.PropertyNames[fieldIndex];
+                AuditLogActionEnum auditLogAction;
+                if (auditLogItem.Properties.TryGetValue(propertyName, out auditLogAction))
+                {
+                    if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
+                    {
+                        PpwAuditLog[] auditLogs =
+                            GetValuesFromStateArray(entityName, entityId, propertyName, @event.State, fieldIndex)
+                                .Where(l => l != null)
+                                .ToArray();
+                        auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, null, auditLog)));
+                    }
+                }
+            }
+
+            return auditEntities;
+        }
+
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostUpdateEvent @event, AuditLogItem auditLogItem)
+        {
+            string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
+
+            if (@event.OldState == null)
+            {
+                throw new ProgrammingError(
+                    string.Format(
+                        "No old state available for entity type '{1}'.{0}Make sure you're loading it into Session before modifying and saving it.",
+                        Environment.NewLine,
+                        entityName));
+            }
+
+            List<TAuditEntity> auditLogs = new List<TAuditEntity>();
+            int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
+            foreach (int dirtyFieldIndex in fieldIndices)
+            {
+                string dirtyPropertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
+                AuditLogActionEnum auditLogAction;
+                if (auditLogItem.Properties.TryGetValue(dirtyPropertyName, out auditLogAction))
+                {
+                    if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
+                    {
+                        Dictionary<string, PpwAuditLog> oldAuditLogs =
+                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.OldState, dirtyFieldIndex)
+                                .Where(l => l != null)
+                                .ToDictionary(l => l.PropertyName);
+                        Dictionary<string, PpwAuditLog> newAuditLogs =
+                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.State, dirtyFieldIndex)
+                                .Where(l => l != null)
+                                .ToDictionary(l => l.PropertyName);
+
+                        HashSet<string> propertyNames =
+                            new HashSet<string>(
+                                oldAuditLogs
+                                    .Select(al => al.Key)
+                                    .Union(newAuditLogs.Select(al => al.Key)));
+
+                        foreach (string propertyName in propertyNames)
+                        {
+                            PpwAuditLog oldAuditLog;
+                            oldAuditLogs.TryGetValue(propertyName, out oldAuditLog);
+
+                            PpwAuditLog newAuditLog;
+                            newAuditLogs.TryGetValue(propertyName, out newAuditLog);
+
+                            if (oldAuditLog?.Value != newAuditLog?.Value)
+                            {
+                                auditLogs.Add(CreateAuditEntity("U", entityName, entityId, oldAuditLog, newAuditLog));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return auditLogs;
+        }
+
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(PostDeleteEvent @event)
+        {
+            string entityName = @event.Entity.GetType().Name;
+            string entityId = @event.Id.ToString();
+
+            List<TAuditEntity> auditLogs =
+                new List<TAuditEntity>
+                {
+                    CreateAuditEntity("D", entityName, entityId, null, null)
+                };
+
+            return auditLogs;
+        }
+
+        protected virtual void SaveAuditLogs(AbstractEvent @event, ICollection<TAuditEntity> auditLogs)
+        {
+            if (auditLogs.Count > 0)
+            {
+                using (ISession session = @event.Session.SessionWithOptions().Connection().OpenSession())
+                {
+                    foreach (TAuditEntity auditLog in auditLogs)
+                    {
+                        session.Save(auditLog);
+                    }
+
+                    session.Flush();
+                }
+            }
+        }
+
+        protected virtual async Task SaveAuditLogsAsync(AbstractEvent @event, ICollection<TAuditEntity> auditLogs, CancellationToken cancellationToken)
+        {
+            if (auditLogs.Count > 0)
+            {
+                using (ISession session = @event.Session.SessionWithOptions().Connection().OpenSession())
+                {
+                    foreach (TAuditEntity auditLog in auditLogs)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await session.SaveAsync(auditLog, cancellationToken).ConfigureAwait(false);
+                    }
+
+                    await session.FlushAsync(cancellationToken).ConfigureAwait(false);
+                }
+            }
+        }
+
+        protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(string entityName, string entityId, string propertyName, object[] stateArray, int position)
         {
             object value = stateArray[position];
-            return value == null ? null : value.ToString();
+            if (value != null)
+            {
+                IPersistentObject<TId> persistentObject = value as IPersistentObject<TId>;
+                if (persistentObject != null)
+                {
+                    yield return new PpwAuditLog(propertyName, persistentObject.Id.ToString());
+                }
+                else
+                {
+                    IPpwAuditLog ppwAuditLog = value as IPpwAuditLog;
+                    if (ppwAuditLog != null)
+                    {
+                        if (ppwAuditLog.IsMultiLog)
+                        {
+                            foreach (PpwAuditLog auditLog in ppwAuditLog.GetMultiLogs(propertyName))
+                            {
+                                yield return auditLog;
+                            }
+                        }
+                        else
+                        {
+                            yield return ppwAuditLog.GetSingleLog(propertyName);
+                        }
+                    }
+                    else
+                    {
+                        yield return CreatePpwAuditLog(entityName, entityId, propertyName, value);
+                    }
+                }
+            }
+            else
+            {
+                yield return new PpwAuditLog(propertyName, null);
+            }
+        }
+
+        protected virtual PpwAuditLog CreatePpwAuditLog(string entityName, string entityId, string propertyName, object value)
+        {
+            if (value is DateTime)
+            {
+                DateTime dt = (DateTime)value;
+                return new PpwAuditLog(propertyName, dt.ToString("u"));
+            }
+
+            return new PpwAuditLog(propertyName, value.ToString());
         }
 
         protected class AuditLogItem
@@ -255,7 +372,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
             public static AuditLogItem Find(Type t)
             {
-                AuditLogItem result = s_DomainTypes
+                AuditLogItem result = _domainTypes
                     .GetOrAdd(
                         t,
                         type =>
@@ -288,6 +405,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 
                             return result;
                         });
+
                 return result;
             }
         }

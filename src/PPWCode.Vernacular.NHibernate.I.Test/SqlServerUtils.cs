@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,29 +40,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         }
 
         public static string GetConnectionString(string dataSource, string catalog)
-        {
-            return GetConnectionString(dataSource, catalog, true);
-        }
+            => GetConnectionString(dataSource, catalog, true);
 
         public static string GetConnectionString(string connectionString)
-        {
-            return ConfigHelper.GetConnectionString(connectionString);
-        }
+            => ConfigHelper.GetConnectionString(connectionString);
 
         private static SqlConnection GetConnection(string dataSource, string catalog, bool pooling)
-        {
-            return new SqlConnection(GetConnectionString(dataSource, catalog, pooling));
-        }
+            => new SqlConnection(GetConnectionString(dataSource, catalog, pooling));
 
         public static SqlConnection GetConnection(string dataSource, string catalog)
-        {
-            return new SqlConnection(GetConnectionString(dataSource, catalog));
-        }
+            => new SqlConnection(GetConnectionString(dataSource, catalog));
 
         public static SqlConnection GetConnection(string connectionString)
-        {
-            return new SqlConnection(GetConnectionString(connectionString));
-        }
+            => new SqlConnection(GetConnectionString(connectionString));
 
         private static void ExecuteCommands(SqlConnection connection, int commandTimeout, IEnumerable<string> scripts)
         {
@@ -107,19 +97,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         private static bool DataSourceExists(string dataSource)
         {
-            bool result = dataSource == @"." || dataSource.Equals(@"localhost", StringComparison.InvariantCultureIgnoreCase);
+            bool result = (dataSource == @".") || dataSource.Equals(@"localhost", StringComparison.InvariantCultureIgnoreCase);
             if (!result)
             {
                 SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
                 DataTable table = instance.GetDataSources();
                 string[] items = dataSource.Split('\\');
-                if (items.Length == 1 || items.Length == 2)
+                if ((items.Length == 1) || (items.Length == 2))
                 {
                     string serverName = items[0];
                     string instanceName = items.Length == 1 ? string.Empty : items[1];
                     result = table.AsEnumerable()
-                                  .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
-                                            && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
+                        .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
+                                  && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
 

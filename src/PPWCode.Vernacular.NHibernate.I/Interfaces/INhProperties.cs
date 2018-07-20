@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,27 +13,13 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 using NHibernate.Cfg;
 
 namespace PPWCode.Vernacular.NHibernate.I.Interfaces
 {
-    [ContractClass(typeof(INhPropertiesContract))]
     public interface INhProperties
     {
         IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration);
-    }
-
-    // ReSharper disable once InconsistentNaming
-    [ContractClassFor(typeof(INhProperties))]
-    public abstract class INhPropertiesContract : INhProperties
-    {
-        public IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration)
-        {
-            Contract.Ensures(Contract.Result<IEnumerable<KeyValuePair<string, string>>>() != null);
-
-            return default(IEnumerable<KeyValuePair<string, string>>);
-        }
     }
 }

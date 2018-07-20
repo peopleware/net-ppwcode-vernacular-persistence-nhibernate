@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,49 +14,35 @@
 
 using System;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Test
 {
-    public abstract class BaseRepositoryFixture<T, TId> : NHibernateSqlServerSetUpFixture<TId>
-        where T : class, IIdentity<TId>
+    public abstract class BaseRepositoryFixture<TId, TAuditEntity> : NHibernateSqlServerSetUpFixture<TId, TAuditEntity>
         where TId : IEquatable<TId>
+        where TAuditEntity : AuditLog<TId>, new()
     {
-        private IRepository<T, TId> m_Repository;
-        private DateTime? m_UtcNow;
-
-        protected abstract Func<IRepository<T, TId>> RepositoryFactory { get; }
-
-        protected IRepository<T, TId> Repository
-        {
-            get { return m_Repository; }
-        }
+        private DateTime? _utcNow;
 
         protected override DateTime UtcNow
         {
             get
             {
-                if (m_UtcNow == null)
+                if (_utcNow == null)
                 {
-                    m_UtcNow = DateTime.UtcNow;
+                    _utcNow = DateTime.UtcNow;
                 }
 
-                return m_UtcNow.Value;
+                return _utcNow.Value;
             }
         }
 
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            m_Repository = RepositoryFactory();
-        }
+        protected override bool UseUtc
+            => true;
 
         protected override void OnTeardown()
         {
-            m_UtcNow = null;
-            m_Repository = null;
+            _utcNow = null;
 
             base.OnTeardown();
         }

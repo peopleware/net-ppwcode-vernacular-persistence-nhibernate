@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using NHibernate;
@@ -33,69 +32,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyChecking(Configuration configuration, ISessionFactory sessionFactory, Action<string> failCallback, Action<string> inconclusiveCallback)
         {
-            Contract.Requires(configuration != null);
-            Contract.Requires(sessionFactory != null);
-            Contract.Requires(failCallback != null);
-            Contract.Requires(inconclusiveCallback != null);
-            Contract.Ensures(Configuration == configuration);
-            Contract.Ensures(SessionFactory == sessionFactory);
-            Contract.Ensures(FailCallback == failCallback);
-            Contract.Ensures(InconclusiveCallback == inconclusiveCallback);
-
             m_Configuration = configuration;
             m_SessionFactory = sessionFactory;
             m_FailCallback = failCallback;
             m_InconclusiveCallback = inconclusiveCallback;
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Configuration != null);
-            Contract.Invariant(FailCallback != null);
-            Contract.Invariant(InconclusiveCallback != null);
-            Contract.Invariant(SessionFactory != null);
-        }
-
         protected Configuration Configuration
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<Configuration>() != null);
-
-                return m_Configuration;
-            }
-        }
+            => m_Configuration;
 
         protected Action<string> FailCallback
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<Action<string>>() != null);
-
-                return m_FailCallback;
-            }
-        }
+            => m_FailCallback;
 
         protected Action<string> InconclusiveCallback
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<Action<string>>() != null);
-
-                return m_InconclusiveCallback;
-            }
-        }
+            => m_InconclusiveCallback;
 
         protected ISessionFactory SessionFactory
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<ISessionFactory>() != null);
-
-                return m_SessionFactory;
-            }
-        }
+            => m_SessionFactory;
 
         public void Test()
         {
@@ -134,7 +87,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             List<string> ghosts = new List<string>();
             DirtyCheckingInterceptor interceptor = new DirtyCheckingInterceptor(ghosts);
 
-            using (ISession session = SessionFactory.OpenSession(interceptor))
+            using (ISession session = SessionFactory.WithOptions().Interceptor(interceptor).OpenSession())
             {
                 using (ITransaction tx = session.BeginTransaction())
                 {

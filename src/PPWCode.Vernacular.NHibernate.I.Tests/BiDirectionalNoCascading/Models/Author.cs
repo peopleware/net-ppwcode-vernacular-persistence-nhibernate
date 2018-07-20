@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,19 +14,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.Semantics;
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Author : PersistentObject<int>
     {
-        private string m_Name;
         private readonly ISet<Book> m_Books = new HashSet<Book>();
+        private string m_Name;
 
         public Author()
         {
@@ -37,34 +39,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
         {
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(Books != null);
-            Contract.Invariant(AssociationContracts.BiDirParentToChild(this, Books, b => b.Author));
-        }
-
         public virtual string Name
         {
             get { return m_Name; }
-            set
-            {
-                Contract.Ensures(Name == value);
-
-                m_Name = value;
-            }
+            set { m_Name = value; }
         }
 
         public virtual ISet<Book> Books
-        {
-            get { return m_Books; }
-        }
+            => m_Books;
 
         public virtual void AddBook(Book book)
         {
-            Contract.Ensures(book == null || Books.Contains(book));
-
-            if (book != null && m_Books.Add(book))
+            if ((book != null) && m_Books.Add(book))
             {
                 book.Author = this;
             }
@@ -72,12 +58,27 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.BiDirectionalNoCascading.Models
 
         public virtual void RemoveBook(Book book)
         {
-            Contract.Ensures(book == null || !Books.Contains(book));
-
-            if (book != null && m_Books.Remove(book))
+            if ((book != null) && m_Books.Remove(book))
             {
                 book.Author = null;
             }
+        }
+    }
+
+    public class AuthorMapper : PersistentObjectMapper<Author, int>
+    {
+        public AuthorMapper()
+        {
+            Property(a => a.Name);
+
+            Set(
+                c => c.Books,
+                m =>
+                {
+                    m.Inverse(true);
+                    m.Cascade(Cascade.None);
+                },
+                r => r.OneToMany(m => m.Class(typeof(Book))));
         }
     }
 }

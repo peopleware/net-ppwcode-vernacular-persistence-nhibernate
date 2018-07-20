@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,27 +14,27 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
+using NHibernate.Mapping.ByCode.Impl;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
 {
-    public abstract class ModelMapperBase : IHbmMapping
+    public abstract class ModelMapperBase : IPpwHbmMapping
     {
-        private readonly IMappingAssemblies m_MappingAssemblies;
-        private readonly ModelMapper m_ModelMapper;
+        private readonly object _locker = new object();
+        private readonly IMappingAssemblies _mappingAssemblies;
+        private readonly ModelMapper _modelMapper;
+        private HbmMapping _hbmMapping;
 
         protected ModelMapperBase(IMappingAssemblies mappingAssemblies)
         {
-            Contract.Requires(mappingAssemblies != null);
-
-            m_MappingAssemblies = mappingAssemblies;
-            m_ModelMapper = new ModelMapper();
+            _mappingAssemblies = mappingAssemblies;
+            _modelMapper = new ModelMapper();
 
             ModelMapper.BeforeMapAny += OnBeforeMapAny;
             ModelMapper.BeforeMapBag += OnBeforeMapBag;
@@ -77,59 +77,65 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.AfterMapUnionSubclass += OnAfterMapUnionSubclass;
         }
 
-        protected ModelMapper ModelMapper
-        {
-            get { return m_ModelMapper; }
-        }
-
         protected IModelInspector ModelInspector
-        {
-            get { return ModelMapper.ModelInspector; }
-        }
-
-        public HbmMapping GetHbmMapping()
-        {
-            IEnumerable<Type> mappingTypes =
-                MappingTypes
-                ?? m_MappingAssemblies
-                    .GetAssemblies()
-                    .SelectMany(a => a.GetExportedTypes());
-            ModelMapper.AddMappings(mappingTypes);
-
-            HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
-
-            hbmMapping.defaultlazy = DefaultLazy;
-            if (!string.IsNullOrWhiteSpace(DefaultAccess))
-            {
-                hbmMapping.defaultaccess = DefaultAccess;
-            }
-
-            if (!string.IsNullOrWhiteSpace(DefaultCascade))
-            {
-                hbmMapping.defaultcascade = DefaultCascade;
-            }
-
-            return hbmMapping;
-        }
+            => ModelMapper.ModelInspector;
 
         protected virtual IEnumerable<Type> MappingTypes
-        {
-            get { return null; }
-        }
+            => null;
 
         protected virtual string DefaultAccess
-        {
-            get { return null; }
-        }
+            => null;
 
         protected virtual bool DefaultLazy
-        {
-            get { return true; }
-        }
+            => true;
 
         protected virtual string DefaultCascade
+            => null;
+
+        public abstract ICandidatePersistentMembersProvider MembersProvider { get; }
+
+        public abstract bool QuoteIdentifiers { get; }
+
+        public ModelMapper ModelMapper
+            => _modelMapper;
+
+        public HbmMapping HbmMapping
         {
-            get { return null; }
+            get
+            {
+                if (_hbmMapping == null)
+                {
+                    lock (_locker)
+                    {
+                        if (_hbmMapping == null)
+                        {
+                            IEnumerable<Type> mappingTypes =
+                                MappingTypes
+                                ?? _mappingAssemblies
+                                    .GetAssemblies()
+                                    .SelectMany(a => a.GetExportedTypes());
+                            ModelMapper.AddMappings(mappingTypes);
+
+                            HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
+
+                            hbmMapping.defaultlazy = DefaultLazy;
+                            if (!string.IsNullOrWhiteSpace(DefaultAccess))
+                            {
+                                hbmMapping.defaultaccess = DefaultAccess;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(DefaultCascade))
+                            {
+                                hbmMapping.defaultcascade = DefaultCascade;
+                            }
+
+                            _hbmMapping = hbmMapping;
+                        }
+                    }
+                }
+
+                return _hbmMapping;
+            }
         }
 
         protected virtual void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)

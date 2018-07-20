@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Data;
+using System.Data.Common;
 
 using NHibernate.Connection;
 
@@ -23,7 +23,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
     public class TestConnectionProvider : DriverConnectionProvider
     {
         [ThreadStatic]
-        private static IDbConnection s_Connection;
+        private static DbConnection s_Connection;
 
         public static void CloseDatabase()
         {
@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        public override IDbConnection GetConnection()
+        public override DbConnection GetConnection()
         {
             if (s_Connection == null)
             {
@@ -46,7 +46,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             return s_Connection;
         }
 
-        public override void CloseConnection(IDbConnection conn)
+        public override void CloseConnection(DbConnection conn)
         {
             // Do nothing
         }

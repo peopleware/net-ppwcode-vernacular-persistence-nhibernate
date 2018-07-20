@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,19 +27,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     public static class PropertyPathExtensions
     {
         public static Type Owner(this PropertyPath member)
-        {
-            return member.GetRootMember().DeclaringType;
-        }
+            => member.GetRootMember().DeclaringType;
 
         public static Type CollectionElementType(this PropertyPath member)
-        {
-            return member.LocalMember.GetPropertyOrFieldType().DetermineCollectionElementOrDictionaryValueType();
-        }
+            => member.LocalMember.GetPropertyOrFieldType().DetermineCollectionElementOrDictionaryValueType();
 
         public static MemberInfo OneToManyOtherSideProperty(this PropertyPath member)
-        {
-            return member.CollectionElementType().GetFirstPropertyOfType(member.Owner());
-        }
+            => member.CollectionElementType().GetFirstPropertyOfType(member.Owner());
 
         public static string ManyToManyIntermediateTableName(this PropertyPath member, string manyToManyIntermediateTableInfix)
         {
@@ -47,9 +41,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         }
 
         public static Type MemberType(this PropertyPath member)
-        {
-            return member.LocalMember.MemberType();
-        }
+            => member.LocalMember.GetPropertyOrFieldType();
 
         private static IEnumerable<string> ManyToManySidesNames(this PropertyPath member)
         {

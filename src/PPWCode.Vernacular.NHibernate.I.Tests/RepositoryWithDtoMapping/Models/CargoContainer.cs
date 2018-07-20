@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,13 @@
 using System;
 using System.Runtime.Serialization;
 
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
 {
-    [Serializable, DataContract(IsReference = true)]
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class CargoContainer : PersistentObject<int>
     {
         [DataMember]
@@ -74,6 +76,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models
                     }
                 }
             }
+        }
+    }
+
+    public class CargoContainerMapper : PersistentObjectMapper<CargoContainer, int>
+    {
+        public CargoContainerMapper()
+        {
+            Property(c => c.Code);
+            Property(c => c.Load);
+
+            ManyToOne(c => c.Ship);
         }
     }
 }

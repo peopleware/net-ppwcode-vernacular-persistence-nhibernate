@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 
 using NHibernate;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 
+using PPWCode.Vernacular.Exceptions.II;
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 
 namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
@@ -34,10 +36,14 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
     /// </summary>
     public abstract class SimpleModelMapper : ModelMapperBase
     {
-        private readonly object m_Locker = new object();
-        private readonly DefaultCandidatePersistentMembersProvider m_MembersProvider;
-        private volatile bool m_ModelMetaDatasByTypeCached;
-        private IDictionary<Type, ModelMetaData> m_ModelMetaDatasByTypeCache;
+        public enum KeyTypeEnum
+        {
+            ID,
+            TYPE_ID,
+            ID_TYPE
+        }
+
+        private PropertyInfo _mapPropertyInfo;
 
         protected SimpleModelMapper(IMappingAssemblies mappingAssemblies)
             : base(mappingAssemblies)
@@ -48,7 +54,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapIdBag += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapMap += OnBeforeMappingCollectionConvention;
 
-            m_MembersProvider = new DefaultCandidatePersistentMembersProvider();
+            MembersProvider = new DefaultCandidatePersistentMembersProvider();
 
             ModelMapper.BeforeMapClass += NoPoidGuid;
             ModelMapper.BeforeMapClass += NoSetterPoidToField;
@@ -92,185 +98,160 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
-        protected virtual IEnumerable<ModelMetaData> ModelMetaDatas
-        {
-            get { yield break; }
-        }
-
         protected virtual bool UseCamelCaseUnderScoreForDbObjects
-        {
-            get { return false; }
-        }
+            => false;
 
         protected virtual bool DynamicInsert
-        {
-            get { return false; }
-        }
+            => false;
 
         protected virtual bool DynamicUpdate
-        {
-            get { return false; }
-        }
+            => false;
 
-        protected virtual int? BatchSize
-        {
-            get { return null; }
-        }
+        protected virtual int? ClassBatchSize
+            => null;
+
+        protected virtual int? CollectionBatchSize
+            => null;
 
         protected virtual string DefaultSchemaName
-        {
-            get { return null; }
-        }
+            => null;
 
         protected virtual string DefaultCatalogName
+            => null;
+
+        public override bool QuoteIdentifiers
+            => false;
+
+        protected virtual bool CreateIndexForForeignKey
+            => true;
+
+        protected virtual bool AdjustColumnForForeignGenerator
+            => false;
+
+        protected virtual KeyTypeEnum PrimaryKeyType
+            => KeyTypeEnum.TYPE_ID;
+
+        protected virtual KeyTypeEnum ForeignKeyType
+            => KeyTypeEnum.TYPE_ID;
+
+        public override ICandidatePersistentMembersProvider MembersProvider { get; }
+
+        protected PropertyInfo MapDocPropertyInfo
+            => _mapPropertyInfo
+               ?? (_mapPropertyInfo = typeof(ClassMapper).GetProperty("MapDoc", BindingFlags.Instance | BindingFlags.NonPublic));
+
+        protected virtual string DefaultDiscriminatorColumnName
+            => "Discriminator";
+
+        protected virtual string DefaultVersionColumnName
+            => "PersistenceVersion";
+
+        public virtual string CamelCaseToUnderscore(string camelCase)
         {
-            get { return null; }
+            const string Rgx = @"([A-Z]+)([A-Z][a-z])";
+            const string Rgx2 = @"([a-z\d])([A-Z])";
+
+            string result = Regex.Replace(camelCase, Rgx, "$1_$2");
+            result = Regex.Replace(result, Rgx2, "$1_$2");
+            return result.ToUpper();
         }
 
-        protected virtual bool QuoteIdentifiers
-        {
-            get { return false; }
-        }
+        public virtual string GetIdentifier(string identifier)
+            => UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
 
-        protected virtual IDictionary<Type, ModelMetaData> ModelMetaDatasByType
+        protected virtual string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier)
+            => quoteIdentifier ?? QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
+
+        protected virtual string QuoteIdentifier(string identifier)
+            => $"`{identifier}`";
+
+        protected virtual string GetTableName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
+            => ConditionalQuoteIdentifier(GetIdentifier(type.Name), quoteIdentifier);
+
+        protected virtual string GetTableNameForManyToMany(IModelInspector modelInspector, PropertyPath member, bool? quoteIdentifier)
         {
-            get
+            if (!modelInspector.IsManyToManyItem(member.LocalMember))
             {
-                if (!m_ModelMetaDatasByTypeCached)
-                {
-                    lock (m_Locker)
-                    {
-                        if (!m_ModelMetaDatasByTypeCached)
-                        {
-                            m_ModelMetaDatasByTypeCache = ModelMetaDatas.ToDictionary(m => m.Type);
-                            m_ModelMetaDatasByTypeCached = true;
-                        }
-                    }
-                }
-
-                return m_ModelMetaDatasByTypeCache;
-            }
-        }
-
-        protected virtual PrimaryKeyTypeEnum PrimaryKeyType
-        {
-            get { return PrimaryKeyTypeEnum.TYPE_ID; }
-        }
-
-        protected virtual string GetTableName(Type type)
-        {
-            ModelMetaData modelMetaData;
-            string tableName = null;
-            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
-            {
-                tableName = modelMetaData.TableName;
-            }
-
-            return tableName ?? GetIdentifier(type.Name);
-        }
-
-        protected virtual string GetTableNameAndQuote(Type type)
-        {
-            return ConditionalQuoteIdentifier(GetTableName(type));
-        }
-
-        protected virtual string GetColumnName(IModelInspector modelInspector, PropertyPath member)
-        {
-            string defaultColumnName = member.ToColumnName();
-            string columnPrefix = null;
-            string columnName = null;
-
-            Type currentType = member.LocalMember.ReflectedType;
-            bool walkToParent = modelInspector.IsTablePerClassHierarchy(currentType);
-            while (currentType != null && currentType != typeof(object))
-            {
-                ModelMetaData modelMetaData;
-                if (ModelMetaDatasByType.TryGetValue(currentType, out modelMetaData))
-                {
-                    columnPrefix = modelMetaData.ColumnPrefix;
-                    modelMetaData.ColumnNames.TryGetValue(defaultColumnName, out columnName);
-                    break;
-                }
-
-                currentType = walkToParent ? currentType.BaseType : null;
+                throw new ProgrammingError($"Member {member} must be a many-to-many-item.");
             }
 
-            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, columnName ?? GetIdentifier(defaultColumnName)));
-
-            return result;
+            return ConditionalQuoteIdentifier(GetIdentifier(member.ManyToManyIntermediateTableName("To")), quoteIdentifier);
         }
 
-        protected virtual string GetKeyColumnName(IModelInspector modelInspector, PropertyPath member, bool quoteIdentifiers)
-        {
-            MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
-            Type type = modelInspector.IsOneToMany(member.LocalMember) && otherSideProperty != null
-                            ? otherSideProperty.MemberType()
-                            : member.MemberType();
-            return GetKeyColumnName(type, true, quoteIdentifiers);
-        }
+        protected virtual string GetColumnName(IModelInspector modelInspector, PropertyPath member, bool? quoteIdentifier)
+            => ConditionalQuoteIdentifier(GetIdentifier(member.ToColumnName()), quoteIdentifier);
 
-        protected virtual string GetKeyColumnName(Type type, bool foreignKey, bool quoteIdentifiers)
+        protected virtual string GetForeignKeyColumnName(IModelInspector modelInspector, PropertyPath member, bool? quoteIdentifier)
         {
-            ModelMetaData modelMetaData;
-            string columnPrefix = null;
-            string tableName = null;
-            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            string keyColumnName;
+
+            if (modelInspector.IsManyToManyItem(member.LocalMember))
             {
-                tableName = modelMetaData.TableName;
-                columnPrefix = modelMetaData.ColumnPrefix;
+                keyColumnName = member.CollectionElementType().Name;
+            }
+            else if (modelInspector.IsManyToOne(member.LocalMember) || modelInspector.IsSet(member.LocalMember))
+            {
+                MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
+                keyColumnName =
+                    modelInspector.IsOneToMany(member.LocalMember) && (otherSideProperty != null)
+                        ? otherSideProperty.GetPropertyOrFieldType().Name
+                        : member.ToColumnName();
+            }
+            else
+            {
+                throw new NotSupportedException($"Unable to determine foreignkey column-name for {member}.");
             }
 
+            if (ForeignKeyType == KeyTypeEnum.ID)
+            {
+                throw new ProgrammingError("Not supported for Foreign keys.");
+            }
+
+            return GetKeyColumnName(ForeignKeyType, keyColumnName, quoteIdentifier);
+        }
+
+        protected virtual string GetPrimaryKeyColumnName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
+            => GetKeyColumnName(PrimaryKeyType, type.Name, quoteIdentifier);
+
+        protected virtual string GetKeyColumnName(KeyTypeEnum keyType, string keyColumnName, bool? quoteIdentifier)
+        {
             string result;
-            PrimaryKeyTypeEnum primaryKeyType = foreignKey ? PrimaryKeyTypeEnum.TYPE_ID : PrimaryKeyType;
-            switch (primaryKeyType)
+            switch (keyType)
             {
-                case PrimaryKeyTypeEnum.ID:
-                    result = string.Concat(columnPrefix, GetIdentifier(@"Id"));
+                case KeyTypeEnum.ID:
+                    result = GetIdentifier("Id");
                     break;
 
-                case PrimaryKeyTypeEnum.TYPE_ID:
-                    if (string.IsNullOrWhiteSpace(tableName))
-                    {
-                        result = string.Concat(columnPrefix, GetIdentifier(string.Concat(type.Name, @"Id")));
-                    }
-                    else
-                    {
-                        result = UseCamelCaseUnderScoreForDbObjects
-                                     ? string.Concat(columnPrefix, tableName, tableName.EndsWith(@"_") ? @"ID" : @"_ID")
-                                     : string.Concat(columnPrefix, tableName, @"Id");
-                    }
+                case KeyTypeEnum.TYPE_ID:
+                    result = GetIdentifier(string.Concat(keyColumnName, "Id"));
+                    break;
 
+                case KeyTypeEnum.ID_TYPE:
+                    result = GetIdentifier(string.Concat("Id", keyColumnName));
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            if (quoteIdentifiers)
-            {
-                result = QuoteIdentifier(result);
-            }
-
-            return result;
+            return ConditionalQuoteIdentifier(result, quoteIdentifier);
         }
 
         protected virtual IEnumerable<MemberInfo> VersionProperties(IModelInspector modelInspector, Type type)
         {
-            if (type == null)
+            Type walker = type;
+            while ((walker != null) && (walker != typeof(object)))
             {
-                yield break;
-            }
-
-            Type currentType = type;
-            while (currentType != null && currentType != typeof(object))
-            {
-                PropertyInfo[] properties = currentType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                IEnumerable<PropertyInfo> properties =
+                    walker
+                        .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly)
+                        .Where(modelInspector.IsVersion);
                 foreach (PropertyInfo property in properties.Where(modelInspector.IsVersion))
                 {
                     yield return property;
                 }
 
-                currentType = currentType.BaseType;
+                walker = walker.BaseType;
             }
 
             IEnumerable<PropertyInfo> versionProperties =
@@ -283,60 +264,29 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             }
         }
 
-        public virtual string GetDiscriminatorColumnName(IModelInspector modelInspector, Type type)
-        {
-            string defaultColumnName = @"Discriminator";
-            string columnPrefix = null;
-            string dicriminatorColumnName = null;
-            ModelMetaData modelMetaData;
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
-            {
-                columnPrefix = modelMetaData.ColumnPrefix;
-                dicriminatorColumnName = modelMetaData.Discriminator;
-            }
-
-            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, dicriminatorColumnName ?? GetIdentifier(defaultColumnName)));
-
-            return result;
-        }
+        public virtual string GetDiscriminatorColumnName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
+            => ConditionalQuoteIdentifier(GetIdentifier(DefaultDiscriminatorColumnName), quoteIdentifier);
 
         public virtual object GetDiscriminatorValue(IModelInspector modelInspector, Type type)
         {
-            return CamelCaseToUnderscore(type.Name);
-        }
-
-        public virtual string GetVersionColumnName(IModelInspector modelInspector, Type type)
-        {
-            string defaultColumnName = @"PersistenceVersion";
-            string columnPrefix = null;
-            string versionColumnName = null;
-            ModelMetaData modelMetaData;
-
-            // ReSharper disable once AssignNullToNotNullAttribute
-            if (ModelMetaDatasByType.TryGetValue(type, out modelMetaData))
+            string discriminatorValue = type.Name;
+            if (type.IsGenericType
+                && type.GenericTypeArguments[0].IsEnum
+                && discriminatorValue.EndsWith("Enum"))
             {
-                columnPrefix = modelMetaData.ColumnPrefix;
-                versionColumnName = modelMetaData.Version;
+                discriminatorValue = discriminatorValue.Substring(0, discriminatorValue.Length - "Enum".Length);
             }
 
-            string result = ConditionalQuoteIdentifier(string.Concat(columnPrefix, versionColumnName ?? GetIdentifier(defaultColumnName)));
-
-            return result;
+            return CamelCaseToUnderscore(discriminatorValue);
         }
 
-        protected DefaultCandidatePersistentMembersProvider MembersProvider
-        {
-            get { return m_MembersProvider; }
-        }
+        public virtual string GetVersionColumnName(IModelInspector modelInspector, Type type, bool? quoteIdentifier)
+            => ConditionalQuoteIdentifier(GetIdentifier(DefaultVersionColumnName), quoteIdentifier);
 
         protected virtual bool DeclaredPolymorphicMatch(MemberInfo member, Func<MemberInfo, bool> declaredMatch)
-        {
-            return declaredMatch(member)
-                   || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
-                   || member.GetPropertyFromInterfaces().Any(declaredMatch);
-        }
+            => declaredMatch(member)
+               || member.GetMemberFromDeclaringClasses().Any(declaredMatch)
+               || member.GetPropertyFromInterfaces().Any(declaredMatch);
 
         protected virtual MemberInfo PoidPropertyOrField(IModelInspector modelInspector, Type type)
         {
@@ -356,7 +306,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual void NoSetterPoidToField(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             MemberInfo poidPropertyOrField = PoidPropertyOrField(modelInspector, type);
-            if (poidPropertyOrField != null && MatchNoSetterProperty(poidPropertyOrField))
+            if ((poidPropertyOrField != null) && MatchNoSetterProperty(poidPropertyOrField))
             {
                 classCustomizer.Id(poidPropertyOrField, idm => idm.Access(Accessor.NoSetter));
             }
@@ -389,12 +339,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual void ComponentParentToFieldAccessor(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
         {
             Type componentType = member.LocalMember.GetPropertyOrFieldType();
-            IEnumerable<MemberInfo> persistentProperties = MembersProvider
-                .GetComponentMembers(componentType)
-                .Where(p => ModelInspector.IsPersistentProperty(p));
+            IEnumerable<MemberInfo> persistentProperties =
+                MembersProvider
+                    .GetComponentMembers(componentType)
+                    .Where(p => ModelInspector.IsPersistentProperty(p));
 
             MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
-            if (parentReferenceProperty != null && MatchPropertyToField(parentReferenceProperty))
+            if ((parentReferenceProperty != null) && MatchPropertyToField(parentReferenceProperty))
             {
                 componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.Field));
             }
@@ -403,18 +354,19 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
         protected virtual void ComponentParentNoSetterToField(IModelInspector modelInspector, PropertyPath member, IComponentAttributesMapper componentMapper)
         {
             Type componentType = member.LocalMember.GetPropertyOrFieldType();
-            IEnumerable<MemberInfo> persistentProperties = MembersProvider
-                .GetComponentMembers(componentType)
-                .Where(p => ModelInspector.IsPersistentProperty(p));
+            IEnumerable<MemberInfo> persistentProperties =
+                MembersProvider
+                    .GetComponentMembers(componentType)
+                    .Where(p => ModelInspector.IsPersistentProperty(p));
 
             MemberInfo parentReferenceProperty = GetComponentParentReferenceProperty(persistentProperties, member.LocalMember.ReflectedType);
-            if (parentReferenceProperty != null && MatchNoSetterProperty(parentReferenceProperty))
+            if ((parentReferenceProperty != null) && MatchNoSetterProperty(parentReferenceProperty))
             {
                 componentMapper.Parent(parentReferenceProperty, cp => cp.Access(Accessor.NoSetter));
             }
         }
 
-        protected bool MatchReadOnlyProperty(MemberInfo subject)
+        protected virtual bool MatchReadOnlyProperty(MemberInfo subject)
         {
             PropertyInfo property = subject as PropertyInfo;
             if (property == null)
@@ -430,12 +382,10 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return false;
         }
 
-        protected bool CanReadCantWriteInsideType(PropertyInfo property)
-        {
-            return !property.CanWrite && property.CanRead && property.DeclaringType == property.ReflectedType;
-        }
+        protected virtual bool CanReadCantWriteInsideType(PropertyInfo property)
+            => !property.CanWrite && property.CanRead && (property.DeclaringType == property.ReflectedType);
 
-        protected bool CanReadCantWriteInBaseType(PropertyInfo property)
+        protected virtual bool CanReadCantWriteInBaseType(PropertyInfo property)
         {
             if (property.DeclaringType == property.ReflectedType)
             {
@@ -450,13 +400,13 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                         .SingleOrDefault(pi => pi.Name == property.Name)
                     : null;
 
-            return rfprop != null && !rfprop.CanWrite && rfprop.CanRead;
+            return (rfprop != null) && !rfprop.CanWrite && rfprop.CanRead;
         }
 
-        protected bool MatchNoSetterProperty(MemberInfo subject)
+        protected virtual bool MatchNoSetterProperty(MemberInfo subject)
         {
             PropertyInfo property = subject as PropertyInfo;
-            if (property == null || property.CanWrite || !property.CanRead)
+            if ((property == null) || property.CanWrite || !property.CanRead)
             {
                 return false;
             }
@@ -470,7 +420,7 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return false;
         }
 
-        protected bool MatchPropertyToField(MemberInfo subject)
+        protected virtual bool MatchPropertyToField(MemberInfo subject)
         {
             PropertyInfo property = subject as PropertyInfo;
             if (property == null)
@@ -482,82 +432,191 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             return fieldInfo != null;
         }
 
-        protected MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, Type propertiesContainerType)
+        protected virtual MemberInfo GetComponentParentReferenceProperty(IEnumerable<MemberInfo> persistentProperties, Type propertiesContainerType)
         {
-            return ModelInspector.IsComponent(propertiesContainerType)
-                       ? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
-                       : null;
+            return
+                ModelInspector.IsComponent(propertiesContainerType)
+                    ? persistentProperties.FirstOrDefault(pp => pp.GetPropertyOrFieldType() == propertiesContainerType)
+                    : null;
+        }
+
+        protected virtual bool IsMemberDeclaredInATablePerClassHierarchy(IModelInspector modelInspector, PropertyPath member)
+        {
+            Type declaredType = member.GetRootMember().DeclaringType;
+            return modelInspector.IsTablePerClassHierarchy(declaredType) && !modelInspector.IsRootEntity(declaredType);
+        }
+
+        protected virtual bool IsRequired(IModelInspector modelInspector, PropertyPath member)
+        {
+            bool required = IsPropertyPathPrimitive(member);
+            if (!required)
+            {
+                PropertyPath walker = member;
+                required = true;
+                do
+                {
+                    required &=
+                        walker
+                            .LocalMember
+                            .GetCustomAttributes()
+                            .OfType<RequiredAttribute>()
+                            .Any();
+                    walker = walker.PreviousPath;
+                }
+                while (required && (walker != null));
+            }
+
+            return required;
+        }
+
+        protected virtual bool IsPropertyPathPrimitive(PropertyPath member)
+        {
+            Type memberType = member.MemberType();
+            return memberType.IsPrimitive || (memberType == typeof(DateTime));
+        }
+
+        protected virtual void OnBeforeEntityMap(IModelInspector modelInspector, Type type, IEntityAttributesMapper entityCustomizer)
+        {
+            entityCustomizer.DynamicInsert(DynamicInsert);
+            entityCustomizer.DynamicUpdate(DynamicUpdate);
+            if ((ClassBatchSize != null) && (ClassBatchSize.Value > 0))
+            {
+                entityCustomizer.BatchSize(ClassBatchSize.Value);
+            }
+
+            IClassAttributesMapper classCustomizer = entityCustomizer as IClassAttributesMapper;
+            if (classCustomizer != null)
+            {
+                classCustomizer.Abstract(type.IsAbstract);
+
+                if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+                {
+                    classCustomizer.Catalog(DefaultCatalogName);
+                }
+
+                if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+                {
+                    classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName, null));
+                }
+
+                classCustomizer.Table(GetTableName(modelInspector, type, null));
+
+                classCustomizer.Id(
+                    m =>
+                    {
+                        m.Column(GetPrimaryKeyColumnName(modelInspector, type, null));
+                        m.Generator(Generators.HighLow);
+                    });
+
+                if (modelInspector.IsTablePerClassHierarchy(type))
+                {
+                    classCustomizer.Discriminator(m => m.Column(GetDiscriminatorColumnName(modelInspector, type, null)));
+                    classCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
+                }
+
+                MemberInfo[] versionProperties = VersionProperties(modelInspector, type).ToArray();
+                if (versionProperties.Length == 1)
+                {
+                    classCustomizer.Version(versionProperties[0], m => m.Column(GetVersionColumnName(modelInspector, type, null)));
+                }
+
+                return;
+            }
+
+            ISubclassAttributesMapper subclassCustomizer = entityCustomizer as ISubclassAttributesMapper;
+            if (subclassCustomizer != null)
+            {
+                subclassCustomizer.Abstract(type.IsAbstract);
+                subclassCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
+
+                return;
+            }
+
+            IJoinedSubclassAttributesMapper joinedSubclassCustomizer = entityCustomizer as IJoinedSubclassAttributesMapper;
+            if (joinedSubclassCustomizer != null)
+            {
+                joinedSubclassCustomizer.Abstract(type.IsAbstract);
+
+                if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+                {
+                    joinedSubclassCustomizer.Catalog(DefaultCatalogName);
+                }
+
+                if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+                {
+                    joinedSubclassCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName, null));
+                }
+
+                joinedSubclassCustomizer.Table(GetTableName(modelInspector, type, null));
+                joinedSubclassCustomizer.Key(
+                    k =>
+                    {
+                        k.Column(GetPrimaryKeyColumnName(modelInspector, type.BaseType ?? type, null));
+                        if (type.BaseType != null)
+                        {
+                            k.ForeignKey($"FK_{GetTableName(modelInspector, type, false)}_{GetTableName(modelInspector, type.BaseType, false)}");
+                        }
+                    });
+
+                return;
+            }
+
+            IUnionSubclassAttributesMapper unionSubclassCustomizer = entityCustomizer as IUnionSubclassAttributesMapper;
+            if (unionSubclassCustomizer != null)
+            {
+                unionSubclassCustomizer.Abstract(type.IsAbstract);
+
+                if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+                {
+                    unionSubclassCustomizer.Catalog(DefaultCatalogName);
+                }
+
+                if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+                {
+                    unionSubclassCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName, null));
+                }
+
+                unionSubclassCustomizer.Table(GetTableName(modelInspector, type, null));
+            }
         }
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            classCustomizer.DynamicInsert(DynamicInsert);
-            classCustomizer.DynamicUpdate(DynamicUpdate);
+            OnBeforeEntityMap(modelInspector, type, classCustomizer);
+        }
 
-            if (BatchSize != null && BatchSize.Value > 0)
-            {
-                classCustomizer.BatchSize(BatchSize.Value);
-            }
+        protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
+        {
+            OnBeforeEntityMap(modelInspector, type, subclassCustomizer);
+        }
 
-            if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
-            {
-                classCustomizer.Catalog(ConditionalQuoteIdentifier(DefaultCatalogName));
-            }
+        protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
+        {
+            OnBeforeEntityMap(modelInspector, type, joinedSubclassCustomizer);
+        }
 
-            if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
-            {
-                classCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName));
-            }
-
-            classCustomizer.Table(GetTableNameAndQuote(type));
-
-            classCustomizer.Id(
-                m =>
-                {
-                    m.Column(GetKeyColumnName(type, false, QuoteIdentifiers));
-                    m.Generator(Generators.HighLow);
-                });
-
-            if (modelInspector.IsTablePerClassHierarchy(type))
-            {
-                classCustomizer.Discriminator(m => m.Column(GetDiscriminatorColumnName(modelInspector, type)));
-                classCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
-            }
-
-            MemberInfo[] versionProperties = VersionProperties(modelInspector, type).ToArray();
-            if (versionProperties.Length == 1)
-            {
-                classCustomizer.Version(versionProperties[0], m => m.Column(GetVersionColumnName(modelInspector, type)));
-            }
+        protected override void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
+        {
+            OnBeforeEntityMap(modelInspector, type, unionSubclassCustomizer);
         }
 
         protected override void OnBeforeMapProperty(IModelInspector modelInspector, PropertyPath member, IPropertyMapper propertyCustomizer)
         {
-            Type reflectedType = member.LocalMember.ReflectedType;
-            if (reflectedType == null)
+            string columnName = GetColumnName(modelInspector, member, null);
+            propertyCustomizer.Column(columnName);
+
+            if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member)
+                && IsRequired(modelInspector, member))
             {
-                return;
+                propertyCustomizer.NotNullable(true);
             }
 
-            propertyCustomizer.Column(GetColumnName(modelInspector, member));
-
-            bool required =
-                member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<RequiredAttribute>()
-                      .Any();
-
-            // Getting tableType of reflected object
-            Type memberType = member.MemberType();
-
-            bool notNullable = required || (memberType != null && memberType.IsPrimitive) || memberType == typeof(DateTime);
-            propertyCustomizer.NotNullable(notNullable);
-
             StringLengthAttribute stringLengthAttribute =
-                member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<StringLengthAttribute>()
-                      .FirstOrDefault();
+                member
+                    .LocalMember
+                    .GetCustomAttributes()
+                    .OfType<StringLengthAttribute>()
+                    .FirstOrDefault();
             if (stringLengthAttribute != null)
             {
                 if (stringLengthAttribute.MaximumLength > 0)
@@ -571,74 +630,66 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
             }
         }
 
-        protected override void ModelMapperOnBeforeMapUnionSubclass(IModelInspector modelInspector, Type type, IUnionSubclassAttributesMapper unionSubclassCustomizer)
-        {
-            unionSubclassCustomizer.Table(GetTableNameAndQuote(type));
-        }
-
-        protected override void OnBeforeMapJoinedSubclass(IModelInspector modelInspector, Type type, IJoinedSubclassAttributesMapper joinedSubclassCustomizer)
-        {
-            joinedSubclassCustomizer.Key(
-                k =>
-                {
-                    k.Column(GetKeyColumnName(type.BaseType ?? type, false, QuoteIdentifiers));
-                    if (type.BaseType != null)
-                    {
-                        k.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(type), GetTableName(type.BaseType)));
-                    }
-                });
-
-            joinedSubclassCustomizer.Table(GetTableNameAndQuote(type));
-        }
-
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            string columnName = GetIdentifier(string.Format("{0}Id", member.CollectionElementType().Name));
-            string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
-            string foreignKeyName = string.Format("FK_{0}_{1}", tableName, columnName);
-            // TODO how to put an index on the second FK??
-            //string indexName = string.Format("IX_FK_{0}_{1}", tableName, columnName);
+            string columnName = GetForeignKeyColumnName(modelInspector, member, false);
+            collectionRelationManyToManyCustomizer.Column(ConditionalQuoteIdentifier(columnName, null));
 
-            collectionRelationManyToManyCustomizer.Column(ConditionalQuoteIdentifier(columnName));
+            string tableName = GetTableNameForManyToMany(modelInspector, member, false);
+            string foreignKeyName = $"FK_{tableName}_{columnName}";
             collectionRelationManyToManyCustomizer.ForeignKey(foreignKeyName);
         }
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
         {
-            string foreignKeyColumnName = GetKeyColumnName(modelInspector, member, false);
-            propertyCustomizer.Column(ConditionalQuoteIdentifier(foreignKeyColumnName));
-            string tableName = GetTableName(member.Owner());
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", tableName, foreignKeyColumnName));
+            string foreignKeyColumnName = GetForeignKeyColumnName(modelInspector, member, false);
+            propertyCustomizer.Column(ConditionalQuoteIdentifier(foreignKeyColumnName, null));
+            string tableName = GetTableName(modelInspector, member.Owner(), false);
+            propertyCustomizer.ForeignKey($"FK_{tableName}_{foreignKeyColumnName}");
 
-            bool required =
-                member.LocalMember
-                      .GetCustomAttributes()
-                      .OfType<RequiredAttribute>()
-                      .Any();
-            propertyCustomizer.NotNullable(required);
-            propertyCustomizer.Index(string.Format("IX_FK_{0}_{1}", tableName, foreignKeyColumnName));
+            if (!IsMemberDeclaredInATablePerClassHierarchy(modelInspector, member)
+                && IsRequired(modelInspector, member))
+            {
+                propertyCustomizer.NotNullable(true);
+            }
+
+            if (CreateIndexForForeignKey)
+            {
+                propertyCustomizer.Index($"IX_FK_{tableName}_{foreignKeyColumnName}");
+            }
         }
 
         protected override void OnBeforeMapOneToOne(IModelInspector modelInspector, PropertyPath member, IOneToOneMapper propertyCustomizer)
         {
-            propertyCustomizer.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(member.Owner()), GetIdentifier(member.ToColumnName())));
-        }
-
-        protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
-        {
-            subclassCustomizer.DiscriminatorValue(GetDiscriminatorValue(modelInspector, type));
+            propertyCustomizer.ForeignKey($"FK_{GetTableName(modelInspector, member.Owner(), false)}_{GetIdentifier(member.ToColumnName())}");
         }
 
         protected virtual void OnBeforeMappingCollectionConvention(IModelInspector modelinspector, PropertyPath member, ICollectionPropertiesMapper collectionPropertiesCustomizer)
         {
+            if (!string.IsNullOrWhiteSpace(DefaultCatalogName))
+            {
+                collectionPropertiesCustomizer.Catalog(DefaultCatalogName);
+            }
+
+            if (!string.IsNullOrWhiteSpace(DefaultSchemaName))
+            {
+                collectionPropertiesCustomizer.Schema(ConditionalQuoteIdentifier(DefaultSchemaName, null));
+            }
+
+            if ((CollectionBatchSize != null) && (CollectionBatchSize.Value > 0))
+            {
+                collectionPropertiesCustomizer.Fetch(CollectionFetchMode.Select);
+                collectionPropertiesCustomizer.BatchSize(CollectionBatchSize.Value);
+            }
+
             if (modelinspector.IsManyToManyItem(member.LocalMember))
             {
-                string tableName = GetIdentifier(member.ManyToManyIntermediateTableName("To"));
+                string tableName = GetTableNameForManyToMany(modelinspector, member, null);
                 collectionPropertiesCustomizer.Table(tableName);
                 collectionPropertiesCustomizer.Key(
                     k =>
                     {
-                        string keyColumnName = GetKeyColumnName(member.Owner(), true, QuoteIdentifiers);
+                        string keyColumnName = GetKeyColumnName(ForeignKeyType, member.Owner().Name, null);
                         k.Column(keyColumnName);
                     });
             }
@@ -650,113 +701,55 @@ namespace PPWCode.Vernacular.NHibernate.I.MappingByCode
                     MembersProvider
                         .GetRootEntityMembers(oneToManyProperty.DeclaringType)
                         .Where(modelinspector.IsManyToOne);
-                if (candidatesManyToOne.Any(mi => mi.MemberType() == member.LocalMember.DeclaringType))
+                if (candidatesManyToOne.Any(mi => mi.GetPropertyOrFieldType() == member.LocalMember.DeclaringType))
                 {
                     collectionPropertiesCustomizer.Inverse(true);
                 }
                 else
                 {
                     Contract.Assert(oneToManyProperty.DeclaringType != null, "otherSideProperty.DeclaringType != null");
-                    collectionPropertiesCustomizer.Key(k => k.ForeignKey(string.Format("FK_{0}_{1}", GetTableName(oneToManyProperty.DeclaringType), GetIdentifier(oneToManyProperty.Name))));
+                    collectionPropertiesCustomizer.Key(k => k.ForeignKey($"FK_{GetTableName(modelinspector, oneToManyProperty.DeclaringType, false)}_{GetIdentifier(oneToManyProperty.Name)}"));
                 }
 
-                collectionPropertiesCustomizer.Key(k => k.Column(GetKeyColumnName(modelinspector, member, QuoteIdentifiers)));
-            }
-
-            if (BatchSize != null && BatchSize.Value > 0)
-            {
-                collectionPropertiesCustomizer.Fetch(CollectionFetchMode.Select);
-                collectionPropertiesCustomizer.BatchSize(BatchSize.Value);
+                string keyColumnName = GetForeignKeyColumnName(modelinspector, member, null);
+                collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
         }
 
-        protected virtual string GetIdentifier(string identifier)
+        protected override void OnAfterMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
-            return UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
+            base.OnAfterMapClass(modelInspector, type, classCustomizer);
+
+            if (AdjustColumnForForeignGenerator)
+            {
+                HbmMapping hbmMapping = TryGetHbmMapping(classCustomizer);
+                HbmClass rootEntity =
+                    hbmMapping
+                        ?.RootClasses
+                        .SingleOrDefault(c => string.Equals(c.Name, type.FullName, StringComparison.Ordinal)
+                                              && string.Equals(c.Id.generator.@class, "foreign", StringComparison.Ordinal));
+                HbmParam propertyParam =
+                    rootEntity
+                        ?.Id
+                        .generator
+                        .param.SingleOrDefault(p => string.Equals(p.name, "property"));
+                if ((propertyParam != null) && (propertyParam.Text.Length == 1))
+                {
+                    string columnName = GetKeyColumnName(PrimaryKeyType, propertyParam.Text[0], null);
+                    classCustomizer.Id(m => m.Column(columnName));
+                }
+            }
         }
 
-        protected virtual string ConditionalQuoteIdentifier(string identifier)
+        protected virtual HbmMapping TryGetHbmMapping(object customizer)
         {
-            return QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
-        }
-
-        protected virtual string QuoteIdentifier(string identifier)
-        {
-            return string.Format("`{0}`", identifier);
-        }
-
-        public static string CamelCaseToUnderscore(string camelCase)
-        {
-            const string Rgx = @"([A-Z]+)([A-Z][a-z])";
-            const string Rgx2 = @"([a-z\d])([A-Z])";
-
-            string result = Regex.Replace(camelCase, Rgx, "$1_$2");
-            result = Regex.Replace(result, Rgx2, "$1_$2");
-            return result.ToUpper();
-        }
-
-        public enum PrimaryKeyTypeEnum
-        {
-            ID,
-            TYPE_ID
-        }
-
-        public class ModelMetaData
-        {
-            private readonly string m_ColumnPrefix;
-            private readonly IDictionary<string, string> m_ColumnNames;
-            private readonly Type m_Type;
-            private readonly string m_TableName;
-            private readonly string m_Discriminator;
-            private readonly string m_Version;
-
-            public ModelMetaData(Type type, string tableName, string discriminator, string version, string columnPrefix, IDictionary<string, string> columnNames)
-            {
-                Contract.Requires(type != null);
-                Contract.Requires(columnNames != null);
-                Contract.Ensures(Type == type);
-                Contract.Ensures(TableName == tableName);
-                Contract.Ensures(Discriminator == discriminator);
-                Contract.Ensures(Version == version);
-                Contract.Ensures(ColumnPrefix == columnPrefix);
-
-                m_Type = type;
-                m_TableName = tableName;
-                m_Discriminator = discriminator;
-                m_Version = version;
-                m_ColumnPrefix = columnPrefix;
-                m_ColumnNames = columnNames;
-            }
-
-            public string TableName
-            {
-                get { return m_TableName; }
-            }
-
-            public string ColumnPrefix
-            {
-                get { return m_ColumnPrefix; }
-            }
-
-            public IDictionary<string, string> ColumnNames
-            {
-                get { return m_ColumnNames; }
-            }
-
-            public Type Type
-            {
-                get { return m_Type; }
-            }
-
-            public string Discriminator
-            {
-                get { return m_Discriminator; }
-            }
-
-            public string Version
-            {
-                get { return m_Version; }
-            }
+            ClassMapper classMapper = customizer as ClassMapper;
+            return
+                classMapper != null
+                    ? (MapDocPropertyInfo != null
+                           ? MapDocPropertyInfo.GetValue(classMapper) as HbmMapping
+                           : null)
+                    : null;
         }
     }
 }

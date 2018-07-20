@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 
 using NHibernate;
 using NHibernate.Engine;
@@ -30,32 +29,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         public DirtyCheckingInterceptor(IList<string> dirtyProps)
         {
-            Contract.Requires(dirtyProps != null);
-            Contract.Ensures(DirtyProps == dirtyProps);
-
             m_DirtyProps = dirtyProps;
         }
 
-        [ContractInvariantMethod]
-        private void ObjectInvariant()
-        {
-            Contract.Invariant(DirtyProps != null);
-        }
-
         protected IList<string> DirtyProps
-        {
-            get
-            {
-                Contract.Ensures(Contract.Result<IList<string>>() != null);
-
-                return m_DirtyProps;
-            }
-        }
+            => m_DirtyProps;
 
         public override void SetSession(ISession session)
         {
-            Contract.Requires(session != null);
-
             m_Session = session;
         }
 
@@ -95,7 +76,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
 
             object[] oldState = oldEntry.LoadedState;
-            object[] currentState = persister.GetPropertyValues(entity, sessionImpl.EntityMode);
+            object[] currentState = persister.GetPropertyValues(entity);
             int[] dirtyProperties = persister.FindDirty(currentState, oldState, entity, sessionImpl);
 
             foreach (int index in dirtyProperties)

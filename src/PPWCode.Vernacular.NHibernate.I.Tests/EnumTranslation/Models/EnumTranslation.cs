@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
 {
     public class EnumTranslation : PersistentObject<int>
     {
-        private string m_TranslationNl;
         private string m_TranslationFr;
+        private string m_TranslationNl;
 
         protected EnumTranslation()
         {
@@ -40,6 +41,15 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models
         {
             get { return m_TranslationFr; }
             set { m_TranslationFr = value; }
+        }
+    }
+
+    public class EnumTranslationMapper : PersistentObjectMapper<EnumTranslation, int>
+    {
+        public EnumTranslationMapper()
+        {
+            Property(et => et.TranslationNl);
+            Property(et => et.TranslationFr);
         }
     }
 }

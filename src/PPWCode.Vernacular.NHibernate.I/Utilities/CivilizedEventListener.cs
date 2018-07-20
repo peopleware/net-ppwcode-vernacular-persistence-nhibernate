@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 using NHibernate.Cfg;
 using NHibernate.Event;
@@ -26,17 +28,44 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
-    public class CivilizedEventListener :
-        IRegisterEventListener,
-        IPreUpdateEventListener,
-        IPreInsertEventListener
+    public class CivilizedEventListener
+        : IRegisterEventListener,
+          IPreUpdateEventListener,
+          IPreInsertEventListener
     {
         /// <summary>
         ///     Return true if the operation should be vetoed.
         /// </summary>
         /// <param name="event">The given event.</param>
+        /// <param name="cancellationToken">The given cancellation token.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public bool OnPreInsert(PreInsertEvent @event)
+        public virtual Task<bool> OnPreInsertAsync(PreInsertEvent @event, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled<bool>(cancellationToken);
+            }
+
+            try
+            {
+                return Task.FromResult(OnPreInsert(@event));
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException<bool>(ex);
+            }
+        }
+
+        /// <summary>
+        ///     Return true if the operation should be vetoed.
+        /// </summary>
+        /// <param name="event">The given event.</param>
+        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        public virtual bool OnPreInsert(PreInsertEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
@@ -46,14 +75,41 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     Return true if the operation should be vetoed.
         /// </summary>
         /// <param name="event">The given event.</param>
+        /// <param name="cancellationToken">The given cancellation token.</param>
         /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
-        public bool OnPreUpdate(PreUpdateEvent @event)
+        public virtual Task<bool> OnPreUpdateAsync(PreUpdateEvent @event, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled<bool>(cancellationToken);
+            }
+
+            try
+            {
+                return Task.FromResult(OnPreUpdate(@event));
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                return Task.FromException<bool>(ex);
+            }
+        }
+
+        /// <summary>
+        ///     Return true if the operation should be vetoed.
+        /// </summary>
+        /// <param name="event">The given event.</param>
+        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        public virtual bool OnPreUpdate(PreUpdateEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
         }
 
-        public void Register(Configuration cfg)
+        public virtual void Register(Configuration cfg)
         {
             cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { this }
                 .Concat(cfg.EventListeners.PreUpdateEventListeners)
@@ -63,13 +119,10 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
                 .ToArray();
         }
 
-        private void ValidateObject(object entity)
+        protected virtual void ValidateObject(object entity)
         {
             ICivilizedObject civilizedObject = entity as ICivilizedObject;
-            if (civilizedObject != null)
-            {
-                civilizedObject.ThrowIfNotCivilized();
-            }
+            civilizedObject?.ThrowIfNotCivilized();
         }
     }
 }

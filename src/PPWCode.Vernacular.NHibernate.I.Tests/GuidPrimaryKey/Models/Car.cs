@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
 
 using System;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models
@@ -35,6 +38,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models
         {
             get { return m_ModelName; }
             set { m_ModelName = value; }
+        }
+    }
+
+    public class CarMapper : PersistentObjectMapper<Car, Guid>
+    {
+        public CarMapper()
+        {
+            Id(
+                c => c.Id,
+                m => { m.Generator(Generators.Guid); });
+
+            Property(c => c.ModelName);
         }
     }
 }

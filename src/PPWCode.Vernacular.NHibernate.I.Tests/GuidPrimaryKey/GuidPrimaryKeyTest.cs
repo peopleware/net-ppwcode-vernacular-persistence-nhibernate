@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,44 +14,53 @@
 
 using System;
 
-using NHibernate.Cfg.MappingSchema;
-
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Test;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
 {
-    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Car, Guid>
+    public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
+        private IQueryOverRepository<Car, Guid> _repository;
+        private IPpwHbmMapping _ppwHbmMapping;
+
+        protected IQueryOverRepository<Car, Guid> Repository
+            => _repository;
+
         protected override string CatalogName
-        {
-            get { return "Test.PPWCode.Vernacular.NHibernate.I.Tests"; }
-        }
+            => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
 
+        /// <inheritdoc />
         protected override string ConnectionString
-        {
-            get { return FixedConnectionString; }
-        }
+            => FixedConnectionString;
 
-        protected override HbmMapping GetHbmMapping()
-        {
-            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            return mapper.GetHbmMapping();
-        }
+        protected override IPpwHbmMapping PpwHbmMapping
+            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
         protected override string IdentityName
+            => "Test - IdentityName";
+
+        protected virtual Func<IQueryOverRepository<Car, Guid>> RepositoryFactory
         {
-            get { return "Test - IdentityName"; }
+            get { return () => new CarRepository(SessionProvider); }
         }
 
-        protected override Func<IRepository<Car, Guid>> RepositoryFactory
+        protected override void OnSetup()
         {
-            get { return () => new CarRepository(Session); }
+            base.OnSetup();
+
+            _repository = RepositoryFactory();
+        }
+
+        protected override void OnTeardown()
+        {
+            _repository = null;
+
+            base.OnTeardown();
         }
 
         [Test]

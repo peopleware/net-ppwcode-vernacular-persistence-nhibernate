@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,18 +20,18 @@ using NHibernate.Mapping.ByCode;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests
 {
     [TestFixture]
     public class ConventionMappingTests
     {
-        [Test, Explicit]
+        [Test]
+        [Explicit]
         public void XmlMapping()
         {
-            IHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
-            HbmMapping hbmMapping = mapper.GetHbmMapping();
+            IPpwHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
+            HbmMapping hbmMapping = mapper.HbmMapping;
             if (hbmMapping != null)
             {
                 Console.WriteLine(hbmMapping.AsString());

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+using NHibernate.Mapping.ByCode;
+
+using PPWCode.Vernacular.NHibernate.I.MappingByCode;
 using PPWCode.Vernacular.Persistence.II;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
@@ -38,21 +41,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
-        [Required, StringLength(200)]
+        [Required]
+        [StringLength(200)]
         public virtual string Name
         {
             get { return m_Name; }
             set { m_Name = value; }
         }
 
+        [AuditLogPropertyIgnore]
         public virtual ISet<User> Users
-        {
-            get { return m_Users; }
-        }
+            => m_Users;
 
         public virtual void AddUser(User user)
         {
-            if (user != null && m_Users.Add(user))
+            if ((user != null) && m_Users.Add(user))
             {
                 user.AddRole(this);
             }
@@ -60,10 +63,26 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void RemoveUser(User user)
         {
-            if (user != null && m_Users.Remove(user))
+            if ((user != null) && m_Users.Remove(user))
             {
                 user.RemoveRole(this);
             }
+        }
+    }
+
+    public class RoleMapper : AuditableVersionedPersistentObjectMapper<Role, int, int>
+    {
+        public RoleMapper()
+        {
+            Property(r => r.Name);
+            Set(
+                r => r.Users,
+                m =>
+                {
+                    m.Cascade(Cascade.None);
+                    m.Inverse(true);
+                },
+                c => c.ManyToMany());
         }
     }
 }

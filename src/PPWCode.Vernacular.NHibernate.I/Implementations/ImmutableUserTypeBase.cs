@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using System;
-using System.Data;
+using System.Data.Common;
 
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.UserTypes;
 
@@ -29,7 +30,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
                 return true;
             }
 
-            if (x == null || y == null)
+            if ((x == null) || (y == null))
             {
                 return false;
             }
@@ -38,45 +39,29 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations
         }
 
         public int GetHashCode(object x)
-        {
-            return x == null ? 0 : x.GetHashCode();
-        }
+            => x == null ? 0 : x.GetHashCode();
 
-        public abstract object NullSafeGet(IDataReader rs, string[] names, object owner);
+        public abstract object NullSafeGet(DbDataReader rs, string[] names, ISessionImplementor sessionImplementor, object owner);
 
-        public abstract void NullSafeSet(IDbCommand cmd, object value, int index);
+        public abstract void NullSafeSet(DbCommand cmd, object value, int index, ISessionImplementor sessionImplementor);
 
         public object DeepCopy(object value)
-        {
-            // since object is immutable, return original
-            return value;
-        }
+            => value;
 
         public object Replace(object original, object target, object owner)
-        {
-            // since object is immutable, return original
-            return original;
-        }
+            => original;
 
         public object Assemble(object cached, object owner)
-        {
-            // Used for caching, as our object is immutable we can just return it as is
-            return cached;
-        }
+            => cached;
 
         public object Disassemble(object value)
-        {
-            // Used for caching, as our object is immutable we can just return it as is
-            return value;
-        }
+            => value;
 
         public abstract SqlType[] SqlTypes { get; }
 
         public abstract Type ReturnedType { get; }
 
         public bool IsMutable
-        {
-            get { return false; }
-        }
+            => false;
     }
 }

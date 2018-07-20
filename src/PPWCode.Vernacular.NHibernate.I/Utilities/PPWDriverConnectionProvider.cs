@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using System;
-using System.Data;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
     [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
-        private static readonly IInternalLogger s_Log = LoggerProvider.LoggerFor(typeof(PPWDriverConnectionProvider));
+        private static readonly INHibernateLogger _log = NHibernateLogger.For(typeof(PPWDriverConnectionProvider));
 
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
@@ -40,22 +40,23 @@ namespace PPWCode.Vernacular.NHibernate.I.Utilities
         ///     </property>
         /// </summary>
         /// <param name="conn">The <see cref="T:System.Data.IDbConnection" /> to clean up.</param>
-        public override void CloseConnection(IDbConnection conn)
+        public override void CloseConnection(DbConnection conn)
         {
             if (conn != null)
             {
                 base.CloseConnection(conn);
             }
-            else if (s_Log.IsWarnEnabled)
+            else if (_log.IsWarnEnabled())
             {
-                StringBuilder sb = new StringBuilder()
-                    .AppendLine("CloseConnection called with <null> conn.")
-                    .AppendLine()
-                    .AppendLine("Stack Trace :")
-                    .AppendLine()
-                    .AppendLine(Environment.StackTrace)
-                    .AppendLine();
-                s_Log.Warn(sb.ToString());
+                StringBuilder sb =
+                    new StringBuilder()
+                        .AppendLine("CloseConnection called with <null> conn.")
+                        .AppendLine()
+                        .AppendLine("Stack Trace :")
+                        .AppendLine()
+                        .AppendLine(Environment.StackTrace)
+                        .AppendLine();
+                _log.Warn(sb.ToString());
             }
         }
     }

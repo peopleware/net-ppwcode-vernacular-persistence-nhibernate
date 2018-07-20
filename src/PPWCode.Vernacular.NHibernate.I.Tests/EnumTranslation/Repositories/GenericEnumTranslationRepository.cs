@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017-2018 by PeopleWare n.v..
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,23 +15,23 @@
 using System;
 using System.Linq;
 
-using NHibernate;
 using NHibernate.Criterion;
 
 using PPWCode.Vernacular.Exceptions.II;
+using PPWCode.Vernacular.NHibernate.I.Interfaces;
 using PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Models;
 using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
 
 namespace PPWCode.Vernacular.NHibernate.I.Tests.EnumTranslation.Repositories
 {
     public class GenericEnumTranslationRepository<T, X>
-        : TestRepository<T>,
+        : TestQueryOverRepository<T>,
           IGenericEnumTranslationRepository<T, X>
         where T : GenericEnumTranslation<X>
         where X : struct, IComparable, IConvertible, IFormattable
     {
-        public GenericEnumTranslationRepository(ISession session)
-            : base(session)
+        public GenericEnumTranslationRepository(ISessionProvider sessionProvider)
+            : base(sessionProvider)
         {
             if (!typeof(X).IsEnum)
             {
