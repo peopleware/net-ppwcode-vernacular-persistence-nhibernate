@@ -29,6 +29,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
         /// <inheritdoc />
         public Exception Convert(string message, Exception exception)
         {
+            if (exception is SemanticException)
+            {
+                return exception;
+            }
+
+            if (exception is ProgrammingError)
+            {
+                return exception;
+            }
+
             StaleObjectStateException staleObjectStateException = exception as StaleObjectStateException;
             if (staleObjectStateException != null)
             {
@@ -39,27 +49,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint
                         staleObjectStateException.Identifier);
             }
 
-            Exception result;
-
-            HibernateException hibernateException = exception as HibernateException;
-            if (hibernateException != null)
+            GenericADOException genericAdoException = exception as GenericADOException;
+            if (genericAdoException != null)
             {
-                GenericADOException genericAdoException = exception as GenericADOException;
-                if (genericAdoException != null)
-                {
-                    result = new RepositorySqlException(message, genericAdoException.SqlString, genericAdoException.InnerException);
-                }
-                else
-                {
-                    result = new ExternalError(message, exception);
-                }
-            }
-            else
-            {
-                result = new ExternalError(message, exception);
+                return new RepositorySqlException(message, genericAdoException.SqlString, genericAdoException.InnerException);
             }
 
-            return result;
+            return new ExternalError(message, exception);
         }
     }
 }
