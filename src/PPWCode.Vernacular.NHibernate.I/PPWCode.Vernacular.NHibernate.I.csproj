@@ -51,6 +51,9 @@
       <HintPath>..\packages\Castle.Core.4.2.1\lib\net45\Castle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <HintPath>..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
     </Reference>
@@ -118,6 +121,7 @@
     <Compile Include="Implementations\Dialects\PpwMsSqlServerDialect.cs" />
     <Compile Include="Implementations\DbExceptionConverters\PpwMsSqlExceptionConverter.cs" />
     <Compile Include="Implementations\Dialects\PpwPostgreDialect.cs" />
+    <Compile Include="Implementations\NhInterceptor.cs" />
     <Compile Include="Implementations\Providers\SafeEnvironmentProvider.cs" />
     <Compile Include="Implementations\Providers\SessionProvider.cs" />
     <Compile Include="Implementations\Providers\TransactionProvider.cs" />
@@ -176,7 +180,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
