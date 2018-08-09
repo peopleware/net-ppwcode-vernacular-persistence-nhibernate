@@ -271,8 +271,6 @@ Task ReSharperClean -description 'Clean ReSharper cache folders.' -depends ShowP
 #
 Task PackageClean -description 'Clean NuGet packages folder.' -depends ReSharperClean {
 
-    Chatter 'Clean package dependencies.' 1
-
     Push-Location
     try
     {
