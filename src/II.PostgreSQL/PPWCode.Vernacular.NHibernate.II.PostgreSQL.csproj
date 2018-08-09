@@ -6,6 +6,11 @@
 
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
+    <Description>The PPWCode Vernacular NHibernate PostgreSQL library version II.</Description>
+    <PackageTags>ppwcode vernacular nhibernate orm postgresql</PackageTags>
+    <PackageReleaseNotes>
+      <![CDATA[1.0.0 Initial release]]>
+    </PackageReleaseNotes>
 
     <!-- version numbers -->
     <AssemblyVersion>1.0.0.0</AssemblyVersion>

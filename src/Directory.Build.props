@@ -21,20 +21,15 @@
 
     <!-- nuget package -->
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <Description Condition="'$(Description)' == ''">The PPWCode Vernacular NHIbernate library version II.</Description>
     <Product>PPWCode</Product>
     <Company>Peopleware NV</Company>
     <Authors>dvdwouwe;rvdginste</Authors>
     <Copyright>Copyright © Peopleware NV 2014-2018</Copyright>
-    <PackageTags>ppwcode vernacular nhibernate orm</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
     <PackageIconUrl>http://peopleware.github.io/net-ppwcode-util-oddsandends/ppwcode_logo.jpg</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
-    <PackageReleaseNotes>
-      <![CDATA[1.0.0 Initial release]]>
-    </PackageReleaseNotes>
   </PropertyGroup>
 
 
