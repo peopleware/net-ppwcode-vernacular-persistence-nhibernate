@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,80 +11,99 @@
 
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using NHibernate;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
-    public class DirtyCheckingInterceptor : EmptyInterceptor
+    public class DirtyCheckingInterceptor
+        : EmptyInterceptor
     {
-        private readonly IList<string> m_DirtyProps;
-        private ISession m_Session;
+        [CanBeNull]
+        private ISession _session;
 
-        public DirtyCheckingInterceptor(IList<string> dirtyProps)
+        public DirtyCheckingInterceptor([NotNull] IList<string> dirtyProps)
         {
-            m_DirtyProps = dirtyProps;
+            DirtyProps = dirtyProps;
         }
 
-        protected IList<string> DirtyProps
-            => m_DirtyProps;
+        [NotNull]
+        protected IList<string> DirtyProps { get; }
 
         public override void SetSession(ISession session)
         {
-            m_Session = session;
+            _session = session;
         }
 
-        public override bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState, string[] propertyNames, IType[] types)
+        public override bool OnFlushDirty(
+            [NotNull] object entity,
+            [NotNull] object id,
+            [NotNull] object[] currentState,
+            [NotNull] object[] previousState,
+            [NotNull] string[] propertyNames,
+            [NotNull] IType[] types)
         {
-            string msg = string.Format("Flush Dirty {0}", entity.GetType().FullName);
+            string msg = $"Flush Dirty {entity.GetType().FullName}";
             DirtyProps.Add(msg);
             ListDirtyProperties(entity);
             return false;
         }
 
-        public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
+        public override bool OnSave(
+            [NotNull] object entity,
+            [NotNull] object id,
+            [NotNull] object[] state,
+            [NotNull] string[] propertyNames,
+            [NotNull] IType[] types)
         {
-            string msg = string.Format("Save {0}", entity.GetType().FullName);
+            string msg = $"Save {entity.GetType().FullName}";
             DirtyProps.Add(msg);
             return false;
         }
 
-        public override void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types)
+        public override void OnDelete(
+            [NotNull] object entity,
+            [NotNull] object id,
+            [NotNull] object[] state,
+            [NotNull] string[] propertyNames,
+            [NotNull] IType[] types)
         {
-            string msg = string.Format("Delete {0}", entity.GetType().FullName);
+            string msg = $"Delete {entity.GetType().FullName}";
             DirtyProps.Add(msg);
         }
 
-        private void ListDirtyProperties(object entity)
+        private void ListDirtyProperties([NotNull] object entity)
         {
-            string className = NHibernateProxyHelper.GuessClass(entity).FullName;
-            ISessionImplementor sessionImpl = m_Session.GetSessionImplementation();
-            IEntityPersister persister = sessionImpl.Factory.GetEntityPersister(className);
-            EntityEntry oldEntry = sessionImpl.PersistenceContext.GetEntry(entity);
-
-            if (oldEntry == null)
+            if (_session != null)
             {
-                INHibernateProxy proxy = entity as INHibernateProxy;
-                object obj = proxy != null ? sessionImpl.PersistenceContext.Unproxy(proxy) : entity;
-                oldEntry = sessionImpl.PersistenceContext.GetEntry(obj);
-            }
+                string className = NHibernateProxyHelper.GuessClass(entity).FullName;
+                ISessionImplementor sessionImpl = _session.GetSessionImplementation();
+                IEntityPersister persister = sessionImpl.Factory.GetEntityPersister(className);
+                EntityEntry oldEntry = sessionImpl.PersistenceContext.GetEntry(entity);
 
-            object[] oldState = oldEntry.LoadedState;
-            object[] currentState = persister.GetPropertyValues(entity);
-            int[] dirtyProperties = persister.FindDirty(currentState, oldState, entity, sessionImpl);
+                if (oldEntry == null)
+                {
+                    object obj =
+                        entity is INHibernateProxy proxy
+                            ? sessionImpl.PersistenceContext.Unproxy(proxy)
+                            : entity;
+                    oldEntry = sessionImpl.PersistenceContext.GetEntry(obj);
+                }
 
-            foreach (int index in dirtyProperties)
-            {
-                string msg = string.Format(
-                    "Dirty property {0}.{1} was {2}, is {3}.",
-                    className,
-                    persister.PropertyNames[index],
-                    oldState[index] ?? "null",
-                    currentState[index] ?? "null");
-                DirtyProps.Add(msg);
+                object[] oldState = oldEntry.LoadedState;
+                object[] currentState = persister.GetPropertyValues(entity);
+                int[] dirtyProperties = persister.FindDirty(currentState, oldState, entity, sessionImpl);
+
+                foreach (int index in dirtyProperties)
+                {
+                    string msg = $"Dirty property {className}.{persister.PropertyNames[index]} was {oldState[index] ?? "null"}, is {currentState[index] ?? "null"}.";
+                    DirtyProps.Add(msg);
+                }
             }
         }
     }

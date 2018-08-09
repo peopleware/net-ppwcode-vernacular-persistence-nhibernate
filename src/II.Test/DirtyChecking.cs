@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,39 +13,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using NHibernate;
 using NHibernate.Cfg;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
     public class DirtyChecking
     {
-        private readonly Configuration m_Configuration;
-        private readonly Action<string> m_FailCallback;
-        private readonly Action<string> m_InconclusiveCallback;
-        private readonly ISessionFactory m_SessionFactory;
-
-        public DirtyChecking(Configuration configuration, ISessionFactory sessionFactory, Action<string> failCallback, Action<string> inconclusiveCallback)
+        public DirtyChecking(
+            [NotNull] Configuration configuration,
+            [NotNull] ISessionFactory sessionFactory,
+            [NotNull] Action<string> failCallback,
+            [NotNull] Action<string> inconclusiveCallback)
         {
-            m_Configuration = configuration;
-            m_SessionFactory = sessionFactory;
-            m_FailCallback = failCallback;
-            m_InconclusiveCallback = inconclusiveCallback;
+            Configuration = configuration;
+            SessionFactory = sessionFactory;
+            FailCallback = failCallback;
+            InconclusiveCallback = inconclusiveCallback;
         }
 
-        protected Configuration Configuration
-            => m_Configuration;
-
-        protected Action<string> FailCallback
-            => m_FailCallback;
-
-        protected Action<string> InconclusiveCallback
-            => m_InconclusiveCallback;
-
-        protected ISessionFactory SessionFactory
-            => m_SessionFactory;
+        protected Configuration Configuration { get; }
+        protected Action<string> FailCallback { get; }
+        protected Action<string> InconclusiveCallback { get; }
+        protected ISessionFactory SessionFactory { get; }
 
         public void Test()
         {
@@ -73,7 +64,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             object id = FindEntityId(entityName);
             if (id == null)
             {
-                string msg = string.Format("No instances of {0} in database.", entityName);
+                string msg = $"No instances of {entityName} in database.";
                 InconclusiveCallback.Invoke(msg);
 
                 return;
@@ -103,20 +94,22 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
+        [CanBeNull]
         private object FindEntityId(string entityName)
         {
             object id;
             using (ISession session = SessionFactory.OpenSession())
             {
-                string idQueryString = string.Format("SELECT e.id FROM {0} e", entityName);
+                string cmdText = $"SELECT e.id FROM {entityName} e";
 
-                IQuery idQuery = session
-                    .CreateQuery(idQueryString)
-                    .SetMaxResults(1);
+                IQuery query =
+                    session
+                        .CreateQuery(cmdText)
+                        .SetMaxResults(1);
 
                 using (ITransaction tx = session.BeginTransaction())
                 {
-                    id = idQuery.UniqueResult();
+                    id = query.UniqueResult();
                     tx.Commit();
                 }
             }

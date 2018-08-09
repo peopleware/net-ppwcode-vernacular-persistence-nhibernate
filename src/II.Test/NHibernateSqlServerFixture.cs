@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,29 +15,34 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 
+using JetBrains.Annotations;
+
 using NHibernate;
 using NHibernate.Cfg;
-using NHibernate.Driver;
 using NHibernate.Event;
 using NHibernate.Mapping;
 
-using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
-using PPWCode.Vernacular.NHibernate.I.Implementations.Dialects;
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Utilities;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.Dialects;
+using PPWCode.Vernacular.NHibernate.II.Utilities;
+using PPWCode.Vernacular.Persistence.III;
 
 using Environment = NHibernate.Cfg.Environment;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
-    public abstract partial class NHibernateSqlServerFixture<TId, TAuditEntity> : NHibernateFixture<TId>
+    public abstract partial class NHibernateSqlServerFixture<TId, TAuditEntity>
+        : NHibernateFixture<TId>
         where TId : IEquatable<TId>
         where TAuditEntity : AuditLog<TId>, new()
     {
-        public class TestAuditLogEventListener : AuditLogEventListener<TId, TAuditEntity>
+        public class TestAuditLogEventListener
+            : AuditLogEventListener<TId, TAuditEntity>
         {
-            public TestAuditLogEventListener(IIdentityProvider identityProvider, ITimeProvider timeProvider, bool useUtc)
+            public TestAuditLogEventListener(
+                [NotNull] IIdentityProvider identityProvider,
+                [NotNull] ITimeProvider timeProvider,
+                bool useUtc)
                 : base(identityProvider, timeProvider, useUtc)
             {
             }
@@ -52,12 +54,16 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         private Configuration _configuration;
         private string _connectionString;
 
+        [NotNull]
         protected abstract string CatalogName { get; }
+
         protected abstract bool UseUtc { get; }
 
+        [NotNull]
         protected virtual string ConnectionString
             => _connectionString ?? (_connectionString = RandomizedConnectionString);
 
+        [NotNull]
         protected virtual string RandomizedConnectionString
         {
             get
@@ -70,9 +76,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
+        [NotNull]
         protected virtual string FixedConnectionString
             => ConfigHelper.GetConnectionString(CatalogName) ?? DefaultFixedConnectionString;
 
+        [NotNull]
         protected virtual string DefaultFixedConnectionString
         {
             get
@@ -88,6 +96,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
+        [NotNull]
         protected override Configuration Configuration
         {
             get
@@ -99,7 +108,6 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                             db =>
                             {
                                 db.Dialect<PpwMsSqlServerDialect>();
-                                db.Driver<Sql2008ClientDriver>();
                                 db.ConnectionString = ConnectionString;
                                 db.IsolationLevel = IsolationLevel.ReadCommitted;
                                 db.BatchSize = 0;
@@ -150,14 +158,17 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             _connectionString = null;
         }
 
+        [CanBeNull]
         protected virtual IPpwHbmMapping PpwHbmMapping
             => null;
 
+        [NotNull]
         protected virtual IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
         {
             get { yield break; }
         }
 
+        [NotNull]
         protected virtual IEnumerable<IRegisterEventListener> RegisterEventListeners
         {
             get
@@ -167,6 +178,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
+        [CanBeNull]
         protected virtual INhInterceptor Interceptor
             => null;
 

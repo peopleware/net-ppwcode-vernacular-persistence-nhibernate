@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +16,19 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Linq;
 
-using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
-using PPWCode.Vernacular.Exceptions.II;
+using JetBrains.Annotations;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+using PPWCode.Vernacular.Exceptions.III;
+
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
     public static class SqlServerUtils
     {
-        private static string GetConnectionString(string dataSource, string catalog, bool pooling)
+        [NotNull]
+        private static string GetConnectionString(
+            [NotNull] string dataSource,
+            [CanBeNull] string catalog,
+            bool pooling)
         {
             SqlConnectionStringBuilder builder =
                 new SqlConnectionStringBuilder
@@ -39,22 +41,33 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             return builder.ConnectionString;
         }
 
-        public static string GetConnectionString(string dataSource, string catalog)
+        [NotNull]
+        public static string GetConnectionString([NotNull] string dataSource, [CanBeNull] string catalog)
             => GetConnectionString(dataSource, catalog, true);
 
-        public static string GetConnectionString(string connectionString)
-            => ConfigHelper.GetConnectionString(connectionString);
+        [CanBeNull]
+        public static string GetConnectionString([NotNull] string connectionStringKey)
+            => ConfigHelper.GetConnectionString(connectionStringKey);
 
-        private static SqlConnection GetConnection(string dataSource, string catalog, bool pooling)
+        [NotNull]
+        private static SqlConnection GetConnection([NotNull] string dataSource, [CanBeNull] string catalog, bool pooling)
             => new SqlConnection(GetConnectionString(dataSource, catalog, pooling));
 
-        public static SqlConnection GetConnection(string dataSource, string catalog)
+        [NotNull]
+        public static SqlConnection GetConnection([NotNull] string dataSource, [CanBeNull] string catalog)
             => new SqlConnection(GetConnectionString(dataSource, catalog));
 
-        public static SqlConnection GetConnection(string connectionString)
-            => new SqlConnection(GetConnectionString(connectionString));
+        [CanBeNull]
+        public static SqlConnection GetConnection([NotNull] string connectionStringKey)
+        {
+            string connectionString = GetConnectionString(connectionStringKey);
+            return connectionString != null ? new SqlConnection(connectionString) : null;
+        }
 
-        private static void ExecuteCommands(SqlConnection connection, int commandTimeout, IEnumerable<string> scripts)
+        private static void ExecuteCommands(
+            [NotNull] SqlConnection connection,
+            int commandTimeout,
+            [NotNull] IEnumerable<string> scripts)
         {
             bool wasOpen = connection.State == ConnectionState.Open;
             if (!wasOpen)
@@ -87,7 +100,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        private static void ExecuteCommands(string dataSource, string catalog, bool pooling, int commandTimeout, IEnumerable<string> scripts)
+        private static void ExecuteCommands(
+            [NotNull] string dataSource,
+            [CanBeNull] string catalog,
+            bool pooling,
+            int commandTimeout,
+            [NotNull] IEnumerable<string> scripts)
         {
             using (SqlConnection connection = GetConnection(dataSource, catalog, pooling))
             {
@@ -95,7 +113,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        private static bool DataSourceExists(string dataSource)
+        private static bool DataSourceExists([NotNull] string dataSource)
         {
             bool result = (dataSource == @".") || dataSource.Equals(@"localhost", StringComparison.InvariantCultureIgnoreCase);
             if (!result)
@@ -107,16 +125,18 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                 {
                     string serverName = items[0];
                     string instanceName = items.Length == 1 ? string.Empty : items[1];
-                    result = table.AsEnumerable()
-                        .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
-                                  && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
+                    result =
+                        table
+                            .AsEnumerable()
+                            .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
+                                      && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
 
             return result;
         }
 
-        public static bool CatalogExists(string dataSource, string catalog)
+        public static bool CatalogExists([NotNull] string dataSource, [CanBeNull] string catalog)
         {
             const string CmdText = @"select null from master.dbo.sysdatabases where name=@name";
 
@@ -140,33 +160,33 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             }
         }
 
-        public static void DropCatalog(string dataSource, string catalog)
+        public static void DropCatalog([NotNull] string dataSource, [CanBeNull] string catalog)
         {
             if (!DataSourceExists(dataSource))
             {
-                throw new SemanticException(string.Format(@"datasource={0} unknown", dataSource));
+                throw new SemanticException($"datasource={dataSource} unknown");
             }
 
             // Put database in single user mode and force a disconnect of the other users.
             string[] commands =
             {
-                string.Format(@"exec msdb.dbo.sp_delete_database_backuphistory @database_name=N'{0}'", catalog),
-                string.Format(@"alter database [{0}] set single_user with rollback immediate", catalog),
-                string.Format(@"drop database [{0}]", catalog)
+                $@"exec msdb.dbo.sp_delete_database_backuphistory @database_name=N'{catalog}'",
+                $"alter database [{catalog}] set single_user with rollback immediate",
+                $"drop database [{catalog}]"
             };
             ExecuteCommands(dataSource, null, false, 0, commands);
         }
 
-        public static void CreateCatalog(string dataSource, string catalog, bool simpleMode)
+        public static void CreateCatalog([NotNull] string dataSource, [CanBeNull] string catalog, bool simpleMode)
         {
             IList<string> commands =
                 new List<string>
                 {
-                    string.Format(@"create database [{0}]", catalog)
+                    $"create database [{catalog}]"
                 };
             if (simpleMode)
             {
-                commands.Add(string.Format(@"alter database [{0}] set recovery simple with no_wait", catalog));
+                commands.Add($"alter database [{catalog}] set recovery simple with no_wait");
             }
 
             ExecuteCommands(dataSource, null, false, 0, commands);

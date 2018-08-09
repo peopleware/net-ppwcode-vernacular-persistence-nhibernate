@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,26 +11,26 @@
 
 using System;
 
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
     public abstract partial class NHibernateSqlServerFixture<TId, TAuditEntity>
     {
         public class TestTimeProvider : ITimeProvider
         {
-            private readonly DateTime m_Now;
+            private readonly DateTime _now;
 
             public TestTimeProvider(DateTime now)
             {
-                m_Now = now;
+                _now = now;
             }
 
             public DateTime Now
-                => m_Now.ToLocalTime();
+                => _now.ToLocalTime();
 
             public DateTime UtcNow
-                => m_Now.ToUniversalTime();
+                => _now.ToUniversalTime();
         }
     }
 }

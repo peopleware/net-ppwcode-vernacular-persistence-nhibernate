@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,25 +14,30 @@ using System.Data;
 
 using HibernatingRhinos.Profiler.Appender;
 
+using JetBrains.Annotations;
+
 using Moq;
 
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
-using PPWCode.Util.OddsAndEnds.II.ConfigHelper;
-using PPWCode.Vernacular.NHibernate.I.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.I.Implementations.Providers;
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Utilities;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.Implementations.Providers;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Utilities;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
-    public abstract class NHibernateFixture<TId> : BaseFixture
+    public abstract class NHibernateFixture<TId>
+        : BaseFixture
         where TId : IEquatable<TId>
     {
+        [CanBeNull]
         private ISessionFactory _sessionFactory;
+
+        [CanBeNull]
         private ISessionProvider _sessionProvider;
 
         protected abstract Configuration Configuration { get; }
@@ -57,9 +59,11 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
         protected virtual bool GenerateStatistics
             => ConfigHelper.GetAppSetting("GenerateStatistics", true);
 
+        [NotNull]
         protected virtual ISessionFactory SessionFactory
             => _sessionFactory ?? (_sessionFactory = Configuration.BuildSessionFactory());
 
+        [NotNull]
         protected virtual ISession OpenSession()
         {
             Mock<IIdentityProvider> identityProvider =
@@ -87,6 +91,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
                     .OpenSession();
         }
 
+        [NotNull]
         protected virtual ISessionProvider SessionProvider
             => _sessionProvider
                ?? (_sessionProvider =
@@ -120,11 +125,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
 
         protected virtual void CloseSession()
         {
-            _sessionProvider?.Session?.Close();
+            _sessionProvider?.Session.Close();
             _sessionProvider = null;
         }
 
-        protected T RunInsideTransaction<T>(Func<T> func, bool clearSession)
+        [CanBeNull]
+        protected T RunInsideTransaction<T>([NotNull] Func<T> func, bool clearSession)
         {
             T result =
                 SessionProvider
@@ -139,7 +145,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Test
             return result;
         }
 
-        protected void RunInsideTransaction(Action action, bool clearSession)
+        protected void RunInsideTransaction([NotNull] Action action, bool clearSession)
         {
             SessionProvider
                 .TransactionProvider

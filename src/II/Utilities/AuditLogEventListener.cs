@@ -162,7 +162,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Utilities
 
         protected abstract bool CanAuditLogFor(
             [NotNull] AbstractEvent @event,
-            AuditLogItem auditLogItem,
+            [NotNull] AuditLogItem auditLogItem,
             AuditLogActionEnum requestedLogAction);
 
         [NotNull]

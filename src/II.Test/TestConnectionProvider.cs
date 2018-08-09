@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,33 +14,33 @@ using System.Data.Common;
 
 using NHibernate.Connection;
 
-namespace PPWCode.Vernacular.NHibernate.I.Test
+namespace PPWCode.Vernacular.NHibernate.II.Test
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public class TestConnectionProvider : DriverConnectionProvider
     {
         [ThreadStatic]
-        private static DbConnection s_Connection;
+        private static DbConnection _connection;
 
         public static void CloseDatabase()
         {
-            if (s_Connection != null)
+            if (_connection != null)
             {
-                s_Connection.Dispose();
-                s_Connection = null;
+                _connection.Dispose();
+                _connection = null;
             }
         }
 
         public override DbConnection GetConnection()
         {
-            if (s_Connection == null)
+            if (_connection == null)
             {
-                s_Connection = Driver.CreateConnection();
-                s_Connection.ConnectionString = ConnectionString;
-                s_Connection.Open();
+                _connection = Driver.CreateConnection();
+                _connection.ConnectionString = ConnectionString;
+                _connection.Open();
             }
 
-            return s_Connection;
+            return _connection;
         }
 
         public override void CloseConnection(DbConnection conn)
