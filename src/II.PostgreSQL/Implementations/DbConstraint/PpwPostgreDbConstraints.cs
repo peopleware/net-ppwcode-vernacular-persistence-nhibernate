@@ -11,7 +11,9 @@
 
 using System.Collections.Generic;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
+using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbConstraint
 {
     /// <inheritdoc cref="InformationSchemaBasedDbConstraints" />
     public class PpwPostgreDbConstraints : InformationSchemaBasedDbConstraints

@@ -12,10 +12,10 @@
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
-using PPWCode.Vernacular.NHibernate.II.Implementations.ViolatedConstraintNameExtracters;
+using PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbExceptionConverters;
+using PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.ViolatedConstraintNameExtracters;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.Dialects
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.Dialects
 {
     public class PpwMsSqlServerDialect : MsSql2012Dialect
     {

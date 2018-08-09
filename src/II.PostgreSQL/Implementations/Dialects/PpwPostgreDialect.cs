@@ -12,10 +12,10 @@
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
-using PPWCode.Vernacular.NHibernate.II.Implementations.ViolatedConstraintNameExtracters;
+using PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbExceptionConverters;
+using PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.ViolatedConstraintNameExtracters;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.Dialects
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.Dialects
 {
     public class PpwPostgreDialect : PostgreSQL83Dialect
     {

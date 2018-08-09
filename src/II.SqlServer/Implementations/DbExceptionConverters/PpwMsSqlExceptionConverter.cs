@@ -17,9 +17,10 @@ using JetBrains.Annotations;
 using NHibernate.Exceptions;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbExceptionConverters
 {
     public class PpwMsSqlExceptionConverter : BaseExceptionConverter
     {

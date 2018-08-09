@@ -17,11 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E
 		..\psakefile.ps1 = ..\psakefile.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.II", "II\PPWCode.Vernacular.NHibernate.II.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II", "II\PPWCode.Vernacular.NHibernate.II.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.II.Tests", "II.Tests\PPWCode.Vernacular.NHibernate.II.Tests.csproj", "{753CD3CA-A0A7-4340-A492-580942B74E83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.II.Test", "II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj", "{BD66B970-0474-468D-A95B-C42DDAE75717}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II.SqlServer", "II.SqlServer\PPWCode.Vernacular.NHibernate.II.SqlServer.csproj", "{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II.PostgreSQL", "II.PostgreSQL\PPWCode.Vernacular.NHibernate.II.PostgreSQL.csproj", "{56923C60-644C-48F1-9B53-295840E80665}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +45,14 @@ Global
 		{BD66B970-0474-468D-A95B-C42DDAE75717}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD66B970-0474-468D-A95B-C42DDAE75717}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD66B970-0474-468D-A95B-C42DDAE75717}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56923C60-644C-48F1-9B53-295840E80665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56923C60-644C-48F1-9B53-295840E80665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56923C60-644C-48F1-9B53-295840E80665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56923C60-644C-48F1-9B53-295840E80665}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

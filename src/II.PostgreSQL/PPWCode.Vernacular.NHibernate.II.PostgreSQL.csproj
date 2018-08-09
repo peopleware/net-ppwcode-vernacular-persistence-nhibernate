@@ -30,12 +30,14 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="PPWCode.Vernacular.Persistence.III" Version="[1, 2)" />
-    <PackageReference Include="NHibernate" Version="[5.1.3, 6)" />
-    <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5)" />
-    <PackageReference Include="Remotion.Linq" Version="[2.1.2, 3)" />
-    <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.1.0, 3)" />
-    <PackageReference Include="Common.Logging" Version="[3.4.1, 4)" />
+    <PackageReference Include="Npgsql" Version="4.0.2" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\II\PPWCode.Vernacular.NHibernate.II.csproj" />
   </ItemGroup>
 
 </Project>

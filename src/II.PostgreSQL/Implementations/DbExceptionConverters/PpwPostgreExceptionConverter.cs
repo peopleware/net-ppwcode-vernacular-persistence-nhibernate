@@ -18,9 +18,10 @@ using NHibernate.Exceptions;
 using Npgsql;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbExceptionConverters
 {
     public class PpwPostgreExceptionConverter : BaseExceptionConverter
     {

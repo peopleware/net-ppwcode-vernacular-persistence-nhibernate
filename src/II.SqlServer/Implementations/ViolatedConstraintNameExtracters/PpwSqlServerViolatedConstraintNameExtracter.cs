@@ -20,8 +20,9 @@ using NHibernate.Exceptions;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.ViolatedConstraintNameExtracters
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.ViolatedConstraintNameExtracters
 {
     public class PpwSqlServerViolatedConstraintNameExtracter
         : IViolatedConstraintNameExtracter,
