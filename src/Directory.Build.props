@@ -2,15 +2,7 @@
 
   <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 
-  <!-- version number -->
-  <Import Project="version.props" />
-
   <PropertyGroup>
-    <!-- version numbers -->
-    <AssemblyVersion>$(GacVersion)</AssemblyVersion>
-    <Version>$(PackageVersion)</Version>
-    <FileVersion>$(InformationalVersion)</FileVersion>
-
     <!-- build paths -->
     <OutputPath>..\..\scratch\bin\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</OutputPath>
     <IntermediateOutputPath>..\..\scratch\obj\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</IntermediateOutputPath>

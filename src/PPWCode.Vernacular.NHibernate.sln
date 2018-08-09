@@ -8,7 +8,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Directory.Build.props = Directory.Build.props
 		StyleCop-Tests.ruleset = StyleCop-Tests.ruleset
 		StyleCop.ruleset = StyleCop.ruleset
-		version.props = version.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E-8AD7-4771-856E-47D86A5FAD33}"

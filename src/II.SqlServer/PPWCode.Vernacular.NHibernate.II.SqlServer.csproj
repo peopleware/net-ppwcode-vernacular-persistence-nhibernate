@@ -7,6 +7,11 @@
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
 
+    <!-- version numbers -->
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0</FileVersion>
+
     <!-- Stylecop -->
     <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
