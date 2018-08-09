@@ -10,6 +10,9 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Data.Common;
+
+using Npgsql;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 
@@ -25,7 +28,7 @@ namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbConstrai
         }
 
         /// <inheritdoc />
-        protected override string ProviderInvariantName
-            => "Npgsql";
+        protected override DbProviderFactory DbProviderFactory
+            => NpgsqlFactory.Instance;
     }
 }

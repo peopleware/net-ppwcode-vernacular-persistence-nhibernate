@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 
 using JetBrains.Annotations;
 
@@ -36,7 +35,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
         private volatile IDictionary<string, DbConstraintMetadata> _constraints;
 
         [CanBeNull]
-        protected abstract string ProviderInvariantName { get; }
+        protected abstract DbProviderFactory DbProviderFactory { get; }
 
         public ISet<DbConstraintMetadata> Constraints
             => _constraints != null
@@ -75,42 +74,30 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            if (ProviderInvariantName != null)
+            DbConnection dbConnection = DbProviderFactory?.CreateConnection();
+            if (dbConnection != null)
             {
-                bool providerExists =
-                    DbProviderFactories
-                        .GetFactoryClasses()
-                        .Rows.Cast<DataRow>()
-                        .Any(r => r[2].Equals(ProviderInvariantName));
-                if (providerExists)
+                string connectionString =
+                    properties.ContainsKey(Environment.ConnectionString)
+                        ? properties[Environment.ConnectionString]
+                        : null;
+                if (connectionString == null)
                 {
-                    DbProviderFactory factory = DbProviderFactories.GetFactory(ProviderInvariantName);
-                    DbConnection dbConnection = factory.CreateConnection();
-                    if (dbConnection != null)
-                    {
-                        string connectionString =
-                            properties.ContainsKey(Environment.ConnectionString)
-                                ? properties[Environment.ConnectionString]
-                                : null;
-                        if (connectionString == null)
-                        {
-                            string connectionStringName =
-                                properties.ContainsKey(Environment.ConnectionStringName)
-                                    ? properties[Environment.ConnectionStringName]
-                                    : null;
-                            connectionString =
-                                connectionStringName != null
-                                    ? GetConnectionString(connectionStringName)
-                                    : null;
-                        }
-
-                        dbConnection.ConnectionString = connectionString;
-                        return dbConnection;
-                    }
+                    string connectionStringName =
+                        properties.ContainsKey(Environment.ConnectionStringName)
+                            ? properties[Environment.ConnectionStringName]
+                            : null;
+                    connectionString =
+                        connectionStringName != null
+                            ? GetConnectionString(connectionStringName)
+                            : null;
                 }
+
+                dbConnection.ConnectionString = connectionString;
+                return dbConnection;
             }
 
-            throw new ProgrammingError($"Unable to figure out which provider we have to use for {properties}");
+            throw new ProgrammingError("Unable to get a database-connection using ADO.Net");
         }
 
         protected virtual void OnInitialize(IDictionary<string, string> properties)

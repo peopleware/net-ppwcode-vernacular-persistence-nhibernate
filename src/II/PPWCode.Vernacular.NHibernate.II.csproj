@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard20</TargetFrameworks>
 
     <!-- nuget package -->
     <IsPackable>true</IsPackable>

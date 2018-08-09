@@ -10,6 +10,8 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 
@@ -25,8 +27,8 @@ namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbConstrain
         }
 
         /// <inheritdoc />
-        protected override string ProviderInvariantName
-            => "System.Data.SqlClient";
+        protected override DbProviderFactory DbProviderFactory
+            => SqlClientFactory.Instance;
 
         /// <inheritdoc />
         protected override string SqlCommand
