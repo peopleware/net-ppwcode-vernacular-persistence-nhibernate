@@ -33,6 +33,10 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
           IEquatable<Address>,
           IPpwAuditLog
     {
+        private Address()
+        {
+        }
+
         public Address(
             [NotNull] string street,
             [NotNull] string number,

@@ -31,6 +31,10 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models
           IPpwAuditLog,
           IEquatable<Vector3D>
     {
+        private Vector3D()
+        {
+        }
+
         public Vector3D(double x, double y, double z)
         {
             X = x;
