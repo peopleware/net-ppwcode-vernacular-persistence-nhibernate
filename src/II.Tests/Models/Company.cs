@@ -27,6 +27,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         [DataMember]
+        private readonly ISet<CompanyIdentification> _identifications = new HashSet<CompanyIdentification>();
+
+        [DataMember]
         private FailedCompany _failedCompany;
 
         public Company(int id, int persistenceVersion)
@@ -77,7 +80,8 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 
         [DataMember]
         [AuditLogPropertyIgnore]
-        public virtual ISet<CompanyIdentification> Identifications { get; } = new HashSet<CompanyIdentification>();
+        public virtual ISet<CompanyIdentification> Identifications
+            => _identifications;
 
         public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {

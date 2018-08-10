@@ -173,7 +173,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations
 
         [NotNull]
         protected virtual IQueryOver<TRoot, TRoot> CreateQueryOver()
-            => CreateQueryOver(() => null);
+            => Session.QueryOver<TRoot>();
 
         [NotNull]
         protected virtual IQueryOver<TRoot, TRoot> CreateQueryOver([CanBeNull] Expression<Func<TRoot>> alias)

@@ -41,7 +41,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations.Providers
                 throw new ArgumentNullException(nameof(action));
             }
 
-            Run(session, isolationLevel, ActionWrapper);
+            Run(session, isolationLevel, ActionWrapper());
         }
 
         public TResult Run<TResult>(ISession session, System.Data.IsolationLevel isolationLevel, Func<TResult> func)
