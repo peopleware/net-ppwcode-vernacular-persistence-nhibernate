@@ -8,6 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		Directory.Build.props = Directory.Build.props
 		StyleCop-Tests.ruleset = StyleCop-Tests.ruleset
 		StyleCop.ruleset = StyleCop.ruleset
+		version.props = version.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E-8AD7-4771-856E-47D86A5FAD33}"
@@ -18,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II", "II\PPWCode.Vernacular.NHibernate.II.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.II.Tests", "II.Tests\PPWCode.Vernacular.NHibernate.II.Tests.csproj", "{753CD3CA-A0A7-4340-A492-580942B74E83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II.Tests", "II.Tests\PPWCode.Vernacular.NHibernate.II.Tests.csproj", "{753CD3CA-A0A7-4340-A492-580942B74E83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPWCode.Vernacular.NHibernate.II.Test", "II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj", "{BD66B970-0474-468D-A95B-C42DDAE75717}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II.Test", "II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj", "{BD66B970-0474-468D-A95B-C42DDAE75717}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.II.SqlServer", "II.SqlServer\PPWCode.Vernacular.NHibernate.II.SqlServer.csproj", "{0A823DCA-06DD-4795-BA11-32BEC3AD0C4E}"
 EndProject
