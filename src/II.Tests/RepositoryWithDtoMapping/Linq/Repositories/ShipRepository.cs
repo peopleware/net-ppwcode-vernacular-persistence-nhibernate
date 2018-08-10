@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +13,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
+using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Linq.Repositories
 {
     public class ShipRepository : TestLinqRepository<Ship>
     {
@@ -37,15 +34,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Linq.Re
             => FindPaged(pageIndex, pageSize, FindContainersQuery(code));
 
         protected virtual Func<IQueryable<Ship>, IQueryable<ContainerDto>> FindContainersQuery(string code)
-        {
-            return
-                qry =>
-                    qry
-                        .SelectMany(ship => ship.CargoContainers, (ship, container) => new { ship, container })
-                        .Where(x => x.ship.Code.StartsWith(code))
-                        .GroupBy(x => new { shipCode = x.ship.Code, containerCode = x.container.Code, containerLoad = x.container.Load })
-                        .OrderBy(g => g.Key.shipCode)
-                        .Select(g => new ContainerDto(g.Key.shipCode, g.Key.containerCode, g.Key.containerLoad));
-        }
+            => qry =>
+                   qry
+                       .SelectMany(ship => ship.CargoContainers, (ship, container) => new { ship, container })
+                       .Where(x => x.ship.Code.StartsWith(code))
+                       .GroupBy(x => new { shipCode = x.ship.Code, containerCode = x.container.Code, containerLoad = x.container.Load })
+                       .OrderBy(g => g.Key.shipCode)
+                       .Select(g => new ContainerDto(g.Key.shipCode, g.Key.containerCode, g.Key.containerLoad));
     }
 }

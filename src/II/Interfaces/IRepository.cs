@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     Find all the records.
         /// </summary>
         /// <returns>
-        ///     A list of records.
+        ///     A list of records, the list is <b>never</b> a null-reference.
         /// </returns>
         [NotNull]
         IList<T> FindAll();

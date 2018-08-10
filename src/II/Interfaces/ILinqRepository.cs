@@ -70,6 +70,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         [NotNull]
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, [NotNull] Func<IQueryable<T>, IQueryable<T>> func);
+        IPagedList<T> FindPaged(int pageIndex, int pageSize, [CanBeNull] Func<IQueryable<T>, IQueryable<T>> func);
     }
 }

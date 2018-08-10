@@ -30,27 +30,34 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations
         {
         }
 
+        /// <inheritdoc />
         public virtual TRoot GetById(TId id)
             => Execute(nameof(GetById), () => GetByIdInternal(id));
 
+        /// <inheritdoc />
         public virtual IList<TRoot> FindAll()
             => Execute(nameof(FindAll), FindAllInternal) ?? new List<TRoot>();
 
+        /// <inheritdoc />
         public virtual TRoot Merge(TRoot entity)
             => Execute(nameof(Merge), () => MergeInternal(entity));
 
+        /// <inheritdoc />
         public virtual void SaveOrUpdate(TRoot entity)
             => Execute(nameof(SaveOrUpdate), () => SaveOrUpdateInternal(entity));
 
+        /// <inheritdoc />
         public virtual void Delete(TRoot entity)
             => Execute(nameof(Delete), () => DeleteInternal(entity));
 
-        protected virtual TRoot GetByIdInternal(TId id)
+        [CanBeNull]
+        protected virtual TRoot GetByIdInternal([NotNull] TId id)
             => Session.Get<TRoot>(id);
 
         [NotNull]
         protected abstract IList<TRoot> FindAllInternal();
 
+        [ContractAnnotation("entity:null => null; entity:notnull => notnull")]
         protected virtual TRoot MergeInternal(TRoot entity)
         {
             if (entity != null)
@@ -68,7 +75,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations
             return default(TRoot);
         }
 
-        protected virtual void SaveOrUpdateInternal(TRoot entity)
+        protected virtual void SaveOrUpdateInternal([CanBeNull] TRoot entity)
         {
             if (entity != null)
             {
@@ -82,7 +89,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations
             }
         }
 
-        protected virtual void DeleteInternal(TRoot entity)
+        protected virtual void DeleteInternal([CanBeNull] TRoot entity)
         {
             if ((entity != null) && !entity.IsTransient)
             {

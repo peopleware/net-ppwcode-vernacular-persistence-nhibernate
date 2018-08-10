@@ -1,256 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\NUnit.3.10.1\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{753CD3CA-A0A7-4340-A492-580942B74E83}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PPWCode.Vernacular.NHibernate.I.Tests</RootNamespace>
-    <AssemblyName>PPWCode.Vernacular.NHibernate.I.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <!-- target frameworks -->
+    <TargetFrameworks>net461</TargetFrameworks>
+
+    <!-- nuget package -->
+    <IsPackable>false</IsPackable>
+
+    <!-- version numbers -->
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0</FileVersion>
+
+    <!-- Stylecop -->
+    <CodeAnalysisRuleSet>..\StyleCop-Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath Condition="'$(OutputPath)' == ''">..\..\scratch\bin\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</OutputPath>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">..\..\scratch\obj\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</IntermediateOutputPath>
-    <DocumentationFile Condition="'$(DocumentationFile)' == ''">..\..\scratch\bin\$(MSBuildProjectName)-$(Configuration)-$(Platform)\$(MSBuildProjectName).XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>6</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>6</LangVersion>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime">
-      <HintPath>..\packages\Antlr3.Runtime.3.5.1\lib\net40-client\Antlr3.Runtime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Castle.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Core.4.3.1\lib\net45\Castle.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Castle.Windsor, Version=4.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <HintPath>..\packages\Castle.Windsor.4.1.0\lib\net45\Castle.Windsor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="HibernatingRhinos.Profiler.Appender, Version=5.0.0.0, Culture=neutral, PublicKeyToken=0774796e73ebf640, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernateProfiler.Appender.5.0.5026\lib\net46\HibernatingRhinos.Profiler.Appender.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\packages\Iesi.Collections.4.0.4\lib\net461\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.7.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.7.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.7.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Moq, Version=4.9.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <HintPath>..\packages\Moq.4.9.0\lib\net45\Moq.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate, Version=5.1.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <HintPath>..\packages\NHibernate.5.1.3\lib\net461\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="PPWCode.Util.OddsAndEnds.II, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PPWCode.Util.OddsAndEnds.II.1.3.0\lib\net45\PPWCode.Util.OddsAndEnds.II.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="PPWCode.Vernacular.Exceptions.II">
-      <HintPath>..\packages\PPWCode.Vernacular.Exceptions.II.1.0.0\lib\net45\PPWCode.Vernacular.Exceptions.II.dll</HintPath>
-    </Reference>
-    <Reference Include="PPWCode.Vernacular.Persistence.II, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PPWCode.Vernacular.Persistence.II.4.0.0\lib\net45\PPWCode.Vernacular.Persistence.II.dll</HintPath>
-    </Reference>
-    <Reference Include="PPWcode.Vernacular.Semantics.II">
-      <HintPath>..\packages\PPWcode.Vernacular.Semantics.II.1.0.0\lib\net45\PPWcode.Vernacular.Semantics.II.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Linq">
-      <HintPath>..\packages\Remotion.Linq.2.1.2\lib\net45\Remotion.Linq.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Remotion.Linq.EagerFetching">
-      <HintPath>..\packages\Remotion.Linq.EagerFetching.2.1.0\lib\net45\Remotion.Linq.EagerFetching.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.4.5.0\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" />
+
+    <ProjectReference Include="..\II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="..\Solution Items\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
-    <Compile Include="BiDirectionalNoCascading\BiDirectionalNoCascadingTest.cs" />
-    <Compile Include="BiDirectionalNoCascading\Models\Author.cs" />
-    <Compile Include="BiDirectionalNoCascading\Models\Book.cs" />
-    <Compile Include="BiDirectionalNoCascading\Models\Keyword.cs" />
-    <Compile Include="BiDirectionalNoCascading\Repositories\AuthorRepository.cs" />
-    <Compile Include="BiDirectionalNoCascading\Repositories\BookRepository.cs" />
-    <Compile Include="BiDirectionalNoCascading\Repositories\KeywordRepository.cs" />
-    <Compile Include="DictionariesAndLists\DictionariesAndListsTest.cs" />
-    <Compile Include="DictionariesAndLists\Models\ClippingPlane.cs" />
-    <Compile Include="DictionariesAndLists\Models\Plane.cs" />
-    <Compile Include="DictionariesAndLists\Models\SideEnum.cs" />
-    <Compile Include="DictionariesAndLists\Models\Tower.cs" />
-    <Compile Include="DictionariesAndLists\Models\Vector3D.cs" />
-    <Compile Include="DictionariesAndLists\Repositories\TowerRepository.cs" />
-    <Compile Include="GuidPrimaryKey\GuidPrimaryKeyTest.cs" />
-    <Compile Include="GuidPrimaryKey\Models\Car.cs" />
-    <Compile Include="GuidPrimaryKey\Repositories\CarRepository.cs" />
-    <Compile Include="IntegrationTests\Linq\BaseCompanyTests.cs" />
-    <Compile Include="IntegrationTests\Linq\BaseRepositoryTests.cs" />
-    <Compile Include="IntegrationTests\Linq\BaseUserTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\BaseUserTests.cs" />
-    <Compile Include="EnumTranslation\EnumTranslationTests.cs" />
-    <Compile Include="EnumTranslation\Models\EnumTranslation.cs" />
-    <Compile Include="IntegrationTests\BaseQueryTests.cs" />
-    <Compile Include="IntegrationTests\Linq\CompanyTests.cs" />
-    <Compile Include="IntegrationTests\Linq\UserTests.cs" />
-    <Compile Include="Models\Address.cs" />
-    <Compile Include="Models\Country.cs" />
-    <Compile Include="Models\Gender.cs" />
-    <Compile Include="EnumTranslation\Models\GenderEnum.cs" />
-    <Compile Include="EnumTranslation\Models\GenderEnumTranslation.cs" />
-    <Compile Include="EnumTranslation\Models\GenericEnumTranslation.cs" />
-    <Compile Include="EnumTranslation\Models\SalutationEnum.cs" />
-    <Compile Include="EnumTranslation\Models\SalutationEnumTranslation.cs" />
-    <Compile Include="Repositories\CompanyLinqRepository.cs" />
-    <Compile Include="Repositories\CompanyQueryOverRepository.cs" />
-    <Compile Include="ConventionMappingTests.cs" />
-    <Compile Include="Repositories\FailedCompanyQueryOverRepository.cs" />
-    <Compile Include="IntegrationTests\Audit\AuditWithHiLoIdentityGeneratorTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\BaseRepositoryTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\CompanyDeleteTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\CompanyTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\BaseCompanyTests.cs" />
-    <Compile Include="IntegrationTests\QueryOver\CompanyBiDirectionalityTests.cs" />
-    <Compile Include="IntegrationTests\DirtyCheckingExampleTest.cs" />
-    <Compile Include="IntegrationTests\QueryOver\UserTests.cs" />
-    <Compile Include="Models\AllRoundIctCompany.cs" />
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\CompanyIdentification.cs" />
-    <Compile Include="Models\IctCompany.cs" />
-    <Compile Include="Models\FailedCompany.cs" />
-    <Compile Include="TestsMappingAssemblies.cs" />
-    <Compile Include="Models\Role.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\WebBasedIctCompany.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestsSimpleModelMapper.cs" />
-    <Compile Include="EnumTranslation\Repositories\GenericEnumTranslationRepository.cs" />
-    <Compile Include="Repositories\ICompanyLinqRepository.cs" />
-    <Compile Include="Repositories\ICompanyQueryOverRepository.cs" />
-    <Compile Include="Repositories\IFailedCompanyQueryOverRepository.cs" />
-    <Compile Include="EnumTranslation\Repositories\IGenericEnumTranslationRepository.cs" />
-    <Compile Include="Repositories\IRoleLinqRepository.cs" />
-    <Compile Include="Repositories\IRoleQueryOverRepository.cs" />
-    <Compile Include="Repositories\ITestLinqRepository.cs" />
-    <Compile Include="Repositories\ITestQueryOverRepository.cs" />
-    <Compile Include="Repositories\IUserLinqRepository.cs" />
-    <Compile Include="Repositories\IUserQueryOverRepository.cs" />
-    <Compile Include="Repositories\RoleLinqRepository.cs" />
-    <Compile Include="Repositories\RoleQueryOverRepository.cs" />
-    <Compile Include="Repositories\TestLinqRepository.cs" />
-    <Compile Include="Repositories\TestQueryOverRepository.cs" />
-    <Compile Include="Repositories\UserLinqRepository.cs" />
-    <Compile Include="Repositories\UserQueryOverRepository.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Linq\DtoMappingTests.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Linq\Repositories\CargoContainerRepository.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Linq\Repositories\ShipRepository.cs" />
-    <Compile Include="RepositoryWithDtoMapping\QueryOver\DtoMappingTests.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Models\CargoContainer.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Models\ContainerDto.cs" />
-    <Compile Include="RepositoryWithDtoMapping\Models\Ship.cs" />
-    <Compile Include="RepositoryWithDtoMapping\QueryOver\Repositories\CargoContainerRepository.cs" />
-    <Compile Include="RepositoryWithDtoMapping\QueryOver\Repositories\ShipRepository.cs" />
-    <Compile Include="TestAuditLog.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj">
-      <Project>{bd66b970-0474-468d-a95b-c42ddae75717}</Project>
-      <Name>PPWCode.Vernacular.NHibernate.I.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PPWCode.Vernacular.NHibernate.I\PPWCode.Vernacular.NHibernate.I.csproj">
-      <Project>{83256ceb-ba1a-4614-9aca-653049ffbdac}</Project>
-      <Name>PPWCode.Vernacular.NHibernate.I</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.10.1\build\NUnit.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-</Project>
+
+ </Project>

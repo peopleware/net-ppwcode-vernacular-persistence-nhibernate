@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,36 +12,55 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Runtime.Serialization;
+
+using JetBrains.Annotations;
 
 using NHibernate.Mapping.ByCode.Conformist;
 
-using PPWCode.Vernacular.NHibernate.I.Utilities;
+using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Utilities;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
     [Serializable]
     [DataContract(IsReference = true)]
     public class Address
-        : IEquatable<Address>,
+        : CivilizedObject,
+          IEquatable<Address>,
           IPpwAuditLog
     {
+        public Address(
+            [NotNull] string street,
+            [NotNull] string number,
+            [CanBeNull] string box,
+            [CanBeNull] Country country)
+        {
+            Street = street;
+            Number = number;
+            Box = box;
+            Country = country;
+        }
+
         [DataMember]
         [Required]
         [StringLength(128)]
-        public virtual string Street { get; set; }
+        public virtual string Street { get; }
 
         [DataMember]
         [Required]
         [StringLength(16)]
-        public virtual string Number { get; set; }
+        public virtual string Number { get; }
 
         [DataMember]
         [StringLength(16)]
-        public virtual string Box { get; set; }
+        public virtual string Box { get; }
 
         [DataMember]
-        public virtual Country Country { get; set; }
+        public virtual Country Country { get; }
 
         public bool Equals(Address other)
         {
@@ -76,8 +92,21 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         public PpwAuditLog GetSingleLog(string propertyName)
+            => throw new NotImplementedException();
+
+        public override CompoundSemanticException WildExceptions()
         {
-            throw new NotImplementedException();
+            CompoundSemanticException cse = base.WildExceptions();
+
+            if (Country != null)
+            {
+                foreach (SemanticException wildException in Country.WildExceptions().Elements)
+                {
+                    cse.AddElement(wildException);
+                }
+            }
+
+            return cse;
         }
 
         public override bool Equals(object obj)
@@ -128,5 +157,69 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
             Property(a => a.Box);
             ManyToOne(a => a.Country);
         }
+    }
+
+    public class AddressBuilder
+    {
+        private string _box;
+        private Country _country;
+        private string _number;
+        private string _street;
+
+        public AddressBuilder()
+        {
+        }
+
+        public AddressBuilder([CanBeNull] Address address)
+        {
+            if (address != null)
+            {
+                _street = address.Street;
+                _number = address.Number;
+                _box = address.Box;
+                _country = address.Country;
+            }
+        }
+
+        [DebuggerStepThrough]
+        [NotNull]
+        public AddressBuilder Street([NotNull] string street)
+        {
+            _street = street;
+            return this;
+        }
+
+        [DebuggerStepThrough]
+        [NotNull]
+        public AddressBuilder Number([NotNull] string number)
+        {
+            _number = number;
+            return this;
+        }
+
+        [DebuggerStepThrough]
+        [NotNull]
+        public AddressBuilder Box([CanBeNull] string box)
+        {
+            _box = box;
+            return this;
+        }
+
+        [DebuggerStepThrough]
+        [NotNull]
+        public AddressBuilder Country([CanBeNull] Country country)
+        {
+            _country = country;
+            return this;
+        }
+
+        [DebuggerStepThrough]
+        [NotNull]
+        public Address Build()
+            => this;
+
+        [NotNull]
+        public static implicit operator Address(AddressBuilder builder)
+            => new Address(builder._street, builder._number, builder._box, builder._country);
     }
 }

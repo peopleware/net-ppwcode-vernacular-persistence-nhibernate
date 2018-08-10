@@ -21,8 +21,8 @@ using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Interfaces
 {
-    public interface IQueryOverRepository<T, in TId> : IRepository<T, TId>
-        where T : class, IIdentity<TId>
+    public interface IQueryOverRepository<TRoot, in TId> : IRepository<TRoot, TId>
+        where TRoot : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
         /// <summary>
@@ -31,7 +31,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         /// <param name="func">The given function.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         [CanBeNull]
-        T Get([NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        TRoot Get([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
 
         /// <summary>
         ///     Gets an entity by a function.
@@ -40,7 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         /// <param name="func">The given function.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         [CanBeNull]
-        T Get([CanBeNull] Expression<Func<T>> alias, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        TRoot Get([CanBeNull] Expression<Func<TRoot>> alias, [NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
 
         /// <summary>
         ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
@@ -50,7 +50,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         [CanBeNull]
-        T GetAtIndex([NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+        TRoot GetAtIndex([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index);
 
         /// <summary>
         ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
@@ -61,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         /// <param name="index">The given index.</param>
         /// <returns>The entity that is filtered by the function or null if not found.</returns>
         [CanBeNull]
-        T GetAtIndex([CanBeNull] Expression<Func<T>> alias, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int index);
+        TRoot GetAtIndex([CanBeNull] Expression<Func<TRoot>> alias, [NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index);
 
         /// <summary>
         ///     Find the records complying with the given function.
@@ -75,7 +75,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
-        IList<T> Find([NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        IList<TRoot> Find([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
 
         /// <summary>
         ///     Find the records complying with the given function.
@@ -90,7 +90,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
-        IList<T> Find([CanBeNull] Expression<Func<T>> alias, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        IList<TRoot> Find([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
 
         /// <summary>
         ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
@@ -107,7 +107,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
-        IList<T> Find([NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
+        IList<TRoot> Find([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count);
 
         /// <summary>
         ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
@@ -125,7 +125,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
-        IList<T> Find([CanBeNull] Expression<Func<T>> alias, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func, int? skip, int? count);
+        IList<TRoot> Find([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count);
 
         /// <summary>
         ///     Find a set of records complying with the given function.
@@ -142,7 +142,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         [NotNull]
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
 
         /// <summary>
         ///     Find a set of records complying with the given function.
@@ -160,6 +160,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
         ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
         /// </returns>
         [NotNull]
-        IPagedList<T> FindPaged(int pageIndex, int pageSize, [CanBeNull] Expression<Func<T>> alias, [NotNull] Func<IQueryOver<T, T>, IQueryOver<T, T>> func);
+        IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, [CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
     }
 }

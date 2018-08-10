@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +13,14 @@ using System;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq
 {
     public abstract class BaseCompanyTests : BaseRepositoryTests<Company>
     {
-        private Company _createdCompany;
-
         protected enum CompanyCreationType
         {
             /// <summary>
@@ -39,20 +34,19 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
             WITH_2_CHILDREN
         }
 
-        protected Company CreatedCompany
-            => _createdCompany;
+        protected Company CreatedCompany { get; private set; }
 
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            _createdCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+            CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
             SessionFactory.Statistics.Clear();
         }
 
         protected override void OnTeardown()
         {
-            _createdCompany = null;
+            CreatedCompany = null;
 
             base.OnTeardown();
         }
@@ -69,11 +63,9 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
                 {
                     Name = "Peopleware NV",
                     Address =
-                        new Address
-                        {
-                            Street = "Duwijckstraat",
-                            Number = "17"
-                        }
+                        new AddressBuilder()
+                            .Street("Duwijckstraat")
+                            .Number("17")
                 };
 
             if (companyCreationType == CompanyCreationType.WITH_2_CHILDREN)
@@ -94,7 +86,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
             }
 
             Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
-
+            Assert.IsNotNull(savedCompany);
             Assert.AreNotSame(company, savedCompany);
             Assert.AreEqual(1, savedCompany.PersistenceVersion);
             Assert.AreEqual(companyCreationType == CompanyCreationType.NO_CHILDREN ? 0 : 2, savedCompany.Identifications.Count);
@@ -114,7 +106,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.Linq
             };
 
             Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
-
+            Assert.IsNotNull(savedCompany);
             Assert.AreNotSame(company, savedCompany);
             Assert.IsNotNull(savedCompany.FailedCompany);
             Assert.IsTrue(savedCompany.IsFailed);

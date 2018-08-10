@@ -52,17 +52,17 @@ namespace PPWCode.Vernacular.NHibernate.II.Implementations
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(alias, func)) ?? new List<TRoot>();
 
-        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
-            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
-
-        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
-            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, alias, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
-
         public virtual IList<TRoot> Find(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(func, skip, count)) ?? new List<TRoot>();
 
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(alias, func, skip, count)) ?? new List<TRoot>();
+
+        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
+
+        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, alias, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
 
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)

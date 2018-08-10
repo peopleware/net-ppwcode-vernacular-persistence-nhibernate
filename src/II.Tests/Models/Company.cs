@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +16,10 @@ using System.Runtime.Serialization;
 
 using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.MappingByCode;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
     [Serializable]
     [DataContract(IsReference = true)]
@@ -30,13 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         [DataMember]
-        private FailedCompany m_FailedCompany;
-
-        [DataMember]
-        private ISet<CompanyIdentification> m_Identifications = new HashSet<CompanyIdentification>();
-
-        [DataMember]
-        private string m_Name;
+        private FailedCompany _failedCompany;
 
         public Company(int id, int persistenceVersion)
             : base(id, persistenceVersion)
@@ -52,33 +43,30 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
+        [DataMember]
         [Required]
         [StringLength(128)]
-        public virtual string Name
-        {
-            get { return m_Name; }
-            set { m_Name = value; }
-        }
+        public virtual string Name { get; set; }
 
         [AuditLogPropertyIgnore]
         public virtual FailedCompany FailedCompany
         {
-            get { return m_FailedCompany; }
+            get => _failedCompany;
             set
             {
-                if (m_FailedCompany != value)
+                if (_failedCompany != value)
                 {
-                    if (m_FailedCompany != null)
+                    if (_failedCompany != null)
                     {
-                        FailedCompany previousFailedCompany = m_FailedCompany;
-                        m_FailedCompany = null;
+                        FailedCompany previousFailedCompany = _failedCompany;
+                        _failedCompany = null;
                         previousFailedCompany.Company = null;
                     }
 
-                    m_FailedCompany = value;
-                    if (m_FailedCompany != null)
+                    _failedCompany = value;
+                    if (_failedCompany != null)
                     {
-                        m_FailedCompany.Company = this;
+                        _failedCompany.Company = this;
                     }
                 }
             }
@@ -87,13 +75,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         public virtual bool IsFailed
             => FailedCompany != null;
 
+        [DataMember]
         [AuditLogPropertyIgnore]
-        public virtual ISet<CompanyIdentification> Identifications
-            => m_Identifications;
+        public virtual ISet<CompanyIdentification> Identifications { get; } = new HashSet<CompanyIdentification>();
 
         public virtual void RemoveIdentification(CompanyIdentification companyIdentification)
         {
-            if ((companyIdentification != null) && m_Identifications.Remove(companyIdentification))
+            if ((companyIdentification != null) && Identifications.Remove(companyIdentification))
             {
                 companyIdentification.Company = null;
             }
@@ -101,7 +89,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void AddIdentification(CompanyIdentification companyIdentification)
         {
-            if ((companyIdentification != null) && m_Identifications.Add(companyIdentification))
+            if ((companyIdentification != null) && Identifications.Add(companyIdentification))
             {
                 companyIdentification.Company = this;
             }

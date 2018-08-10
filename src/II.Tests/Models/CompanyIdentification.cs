@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,58 +13,43 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.MappingByCode;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
     [Serializable]
     [DataContract(IsReference = true)]
     public class CompanyIdentification : AuditablePersistentObject<int>
     {
         [DataMember]
-        private Company m_Company;
-
-        [DataMember]
-        private string m_Identification;
-
-        [DataMember]
-        private int m_Number;
+        private Company _company;
 
         [Required]
         [StringLength(256)]
-        public virtual string Identification
-        {
-            get { return m_Identification; }
-            set { m_Identification = value; }
-        }
+        [DataMember]
+        public virtual string Identification { get; set; }
 
-        public virtual int Number
-        {
-            get { return m_Number; }
-            set { m_Number = value; }
-        }
+        [DataMember]
+        public virtual int Number { get; set; }
 
         [Required]
         public virtual Company Company
         {
-            get { return m_Company; }
+            get => _company;
             set
             {
-                if (m_Company != value)
+                if (_company != value)
                 {
-                    if (m_Company != null)
+                    if (_company != null)
                     {
-                        Company previousCompany = m_Company;
-                        m_Company = null;
+                        Company previousCompany = _company;
+                        _company = null;
                         previousCompany.RemoveIdentification(this);
                     }
 
-                    m_Company = value;
-                    if (m_Company != null)
-                    {
-                        m_Company.AddIdentification(this);
-                    }
+                    _company = value;
+                    _company?.AddIdentification(this);
                 }
             }
         }

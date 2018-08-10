@@ -4,6 +4,8 @@
 	<s:String x:Key="/Default/CodeEditing/GenerateMemberBody/DocumentationGenerationKind/@EntryValue">Inherit</s:String>
 	<s:Boolean x:Key="/Default/CodeEditing/GenerateMemberBody/WrapIntoRegions/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeEditing/Intellisense/CodeCompletion/AutoCompleteBasicCompletion/@EntryValue">True</s:Boolean>
+	<s:String x:Key="/Default/CodeEditing/Intellisense/EnhancedTooltipSettingsRoot/Display/TextFormattingMode/@EntryValue">Display</s:String>
+	<s:String x:Key="/Default/CodeEditing/Intellisense/EnhancedTooltipSettingsRoot/Display/TooltipColorSource/@EntryValue">EnvironmentSettings</s:String>
 	<s:String x:Key="/Default/CodeEditing/Intellisense/EnhancedTooltipSettingsRoot/IdentifierTooltip/ShowIdentifierAttributes/@EntryValue">AllAnnotations</s:String>
 	<s:Boolean x:Key="/Default/CodeEditing/Intellisense/EnhancedTooltipSettingsRoot/IdentifierTooltip/ShowIdentifierAttributesArguments/@EntryValue">True</s:Boolean>
 	<s:String x:Key="/Default/CodeEditing/Intellisense/EnhancedTooltipSettingsRoot/IdentifierTooltip/ShowParametersAttributes/@EntryValue">AllAnnotations</s:String>

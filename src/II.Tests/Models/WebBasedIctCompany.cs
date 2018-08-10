@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,20 +11,16 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
-    [DataContract(IsReference = true)]
     [Serializable]
+    [DataContract(IsReference = true)]
     public class WebBasedIctCompany : IctCompany
     {
-        [DataMember]
-        private string m_WebBased;
-
         public WebBasedIctCompany(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -43,16 +36,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         }
 
         [Required]
-        public virtual string WebBased
-        {
-            get { return m_WebBased; }
-            set
-            {
-                Contract.Ensures(WebBased == value);
-
-                m_WebBased = value;
-            }
-        }
+        [DataMember]
+        public virtual string WebBased { get; set; }
     }
 
     public class WebBasedIctCompanyMapper : SubclassMapping<WebBasedIctCompany>

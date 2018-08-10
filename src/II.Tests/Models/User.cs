@@ -1,35 +1,31 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 using NHibernate.Mapping.ByCode;
 using NHibernate.Type;
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.MappingByCode;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class User : AuditableVersionedPersistentObject<int, int>
     {
-        private readonly ISet<Role> m_Roles = new HashSet<Role>();
-        private Gender? m_Gender;
-        private bool m_HasBlueEyes;
-        private string m_Name;
-
         public User(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -44,34 +40,25 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
         {
         }
 
+        [DataMember]
         [Required]
         [StringLength(200)]
-        public virtual string Name
-        {
-            get { return m_Name; }
-            set { m_Name = value; }
-        }
+        public virtual string Name { get; set; }
 
+        [DataMember]
         [Required]
-        public virtual Gender? Gender
-        {
-            get { return m_Gender; }
-            set { m_Gender = value; }
-        }
+        public virtual Gender? Gender { get; set; }
 
-        public virtual bool HasBlueEyes
-        {
-            get { return m_HasBlueEyes; }
-            set { m_HasBlueEyes = value; }
-        }
+        [DataMember]
+        public virtual bool HasBlueEyes { get; set; }
 
+        [DataMember]
         [AuditLogPropertyIgnore]
-        public virtual ISet<Role> Roles
-            => m_Roles;
+        public virtual ISet<Role> Roles { get; } = new HashSet<Role>();
 
         public virtual void AddRole(Role role)
         {
-            if ((role != null) && m_Roles.Add(role))
+            if ((role != null) && Roles.Add(role))
             {
                 role.AddUser(this);
             }
@@ -79,7 +66,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void RemoveRole(Role role)
         {
-            if ((role != null) && m_Roles.Remove(role))
+            if ((role != null) && Roles.Remove(role))
             {
                 role.RemoveUser(this);
             }

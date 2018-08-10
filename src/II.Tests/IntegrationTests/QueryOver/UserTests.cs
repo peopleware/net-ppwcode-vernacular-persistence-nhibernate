@@ -1,11 +1,8 @@
-// Copyright 2017-2018 by PeopleWare n.v..
-// 
+// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,18 +13,15 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Tests.Models;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
 {
     public class UserTests : BaseUserTests
     {
-        private RoleQueryOverRepository _roleRepository;
-
-        protected RoleQueryOverRepository RoleRepository
-            => _roleRepository;
+        protected RoleQueryOverRepository RoleRepository { get; private set; }
 
         protected IUserQueryOverRepository UserRepository
             => (IUserQueryOverRepository)Repository;
@@ -36,12 +30,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         {
             base.OnSetup();
 
-            _roleRepository = new RoleQueryOverRepository(SessionProvider);
+            RoleRepository = new RoleQueryOverRepository(SessionProvider);
         }
 
         protected override void OnTeardown()
         {
-            _roleRepository = null;
+            RoleRepository = null;
 
             base.OnTeardown();
         }
@@ -64,7 +58,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.IntegrationTests.QueryOver
         {
             RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
 
-            Assert.That(() => Repository.Merge(CreateUser()), Throws.TypeOf<DbUniqueConstraintException>());
+            Assert.That((TestDelegate)(() => Repository.Merge(CreateUser())), Throws.TypeOf<DbUniqueConstraintException>());
         }
 
         [Test]

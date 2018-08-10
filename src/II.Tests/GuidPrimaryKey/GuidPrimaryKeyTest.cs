@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,20 +13,18 @@ using System;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Test;
-using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models;
-using PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Repositories;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Test;
+using PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Repositories;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
+namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey
 {
     public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
-        private IQueryOverRepository<Car, Guid> _repository;
         private IPpwHbmMapping _ppwHbmMapping;
 
-        protected IQueryOverRepository<Car, Guid> Repository
-            => _repository;
+        protected IQueryOverRepository<Car, Guid> Repository { get; private set; }
 
         protected override string CatalogName
             => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
@@ -39,7 +34,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
             => FixedConnectionString;
 
         protected override IPpwHbmMapping PpwHbmMapping
-            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
+            => _ppwHbmMapping
+               ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
         protected override string IdentityName
             => "Test - IdentityName";
@@ -53,12 +49,12 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey
         {
             base.OnSetup();
 
-            _repository = RepositoryFactory();
+            Repository = RepositoryFactory();
         }
 
         protected override void OnTeardown()
         {
-            _repository = null;
+            Repository = null;
 
             base.OnTeardown();
         }

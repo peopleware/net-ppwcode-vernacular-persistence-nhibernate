@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -13,18 +10,19 @@
 // limitations under the License.
 
 using System;
+using System.Runtime.Serialization;
 
 using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.MappingByCode;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Models
 {
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Car : PersistentObject<Guid>
     {
-        private string m_ModelName;
-
         public Car()
         {
         }
@@ -34,11 +32,8 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.GuidPrimaryKey.Models
         {
         }
 
-        public virtual string ModelName
-        {
-            get { return m_ModelName; }
-            set { m_ModelName = value; }
-        }
+        [DataMember]
+        public virtual string ModelName { get; set; }
     }
 
     public class CarMapper : PersistentObjectMapper<Car, Guid>

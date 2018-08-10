@@ -21,12 +21,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Interfaces
     {
         void Run([NotNull] string requestDescription, [NotNull] Action action);
 
+        [CanBeNull]
+        TResult Run<TResult>([NotNull] string requestDescription, [NotNull] Func<TResult> func);
+
         void Run<TEntity, TId>([NotNull] string requestDescription, [NotNull] Action action, [CanBeNull] TEntity entity)
             where TEntity : class, IIdentity<TId>
             where TId : IEquatable<TId>;
-
-        [CanBeNull]
-        TResult Run<TResult>([NotNull] string requestDescription, [NotNull] Func<TResult> func);
 
         [CanBeNull]
         TResult Run<TEntity, TId, TResult>([NotNull] string requestDescription, [NotNull] Func<TResult> func, [CanBeNull] TEntity entity)

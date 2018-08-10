@@ -1,11 +1,8 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,12 +13,12 @@ using System.Collections.Generic;
 
 using NHibernate.Transform;
 
-using PPWCode.Vernacular.NHibernate.I.Interfaces;
-using PPWCode.Vernacular.NHibernate.I.Tests.Repositories;
-using PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.Models;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
+using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOver.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryOver.Repositories
 {
     public class ShipRepository : TestQueryOverRepository<Ship>
     {
@@ -43,18 +40,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
                     return
                         CreateQueryOver()
                             .JoinAlias(ship => ship.CargoContainers, () => cargoContainer)
-                            .WhereRestrictionOn(ship => ship.Code)
-                            .IsLike(code + "%")
+                            .WhereRestrictionOn(ship => ship.Code).IsLike(code + "%")
                             .OrderBy(ship => ship.Code).Asc
                             .SelectList(
                                 list =>
                                     list
-                                        .SelectGroup(ship => ship.Code)
-                                        .WithAlias(() => dto.ShipCode)
-                                        .SelectGroup(ship => cargoContainer.Code)
-                                        .WithAlias(() => dto.ContainerCode)
-                                        .SelectGroup(ship => cargoContainer.Load)
-                                        .WithAlias(() => dto.Load))
+                                        .SelectGroup(ship => ship.Code).WithAlias(() => dto.ShipCode)
+                                        .SelectGroup(ship => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
+                                        .SelectGroup(ship => cargoContainer.Load).WithAlias(() => dto.Load))
                             .TransformUsing(Transformers.AliasToBean<ContainerDto>());
                 });
         }
@@ -72,17 +65,13 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.RepositoryWithDtoMapping.QueryOv
             return
                 CreateQueryOver()
                     .JoinAlias(ship => ship.CargoContainers, () => cargoContainer)
-                    .WhereRestrictionOn(ship => ship.Code)
-                    .IsLike(code + "%")
+                    .WhereRestrictionOn(ship => ship.Code).IsLike(code + "%")
                     .SelectList(
                         list =>
                             list
-                                .SelectGroup(ship => ship.Code)
-                                .WithAlias(() => dto.ShipCode)
-                                .SelectGroup(ship => cargoContainer.Code)
-                                .WithAlias(() => dto.ContainerCode)
-                                .SelectGroup(ship => cargoContainer.Load)
-                                .WithAlias(() => dto.Load))
+                                .SelectGroup(ship => ship.Code).WithAlias(() => dto.ShipCode)
+                                .SelectGroup(ship => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
+                                .SelectGroup(ship => cargoContainer.Load).WithAlias(() => dto.Load))
                     .TransformUsing(Transformers.AliasToBean<ContainerDto>())
                     .List<ContainerDto>();
         }

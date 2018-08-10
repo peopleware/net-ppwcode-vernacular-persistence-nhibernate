@@ -1,32 +1,30 @@
-﻿// Copyright 2017-2018 by PeopleWare n.v..
-// 
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
 // http://www.apache.org/licenses/LICENSE-2.0
-// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.I.MappingByCode;
-using PPWCode.Vernacular.Persistence.II;
+using PPWCode.Vernacular.NHibernate.II.MappingByCode;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
+namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {
+    [Serializable]
+    [DataContract(IsReference = true)]
     public class Role : AuditableVersionedPersistentObject<int, int>
     {
-        private readonly ISet<User> m_Users = new HashSet<User>();
-        private string m_Name;
-
         public Role(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -43,19 +41,14 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         [Required]
         [StringLength(200)]
-        public virtual string Name
-        {
-            get { return m_Name; }
-            set { m_Name = value; }
-        }
+        public virtual string Name { get; set; }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<User> Users
-            => m_Users;
+        public virtual ISet<User> Users { get; } = new HashSet<User>();
 
         public virtual void AddUser(User user)
         {
-            if ((user != null) && m_Users.Add(user))
+            if ((user != null) && Users.Add(user))
             {
                 user.AddRole(this);
             }
@@ -63,7 +56,7 @@ namespace PPWCode.Vernacular.NHibernate.I.Tests.Models
 
         public virtual void RemoveUser(User user)
         {
-            if ((user != null) && m_Users.Remove(user))
+            if ((user != null) && Users.Remove(user))
             {
                 user.RemoveRole(this);
             }
