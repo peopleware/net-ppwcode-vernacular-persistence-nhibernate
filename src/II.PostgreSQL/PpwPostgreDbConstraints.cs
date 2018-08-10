@@ -12,11 +12,11 @@
 using System.Collections.Generic;
 using System.Data.Common;
 
-using FirebirdSql.Data.FirebirdClient;
+using Npgsql;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.Firebird.Implementations.DbConstraint
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
 {
     /// <inheritdoc cref="InformationSchemaBasedDbConstraints" />
     public class PpwPostgreDbConstraints : InformationSchemaBasedDbConstraints
@@ -24,11 +24,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird.Implementations.DbConstraint
         /// <inheritdoc />
         protected override IEnumerable<string> Schemas
         {
-            get { yield return string.Empty; }
+            get { yield return "public"; }
         }
 
         /// <inheritdoc />
         protected override DbProviderFactory DbProviderFactory
-            => FirebirdClientFactory.Instance;
+            => NpgsqlFactory.Instance;
     }
 }

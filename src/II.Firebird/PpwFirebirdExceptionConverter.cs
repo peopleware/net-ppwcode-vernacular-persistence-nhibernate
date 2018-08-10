@@ -21,7 +21,7 @@ using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Firebird.Implementations.DbExceptionConverters
+namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
     public class PpwFirebirdExceptionConverter : BaseExceptionConverter
     {

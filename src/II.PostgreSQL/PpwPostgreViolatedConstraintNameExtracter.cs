@@ -20,9 +20,8 @@ using Npgsql;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Interfaces;
-using PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.ViolatedConstraintNameExtracters
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
 {
     public class PpwPostgreViolatedConstraintNameExtracter
         : IViolatedConstraintNameExtracter,

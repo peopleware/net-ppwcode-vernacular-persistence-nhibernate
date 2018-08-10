@@ -15,7 +15,7 @@ using System.Data.SqlClient;
 
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbConstraint
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
     /// <inheritdoc cref="InformationSchemaBasedDbConstraints" />
     public class PpwSqlServerDbConstraints : InformationSchemaBasedDbConstraints

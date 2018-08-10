@@ -12,22 +12,19 @@
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.DbExceptionConverters;
-using PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.ViolatedConstraintNameExtracters;
-
-namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL.Implementations.Dialects
+namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
-    public class PpwPostgreDialect : PostgreSQL83Dialect
+    public class PpwFirebirdDialect : FirebirdDialect
     {
         private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
 
         /// <inheritdoc />
         public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
             => _violatedConstraintNameExtracter
-               ?? (_violatedConstraintNameExtracter = new PpwPostgreViolatedConstraintNameExtracter());
+               ?? (_violatedConstraintNameExtracter = new PpwFirebirdViolatedConstraintNameExtracter());
 
         /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
-            => new PpwPostgreExceptionConverter(ViolatedConstraintNameExtracter);
+            => new PpwFirebirdExceptionConverter(ViolatedConstraintNameExtracter);
     }
 }

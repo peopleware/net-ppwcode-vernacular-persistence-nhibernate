@@ -23,7 +23,7 @@ using NHibernate.Event;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.II.Interfaces;
-using PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.Dialects;
+using PPWCode.Vernacular.NHibernate.II.SqlServer;
 using PPWCode.Vernacular.NHibernate.II.Utilities;
 using PPWCode.Vernacular.Persistence.III;
 

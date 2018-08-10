@@ -20,7 +20,7 @@ using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.SqlServer.Implementations.DbExceptionConverters
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
     public class PpwMsSqlExceptionConverter : BaseExceptionConverter
     {
