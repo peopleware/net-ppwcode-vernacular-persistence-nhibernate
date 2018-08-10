@@ -38,7 +38,7 @@ select tc.CONSTRAINT_NAME,
        tc.TABLE_SCHEMA,
        tc.CONSTRAINT_TYPE
   from INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
- where tc.CONSTRAINT_CATALOG = 'Phoenix'
+ where tc.CONSTRAINT_CATALOG = @catalog
    and tc.CONSTRAINT_SCHEMA in ('dbo')
 union all
 select i.[name] as CONSTRAINT_NAME,
