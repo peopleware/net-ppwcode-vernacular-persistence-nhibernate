@@ -44,7 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
         private Type _safeEnvironmentProvider;
         private Type _sessionProvider;
         private Type _transactionProvider;
-        private bool _useCivilizedEventListener;
+        private bool _useCivilizedEventListener = true;
 
         public NHibernateFacility UseQueryOverCustomExpressions<T>()
             where T : IQueryOverCustomExpressions
