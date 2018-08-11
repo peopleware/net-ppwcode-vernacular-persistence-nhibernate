@@ -68,8 +68,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
         {
             get
             {
-                SqlConnectionStringBuilder builder =
-                    new SqlConnectionStringBuilder(FixedConnectionString);
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(FixedConnectionString);
                 long ticks = DateTime.Now.Ticks;
                 builder.InitialCatalog = $"{builder.InitialCatalog}.{ticks.ToString(CultureInfo.InvariantCulture)}";
                 return builder.ToString();

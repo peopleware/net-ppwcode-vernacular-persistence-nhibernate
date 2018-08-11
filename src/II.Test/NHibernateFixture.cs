@@ -66,14 +66,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
         [NotNull]
         protected virtual ISession OpenSession()
         {
-            Mock<IIdentityProvider> identityProvider =
-                new Mock<IIdentityProvider>();
+            Mock<IIdentityProvider> identityProvider = new Mock<IIdentityProvider>();
             identityProvider
                 .Setup(ip => ip.IdentityName)
                 .Returns(IdentityName);
 
-            Mock<ITimeProvider> timeProvider =
-                new Mock<ITimeProvider>();
+            Mock<ITimeProvider> timeProvider = new Mock<ITimeProvider>();
             timeProvider
                 .Setup(tp => tp.Now)
                 .Returns(UtcNow.ToLocalTime);
@@ -81,8 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
                 .Setup(tp => tp.UtcNow)
                 .Returns(UtcNow);
 
-            AuditInterceptor<TId> sessionLocalInterceptor =
-                new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
+            AuditInterceptor<TId> sessionLocalInterceptor = new AuditInterceptor<TId>(identityProvider.Object, timeProvider.Object, true);
 
             return
                 SessionFactory
