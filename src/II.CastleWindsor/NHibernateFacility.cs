@@ -13,8 +13,10 @@ using System;
 using System.Data;
 using System.Reflection;
 
+using Castle.Core;
 using Castle.MicroKernel.Facilities;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 
 using NHibernate;
 using NHibernate.Mapping;
@@ -35,6 +37,7 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
         private Type _exceptionTranslator;
         private Type _interceptor;
         private IsolationLevel? _isolationLevel;
+        private LifestyleType? _lifestyleType;
         private Type _mappingAssemblies;
         private Type _nhConfiguration;
         private Type _nhibernateSessionFactory;
@@ -130,44 +133,58 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
             return this;
         }
 
+        public NHibernateFacility UseLifestyleTypeForSessions(LifestyleType lifestyleType)
+        {
+            _lifestyleType = lifestyleType;
+            return this;
+        }
+
         /// <inheritdoc />
         protected override void Init()
         {
             if (_ppwHbmMapping == null)
             {
-                throw new Error("You must supply a HbmMapping of type IPpwHbmMapping, using the UseHbmMapping method.");
+                throw new Error($"You must supply a dependency of type {nameof(IPpwHbmMapping)}, using the {nameof(UseHbmMapping)} method.");
             }
+
+            if (_mappingAssemblies == null)
+            {
+                throw new Error($"You must supply a dependency of type {nameof(IMappingAssemblies)}, using the {nameof(UseMappingAssemblies)} method.");
+            }
+
+            Kernel.AddSubResolverConditionally(k => new CollectionResolver(k, true));
 
             Kernel
                 .Register(
-                    Classes
-                        .FromAssembly(Assembly.GetCallingAssembly())
-                        .BasedOn<IRegisterEventListener>()
-                        .WithService.AllInterfaces()
-                        .LifestyleSingleton(),
-                    Classes
-                        .FromAssembly(Assembly.GetCallingAssembly())
-                        .BasedOn<IAuxiliaryDatabaseObject>()
-                        .WithService.AllInterfaces()
-                        .LifestyleSingleton(),
                     Component
-                        .For<ISession>()
-                        .UsingFactoryMethod(
-                            _ =>
-                            {
-                                INHibernateSessionFactory nHibernateSessionFactory = Kernel.Resolve<INHibernateSessionFactory>();
-                                return nHibernateSessionFactory.SessionFactory.OpenSession();
-                            })
-                        .LifestyleScoped(),
+                        .For<IMappingAssemblies>()
+                        .ImplementedBy(_mappingAssemblies)
+                        .LifeStyle.Singleton,
                     Component
-                        .For<IStatelessSession>()
-                        .UsingFactoryMethod(
-                            _ =>
-                            {
-                                INHibernateSessionFactory nHibernateSessionFactory = Kernel.Resolve<INHibernateSessionFactory>();
-                                return nHibernateSessionFactory.SessionFactory.OpenStatelessSession();
-                            })
-                        .LifestyleScoped());
+                        .For<IPpwHbmMapping>()
+                        .ImplementedBy(_ppwHbmMapping)
+                        .LifeStyle.Singleton,
+                    Component
+                        .For<INhInterceptor>()
+                        .ImplementedBy<NhInterceptor>()
+                        .LifeStyle.Singleton);
+
+            IMappingAssemblies mappingAssemblies = Kernel.Resolve<IMappingAssemblies>();
+            foreach (Assembly assembly in mappingAssemblies.GetAssemblies())
+            {
+                Kernel
+                    .Register(
+                        Classes
+                            .FromAssembly(assembly)
+                            .BasedOn<IRegisterEventListener>()
+                            .WithService.Base()
+                            .LifestyleSingleton(),
+                        Classes
+                            .FromAssembly(assembly)
+                            .BasedOn<IAuxiliaryDatabaseObject>()
+                            .WithService.Base()
+                            .LifestyleSingleton());
+            }
 
             Type transactionProvider = _transactionProvider ?? typeof(TransactionProvider);
             Kernel
@@ -175,15 +192,7 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                     Component
                         .For<ITransactionProvider>()
                         .ImplementedBy(transactionProvider)
-                        .LifestyleSingleton());
-
-            Type safeEnvironmentProvider = _safeEnvironmentProvider ?? typeof(SafeEnvironmentProvider);
-            Kernel
-                .Register(
-                    Component
-                        .For<ISafeEnvironmentProvider>()
-                        .ImplementedBy(safeEnvironmentProvider)
-                        .LifestyleSingleton());
+                        .LifeStyle.Singleton);
 
             Type exceptionTranslator = _exceptionTranslator ?? typeof(ExceptionTranslator);
             Kernel
@@ -191,7 +200,78 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                     Component
                         .For<IExceptionTranslator>()
                         .ImplementedBy(exceptionTranslator)
-                        .LifestyleSingleton());
+                        .LifeStyle.Singleton);
+
+            Type safeEnvironmentProvider = _safeEnvironmentProvider ?? typeof(SafeEnvironmentProvider);
+            Kernel
+                .Register(
+                    Component
+                        .For<ISafeEnvironmentProvider>()
+                        .ImplementedBy(safeEnvironmentProvider)
+                        .LifeStyle.Singleton);
+
+            if (_useCivilizedEventListener && !Kernel.HasComponent(typeof(CivilizedEventListener)))
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<IRegisterEventListener>()
+                            .ImplementedBy<CivilizedEventListener>()
+                            .LifeStyle.Singleton);
+            }
+
+            Type nhProperties = _nhProperties ?? typeof(EmptyNhProperties);
+            Kernel
+                .Register(
+                    Component
+                        .For<INhProperties>()
+                        .ImplementedBy(nhProperties)
+                        .LifeStyle.Singleton);
+
+            if (_interceptor != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<IInterceptor>()
+                            .ImplementedBy(_interceptor)
+                            .LifeStyle.Singleton);
+            }
+
+            Type configuration = _nhConfiguration ?? typeof(NhConfiguration);
+            Kernel
+                .Register(
+                    Component
+                        .For<INhConfiguration>()
+                        .ImplementedBy(configuration)
+                        .LifeStyle.Singleton);
+
+            LifestyleType lifestyleType = _lifestyleType ?? LifestyleType.Singleton;
+            Type nhibernateSessionFactory = _nhibernateSessionFactory ?? typeof(NHibernateSessionFactory);
+            Kernel
+                .Register(
+                    Component
+                        .For<INHibernateSessionFactory>()
+                        .ImplementedBy(nhibernateSessionFactory)
+                        .LifeStyle.Singleton,
+                    Component
+                        .For<ISession>()
+                        .UsingFactoryMethod(
+                            _ =>
+                            {
+                                INHibernateSessionFactory sessionFactoryFactory = Kernel.Resolve<INHibernateSessionFactory>();
+                                return sessionFactoryFactory.SessionFactory.OpenSession();
+                            })
+                        .LifeStyle.Is(lifestyleType),
+                    Component
+                        .For<IStatelessSession>()
+                        .UsingFactoryMethod(
+                            _ =>
+                            {
+                                INHibernateSessionFactory sessionFactoryFactory = Kernel.Resolve<INHibernateSessionFactory>();
+                                return sessionFactoryFactory.SessionFactory.OpenStatelessSession();
+                            })
+                        .LifeStyle.Is(lifestyleType));
 
             Type sessionProvider = _sessionProvider ?? typeof(SessionProvider);
             IsolationLevel isolationLevel = _isolationLevel ?? IsolationLevel.Unspecified;
@@ -201,73 +281,7 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                         .For<ISessionProvider>()
                         .ImplementedBy(sessionProvider)
                         .DependsOn(Dependency.OnValue<IsolationLevel>(isolationLevel))
-                        .LifestyleTransient());
-
-            if (_useCivilizedEventListener && !Kernel.HasComponent(typeof(CivilizedEventListener)))
-            {
-                Kernel
-                    .Register(
-                        Component
-                            .For<IRegisterEventListener>()
-                            .ImplementedBy<CivilizedEventListener>()
-                            .LifestyleSingleton());
-            }
-
-            Kernel
-                .Register(
-                    Component
-                        .For<IPpwHbmMapping>()
-                        .ImplementedBy(_ppwHbmMapping)
-                        .LifestyleSingleton());
-
-            Type nhProperties = _nhProperties ?? typeof(EmptyNhProperties);
-            Kernel
-                .Register(
-                    Component
-                        .For<INhProperties>()
-                        .ImplementedBy(nhProperties)
-                        .LifestyleSingleton());
-
-            Type mappingAssemblies = _mappingAssemblies ?? typeof(DefaultMappingAssemblies);
-            Kernel
-                .Register(
-                    Component
-                        .For<IMappingAssemblies>()
-                        .ImplementedBy(mappingAssemblies)
-                        .LifestyleSingleton());
-
-            if (_interceptor != null)
-            {
-                Kernel
-                    .Register(
-                        Component
-                            .For<IInterceptor>()
-                            .ImplementedBy(_interceptor)
-                            .LifestyleSingleton());
-            }
-
-            Kernel
-                .Register(
-                    Component
-                        .For<INhInterceptor>()
-                        .ImplementedBy<NhInterceptor>()
-                        .LifestyleSingleton());
-
-            Type configuration = _nhConfiguration ?? typeof(NhConfiguration);
-            Kernel
-                .Register(
-                    Component
-                        .For<INhConfiguration>()
-                        .ImplementedBy(configuration)
-                        .LifestyleSingleton());
-
-            Type nhibernateSessionFactory = _nhibernateSessionFactory ?? typeof(NHibernateSessionFactory);
-            Kernel
-                .Register(
-                    Component
-                        .For<INHibernateSessionFactory>()
-                        .ImplementedBy(nhibernateSessionFactory)
-                        .LifestyleSingleton());
+                        .LifeStyle.Transient);
 
             if (_queryOverCustomExpressions != null)
             {
