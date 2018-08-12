@@ -16,9 +16,7 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.Implementations
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class NhConfigurationBase : INhConfiguration
     {

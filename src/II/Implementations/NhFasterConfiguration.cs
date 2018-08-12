@@ -22,12 +22,11 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.Providers;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 
 using Environment = System.Environment;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class NhFasterConfiguration : NhConfiguration
     {

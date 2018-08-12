@@ -9,30 +9,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
+
+using FirebirdSql.Data.FirebirdClient;
 
 using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using Npgsql;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
+namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
-    public class PpwPostgreViolatedConstraintNameExtracter
+    public class FirebirdViolatedConstraintNameExtracter
         : IViolatedConstraintNameExtracter,
           IDbConstraints
     {
         [NotNull]
         private readonly IDbConstraints _dbConstraints;
 
-        public PpwPostgreViolatedConstraintNameExtracter()
+        public FirebirdViolatedConstraintNameExtracter()
         {
-            _dbConstraints = new PpwPostgreDbConstraints();
+            _dbConstraints = new FirebirdDbConstraints();
         }
 
         /// <inheritdoc />
@@ -53,8 +53,8 @@ namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
         [CanBeNull]
         public string ExtractConstraintName([NotNull] DbException dbException)
         {
-            PostgresException sqle = ADOExceptionHelper.ExtractDbException(dbException) as PostgresException;
-            return sqle?.ConstraintName;
+            FbException sqle = ADOExceptionHelper.ExtractDbException(dbException) as FbException;
+            throw new NotImplementedException();
         }
     }
 }

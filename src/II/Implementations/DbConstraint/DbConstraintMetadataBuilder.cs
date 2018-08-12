@@ -15,7 +15,7 @@ using JetBrains.Annotations;
 
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
+namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {
     public class DbConstraintMetadataBuilder
     {

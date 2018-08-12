@@ -11,28 +11,27 @@
 
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
-using System.Linq;
 
 using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using Npgsql;
 
-namespace PPWCode.Vernacular.NHibernate.II.SqlServer
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
 {
-    public class PpwSqlServerViolatedConstraintNameExtracter
+    public class PostgreViolatedConstraintNameExtracter
         : IViolatedConstraintNameExtracter,
           IDbConstraints
     {
         [NotNull]
         private readonly IDbConstraints _dbConstraints;
 
-        public PpwSqlServerViolatedConstraintNameExtracter()
+        public PostgreViolatedConstraintNameExtracter()
         {
-            _dbConstraints = new PpwSqlServerDbConstraints();
+            _dbConstraints = new PostgreDbConstraints();
         }
 
         /// <inheritdoc />
@@ -40,9 +39,9 @@ namespace PPWCode.Vernacular.NHibernate.II.SqlServer
             => _dbConstraints.GetByConstraintName(constraintName);
 
         /// <inheritdoc />
-        public void Initialize(IDictionary<string, string> properties)
+        public void Initialize(IDictionary<string, string> connectionStringSettings)
         {
-            _dbConstraints.Initialize(properties);
+            _dbConstraints.Initialize(connectionStringSettings);
         }
 
         /// <inheritdoc />
@@ -53,16 +52,8 @@ namespace PPWCode.Vernacular.NHibernate.II.SqlServer
         [CanBeNull]
         public string ExtractConstraintName([NotNull] DbException dbException)
         {
-            if (ADOExceptionHelper.ExtractDbException(dbException) is SqlException sqle)
-            {
-                DbConstraintMetadata dbConstraint =
-                    _dbConstraints
-                        .Constraints
-                        .FirstOrDefault(c => sqle.Message.Contains(c.ConstraintName));
-                return dbConstraint?.ConstraintName;
-            }
-
-            return null;
+            PostgresException sqle = ADOExceptionHelper.ExtractDbException(dbException) as PostgresException;
+            return sqle?.ConstraintName;
         }
     }
 }

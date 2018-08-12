@@ -17,15 +17,15 @@ using NHibernate.Exceptions;
 
 using Npgsql;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
 {
-    public class PpwPostgreExceptionConverter : BaseExceptionConverter
+    public class PostgreExceptionConverter : BaseExceptionConverter
     {
-        public PpwPostgreExceptionConverter([NotNull] IViolatedConstraintNameExtracter constraintNameExtracter)
+        public PostgreExceptionConverter([NotNull] IViolatedConstraintNameExtracter constraintNameExtracter)
             : base(constraintNameExtracter)
         {
         }

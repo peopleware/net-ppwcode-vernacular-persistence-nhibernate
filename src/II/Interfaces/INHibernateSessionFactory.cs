@@ -13,7 +13,7 @@ using JetBrains.Annotations;
 
 using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface INHibernateSessionFactory
     {

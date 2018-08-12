@@ -9,26 +9,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Data.Common;
+using NHibernate.Dialect;
+using NHibernate.Exceptions;
 
-using FirebirdSql.Data.FirebirdClient;
-
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-
-namespace PPWCode.Vernacular.NHibernate.II.Firebird
+namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
 {
-    /// <inheritdoc cref="InformationSchemaBasedDbConstraints" />
-    public class PpwPostgreDbConstraints : InformationSchemaBasedDbConstraints
+    public class PostgreDialect : PostgreSQL83Dialect
     {
-        /// <inheritdoc />
-        protected override IEnumerable<string> Schemas
-        {
-            get { yield return string.Empty; }
-        }
+        private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
 
         /// <inheritdoc />
-        protected override DbProviderFactory DbProviderFactory
-            => FirebirdClientFactory.Instance;
+        public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
+            => _violatedConstraintNameExtracter
+               ?? (_violatedConstraintNameExtracter = new PostgreViolatedConstraintNameExtracter());
+
+        /// <inheritdoc />
+        public override ISQLExceptionConverter BuildSQLExceptionConverter()
+            => new PostgreExceptionConverter(ViolatedConstraintNameExtracter);
     }
 }

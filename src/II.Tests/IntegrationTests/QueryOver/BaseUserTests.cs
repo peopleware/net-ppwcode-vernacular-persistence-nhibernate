@@ -11,7 +11,6 @@
 
 using System;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 

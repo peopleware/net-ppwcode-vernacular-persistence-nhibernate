@@ -9,31 +9,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Data.Common;
-
-using FirebirdSql.Data.FirebirdClient;
+using System.Data.SqlClient;
+using System.Linq;
 
 using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.Firebird
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
-    public class PpwFirebirdViolatedConstraintNameExtracter
+    public class MsSqlViolatedConstraintNameExtracter
         : IViolatedConstraintNameExtracter,
           IDbConstraints
     {
         [NotNull]
         private readonly IDbConstraints _dbConstraints;
 
-        public PpwFirebirdViolatedConstraintNameExtracter()
+        public MsSqlViolatedConstraintNameExtracter()
         {
-            _dbConstraints = new PpwPostgreDbConstraints();
+            _dbConstraints = new MsSqlDbConstraints();
         }
 
         /// <inheritdoc />
@@ -41,9 +39,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
             => _dbConstraints.GetByConstraintName(constraintName);
 
         /// <inheritdoc />
-        public void Initialize(IDictionary<string, string> connectionStringSettings)
+        public void Initialize(IDictionary<string, string> properties)
         {
-            _dbConstraints.Initialize(connectionStringSettings);
+            _dbConstraints.Initialize(properties);
         }
 
         /// <inheritdoc />
@@ -54,8 +52,16 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
         [CanBeNull]
         public string ExtractConstraintName([NotNull] DbException dbException)
         {
-            FbException sqle = ADOExceptionHelper.ExtractDbException(dbException) as FbException;
-            throw new NotImplementedException();
+            if (ADOExceptionHelper.ExtractDbException(dbException) is SqlException sqle)
+            {
+                DbConstraintMetadata dbConstraint =
+                    _dbConstraints
+                        .Constraints
+                        .FirstOrDefault(c => sqle.Message.Contains(c.ConstraintName));
+                return dbConstraint?.ConstraintName;
+            }
+
+            return null;
         }
     }
 }

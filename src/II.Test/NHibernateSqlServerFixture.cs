@@ -22,9 +22,7 @@ using NHibernate.Cfg;
 using NHibernate.Event;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.SqlServer;
-using PPWCode.Vernacular.NHibernate.II.Utilities;
 using PPWCode.Vernacular.Persistence.III;
 
 using Environment = NHibernate.Cfg.Environment;
@@ -106,7 +104,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
                         .DataBaseIntegration(
                             db =>
                             {
-                                db.Dialect<PpwMsSqlServerDialect>();
+                                db.Dialect<MsSqlDialect>();
                                 db.ConnectionString = ConnectionString;
                                 db.IsolationLevel = IsolationLevel.ReadCommitted;
                                 db.BatchSize = 0;

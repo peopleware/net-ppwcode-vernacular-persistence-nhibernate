@@ -14,10 +14,10 @@ using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class Repository<TRoot, TId>
         : RepositoryBase<TRoot, TId>,

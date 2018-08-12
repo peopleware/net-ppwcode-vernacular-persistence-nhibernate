@@ -9,22 +9,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using NHibernate.Dialect;
-using NHibernate.Exceptions;
+using System;
+using System.Data.Common;
+
+using FirebirdSql.Data.FirebirdClient;
+
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 
 namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
-    public class PpwFirebirdDialect : FirebirdDialect
+    /// <inheritdoc cref="SchemaBasedDbConstraints" />
+    public class FirebirdDbConstraints : SchemaBasedDbConstraints
     {
-        private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
+        /// <inheritdoc />
+        protected override DbProviderFactory DbProviderFactory
+            => FirebirdClientFactory.Instance;
 
         /// <inheritdoc />
-        public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
-            => _violatedConstraintNameExtracter
-               ?? (_violatedConstraintNameExtracter = new PpwFirebirdViolatedConstraintNameExtracter());
-
-        /// <inheritdoc />
-        public override ISQLExceptionConverter BuildSQLExceptionConverter()
-            => new PpwFirebirdExceptionConverter(ViolatedConstraintNameExtracter);
+        protected override string CommandText
+            => throw new NotImplementedException();
     }
 }

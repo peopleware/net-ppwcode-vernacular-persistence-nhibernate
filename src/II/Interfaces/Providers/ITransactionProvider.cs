@@ -9,22 +9,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
+using System.Data;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
-    public interface IDbConstraints
+    public interface ITransactionProvider
     {
-        [NotNull]
-        ISet<DbConstraintMetadata> Constraints { get; }
+        void Run([NotNull] ISession session, IsolationLevel isolationLevel, [NotNull] Action action);
 
         [CanBeNull]
-        DbConstraintMetadata GetByConstraintName([NotNull] string constraintName);
-
-        void Initialize([NotNull] IDictionary<string, string> properties);
+        TResult Run<TResult>([NotNull] ISession session, IsolationLevel isolationLevel, [NotNull] Func<TResult> func);
     }
 }

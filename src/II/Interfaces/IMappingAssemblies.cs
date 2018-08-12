@@ -16,7 +16,7 @@ using JetBrains.Annotations;
 
 using NHibernate.Mapping.ByCode;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     /// <summary>
     ///     Used to determine where we can find our hbm definition for our models.

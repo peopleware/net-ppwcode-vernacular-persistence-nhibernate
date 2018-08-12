@@ -15,7 +15,7 @@ using JetBrains.Annotations;
 
 using NHibernate.Cfg;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface INhProperties
     {

@@ -17,9 +17,7 @@ using JetBrains.Annotations;
 
 using NHibernate.Engine;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations;
-
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     [Serializable]
     public abstract class GenericWellKnownInstanceType<T, TId> : ImmutableUserTypeBase

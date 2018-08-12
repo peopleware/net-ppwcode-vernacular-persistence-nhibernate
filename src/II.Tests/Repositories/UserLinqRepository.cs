@@ -11,7 +11,7 @@
 
 using System.Linq;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Repositories

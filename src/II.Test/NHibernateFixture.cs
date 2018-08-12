@@ -22,10 +22,8 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Implementations.Providers;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-using PPWCode.Vernacular.NHibernate.II.Utilities;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Test

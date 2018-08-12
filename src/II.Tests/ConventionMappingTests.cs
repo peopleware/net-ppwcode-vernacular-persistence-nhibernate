@@ -16,8 +16,6 @@ using NHibernate.Mapping.ByCode;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
 namespace PPWCode.Vernacular.NHibernate.II.Tests
 {
     [TestFixture]

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.Test;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests

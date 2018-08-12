@@ -13,9 +13,7 @@ using System.Collections.Generic;
 
 using NHibernate.Cfg;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.Implementations
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public class NhProperties : INhProperties
     {

@@ -19,7 +19,7 @@ using NHibernate;
 
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface IQueryOverRepository<TRoot, in TId> : IRepository<TRoot, TId>
         where TRoot : class, IIdentity<TId>

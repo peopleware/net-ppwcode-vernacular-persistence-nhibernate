@@ -17,9 +17,7 @@ using JetBrains.Annotations;
 
 using NHibernate;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.Providers
+namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
     public class SessionProvider : ISessionProvider
     {

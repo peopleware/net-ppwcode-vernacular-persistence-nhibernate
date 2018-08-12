@@ -9,20 +9,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
 using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
-    public interface ITransactionProvider
+    public interface ISessionProvider
     {
-        void Run([NotNull] ISession session, IsolationLevel isolationLevel, [NotNull] Action action);
+        [NotNull]
+        ISession Session { get; }
 
-        [CanBeNull]
-        TResult Run<TResult>([NotNull] ISession session, IsolationLevel isolationLevel, [NotNull] Func<TResult> func);
+        [NotNull]
+        ITransactionProvider TransactionProvider { get; }
+
+        [NotNull]
+        ISafeEnvironmentProvider SafeEnvironmentProvider { get; }
+
+        IsolationLevel IsolationLevel { get; }
+        void Flush();
+        Task FlushAsync(CancellationToken cancellationToken);
     }
 }

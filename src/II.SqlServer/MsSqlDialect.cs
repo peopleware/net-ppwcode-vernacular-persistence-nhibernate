@@ -12,19 +12,19 @@
 using NHibernate.Dialect;
 using NHibernate.Exceptions;
 
-namespace PPWCode.Vernacular.NHibernate.II.PostgreSQL
+namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
-    public class PpwPostgreDialect : PostgreSQL83Dialect
+    public class MsSqlDialect : MsSql2012Dialect
     {
         private IViolatedConstraintNameExtracter _violatedConstraintNameExtracter;
 
         /// <inheritdoc />
         public override IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter
             => _violatedConstraintNameExtracter
-               ?? (_violatedConstraintNameExtracter = new PpwPostgreViolatedConstraintNameExtracter());
+               ?? (_violatedConstraintNameExtracter = new MsSqlViolatedConstraintNameExtracter());
 
         /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
-            => new PpwPostgreExceptionConverter(ViolatedConstraintNameExtracter);
+            => new MsSqlConverter(ViolatedConstraintNameExtracter);
     }
 }

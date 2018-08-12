@@ -9,29 +9,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
-using NHibernate;
-
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {
-    public interface ISessionProvider
+    public interface IDbConstraints
     {
         [NotNull]
-        ISession Session { get; }
+        ISet<DbConstraintMetadata> Constraints { get; }
 
-        [NotNull]
-        ITransactionProvider TransactionProvider { get; }
+        [CanBeNull]
+        DbConstraintMetadata GetByConstraintName([NotNull] string constraintName);
 
-        [NotNull]
-        ISafeEnvironmentProvider SafeEnvironmentProvider { get; }
-
-        IsolationLevel IsolationLevel { get; }
-        void Flush();
-        Task FlushAsync(CancellationToken cancellationToken);
+        void Initialize([NotNull] IDictionary<string, string> properties);
     }
 }

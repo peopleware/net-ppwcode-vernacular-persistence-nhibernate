@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 using NHibernate.Transform;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
 using PPWCode.Vernacular.Persistence.III;

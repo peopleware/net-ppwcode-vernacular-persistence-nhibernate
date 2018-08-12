@@ -20,9 +20,7 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {

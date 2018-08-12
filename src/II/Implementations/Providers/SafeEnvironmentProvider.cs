@@ -15,10 +15,10 @@ using Common.Logging;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.Providers
+namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
     public class SafeEnvironmentProvider : ISafeEnvironmentProvider
     {

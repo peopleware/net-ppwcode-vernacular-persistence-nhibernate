@@ -17,9 +17,9 @@ using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters
+namespace PPWCode.Vernacular.NHibernate.II.DbExceptionConverters
 {
     public abstract class BaseExceptionConverter
         : ISQLExceptionConverter,

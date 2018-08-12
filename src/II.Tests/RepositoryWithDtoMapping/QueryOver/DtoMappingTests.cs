@@ -16,7 +16,6 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryOver.Repositories;

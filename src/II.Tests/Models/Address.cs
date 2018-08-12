@@ -20,8 +20,6 @@ using JetBrains.Annotations;
 using NHibernate.Mapping.ByCode.Conformist;
 
 using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-using PPWCode.Vernacular.NHibernate.II.Utilities;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Models

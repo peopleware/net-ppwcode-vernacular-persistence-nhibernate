@@ -13,7 +13,7 @@ using System;
 
 using JetBrains.Annotations;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {
     public interface IExceptionTranslator
     {

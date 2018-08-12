@@ -14,9 +14,7 @@ using JetBrains.Annotations;
 using NHibernate;
 using NHibernate.Cfg;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public class NHibernateSessionFactory : INHibernateSessionFactory
     {

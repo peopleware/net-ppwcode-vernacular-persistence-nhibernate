@@ -20,9 +20,9 @@ using JetBrains.Annotations;
 
 using NHibernate.Connection;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.Providers;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]

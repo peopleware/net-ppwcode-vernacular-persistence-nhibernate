@@ -13,7 +13,6 @@ using System;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver;

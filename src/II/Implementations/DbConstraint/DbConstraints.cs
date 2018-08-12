@@ -19,11 +19,10 @@ using System.Data.Common;
 using JetBrains.Annotations;
 
 using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 
 using Environment = NHibernate.Cfg.Environment;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
+namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {
     public abstract class DbConstraints : IDbConstraints
     {

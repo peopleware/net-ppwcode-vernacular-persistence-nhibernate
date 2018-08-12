@@ -9,29 +9,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 
 namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
-    /// <inheritdoc cref="InformationSchemaBasedDbConstraints" />
-    public class PpwSqlServerDbConstraints : InformationSchemaBasedDbConstraints
+    /// <inheritdoc cref="SchemaBasedDbConstraints" />
+    public class MsSqlDbConstraints : SchemaBasedDbConstraints
     {
-        /// <inheritdoc />
-        protected override IEnumerable<string> Schemas
-        {
-            get { yield return "dbo"; }
-        }
-
         /// <inheritdoc />
         protected override DbProviderFactory DbProviderFactory
             => SqlClientFactory.Instance;
 
         /// <inheritdoc />
-        protected override string SqlCommand
+        protected override string CommandText
             => @"
 select tc.CONSTRAINT_NAME,
        tc.TABLE_NAME,
@@ -39,7 +32,6 @@ select tc.CONSTRAINT_NAME,
        tc.CONSTRAINT_TYPE
   from INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
  where tc.CONSTRAINT_CATALOG = @catalog
-   and tc.CONSTRAINT_SCHEMA in ('dbo')
 union all
 select i.[name] as CONSTRAINT_NAME,
        o.[name] as TABLE_NAME,

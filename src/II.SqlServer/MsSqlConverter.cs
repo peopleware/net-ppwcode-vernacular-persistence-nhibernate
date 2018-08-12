@@ -16,15 +16,15 @@ using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.SqlServer
 {
-    public class PpwMsSqlExceptionConverter : BaseExceptionConverter
+    public class MsSqlConverter : BaseExceptionConverter
     {
-        public PpwMsSqlExceptionConverter([NotNull] IViolatedConstraintNameExtracter violatedConstraintNameExtracter)
+        public MsSqlConverter([NotNull] IViolatedConstraintNameExtracter violatedConstraintNameExtracter)
             : base(violatedConstraintNameExtracter)
         {
         }

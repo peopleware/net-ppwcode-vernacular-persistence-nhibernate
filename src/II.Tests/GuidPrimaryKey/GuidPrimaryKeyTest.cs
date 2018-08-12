@@ -13,7 +13,6 @@ using System;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.Test;
 using PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Repositories;

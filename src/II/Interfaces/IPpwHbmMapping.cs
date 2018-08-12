@@ -17,7 +17,7 @@ using NHibernate.Mapping.ByCode.Impl;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     /// <summary>
     ///     This is a wrapper around the mapping by code class <see cref="HbmMapping" /> from nHibernate.

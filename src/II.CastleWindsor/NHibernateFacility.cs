@@ -22,11 +22,8 @@ using NHibernate;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.NHibernate.II.Implementations;
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Implementations.Providers;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-using PPWCode.Vernacular.NHibernate.II.Utilities;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 
 using Component = Castle.MicroKernel.Registration.Component;
 

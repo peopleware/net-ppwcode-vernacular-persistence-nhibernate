@@ -11,8 +11,7 @@
 
 using System;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Models;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Repositories

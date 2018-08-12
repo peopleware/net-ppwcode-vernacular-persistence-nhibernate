@@ -13,9 +13,7 @@ using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Utilities;
-
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface IPpwAuditLog
     {

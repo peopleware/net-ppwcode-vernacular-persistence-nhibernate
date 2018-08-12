@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
 namespace PPWCode.Vernacular.NHibernate.II.Test
 {
     public abstract partial class NHibernateSqlServerFixture<TId, TAuditEntity>

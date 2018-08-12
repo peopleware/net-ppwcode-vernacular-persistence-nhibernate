@@ -16,10 +16,10 @@ using JetBrains.Annotations;
 
 using NHibernate;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class RepositoryBase<TRoot, TId>
         where TRoot : class, IIdentity<TId>

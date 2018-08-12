@@ -14,7 +14,7 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface IPpwAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
     {

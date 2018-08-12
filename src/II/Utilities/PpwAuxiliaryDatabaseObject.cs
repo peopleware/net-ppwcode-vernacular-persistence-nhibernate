@@ -21,9 +21,8 @@ using NHibernate.Dialect;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public abstract class PpwAuxiliaryDatabaseObject
         : AbstractAuxiliaryDatabaseObject,

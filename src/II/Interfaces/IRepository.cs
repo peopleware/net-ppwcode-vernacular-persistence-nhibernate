@@ -16,7 +16,7 @@ using JetBrains.Annotations;
 
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Interfaces
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface IRepository<T, in TId>
         where T : class, IIdentity<TId>

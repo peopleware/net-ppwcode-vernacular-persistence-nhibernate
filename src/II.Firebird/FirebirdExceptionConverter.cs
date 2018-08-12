@@ -17,15 +17,15 @@ using JetBrains.Annotations;
 
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint;
-using PPWCode.Vernacular.NHibernate.II.Implementations.DbExceptionConverters;
+using PPWCode.Vernacular.NHibernate.II.DbConstraint;
+using PPWCode.Vernacular.NHibernate.II.DbExceptionConverters;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
-    public class PpwFirebirdExceptionConverter : BaseExceptionConverter
+    public class FirebirdExceptionConverter : BaseExceptionConverter
     {
-        public PpwFirebirdExceptionConverter([NotNull] IViolatedConstraintNameExtracter constraintNameExtracter)
+        public FirebirdExceptionConverter([NotNull] IViolatedConstraintNameExtracter constraintNameExtracter)
             : base(constraintNameExtracter)
         {
         }

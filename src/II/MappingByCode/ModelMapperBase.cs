@@ -19,8 +19,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
 namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 {
     public abstract class ModelMapperBase : IPpwHbmMapping

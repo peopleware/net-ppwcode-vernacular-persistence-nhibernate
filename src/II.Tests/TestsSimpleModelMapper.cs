@@ -13,9 +13,7 @@ using System;
 
 using NHibernate.Mapping.ByCode;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
-using PPWCode.Vernacular.NHibernate.II.Utilities;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests
 {

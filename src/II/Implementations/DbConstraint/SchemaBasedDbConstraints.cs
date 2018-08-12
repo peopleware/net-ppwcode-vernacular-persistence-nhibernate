@@ -10,30 +10,36 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 
-namespace PPWCode.Vernacular.NHibernate.II.Implementations.DbConstraint
+using JetBrains.Annotations;
+
+using PPWCode.Vernacular.Exceptions.III;
+
+namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {
     /// <inheritdoc cref="DbConstraints" />
-    public abstract class InformationSchemaBasedDbConstraints : DbConstraints
+    public abstract class SchemaBasedDbConstraints : DbConstraints
     {
         /// <summary>
-        ///     Get all the schema's within our current catalog.
+        ///     Get the SQL command necessary to retrieve following columns (order is important!):
+        ///     <list type="number">
+        ///         <item>
+        ///             <description>Constraint Name</description>
+        ///         </item>
+        ///         <item>
+        ///             <description>Table Name</description>
+        ///         </item>
+        ///         <item>
+        ///             <description>Table Schema</description>
+        ///         </item>
+        ///         <item>
+        ///             <description>Constraint Type</description>
+        ///         </item>
+        ///     </list>
         /// </summary>
-        protected abstract IEnumerable<string> Schemas { get; }
-
-        protected virtual string SqlCommand
-            => @"
-select tc.CONSTRAINT_NAME,
-       tc.TABLE_NAME,
-       tc.TABLE_SCHEMA,
-       tc.CONSTRAINT_TYPE
-  from INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
- where tc.CONSTRAINT_CATALOG = @catalog
-   and tc.CONSTRAINT_SCHEMA in ({0})";
+        protected abstract string CommandText { get; }
 
         /// <inheritdoc />
         protected override DbCommand GetCommand(DbConnection connection, DbTransaction transaction)
@@ -41,19 +47,21 @@ select tc.CONSTRAINT_NAME,
             DbCommand command = connection.CreateCommand();
             try
             {
-                string sqlSchemasFragment = string.Join(", ", Schemas.Select(s => $"'{s}'"));
-                command.CommandText = string.Format(SqlCommand, sqlSchemasFragment);
+                command.CommandText = CommandText;
                 command.CommandType = CommandType.Text;
                 command.Transaction = transaction;
 
                 // Catalog parameter
-                DbParameter catalogParameter = command.CreateParameter();
-                catalogParameter.DbType = DbType.AnsiString;
-                catalogParameter.Direction = ParameterDirection.Input;
-                catalogParameter.ParameterName = "@catalog";
-                catalogParameter.IsNullable = false;
-                catalogParameter.Value = connection.Database;
-                command.Parameters.Add(catalogParameter);
+                if (command.CommandText.IndexOf("@catalog", StringComparison.InvariantCultureIgnoreCase) > 0)
+                {
+                    DbParameter catalogParameter = command.CreateParameter();
+                    catalogParameter.DbType = DbType.AnsiString;
+                    catalogParameter.Direction = ParameterDirection.Input;
+                    catalogParameter.ParameterName = "@catalog";
+                    catalogParameter.IsNullable = false;
+                    catalogParameter.Value = connection.Database;
+                    command.Parameters.Add(catalogParameter);
+                }
             }
             catch (Exception)
             {
@@ -73,6 +81,14 @@ select tc.CONSTRAINT_NAME,
             string tableSchema = GetNullableString(reader, index++);
             string constraintType = GetNullableString(reader, index);
 
+            if ((constraintName == null)
+                || (tableName == null)
+                || (tableSchema == null)
+                || (constraintType == null))
+            {
+                throw new ProgrammingError($"The query defined by {nameof(CommandText)}, gives incorrect data, all data should be not-null.");
+            }
+
             return
                 new DbConstraintMetadataBuilder()
                     .ConstraintName(constraintName)
@@ -81,7 +97,8 @@ select tc.CONSTRAINT_NAME,
                     .DbConstraintType(constraintType);
         }
 
-        private string GetNullableString(DbDataReader reader, int index)
+        [CanBeNull]
+        private string GetNullableString([NotNull] DbDataReader reader, int index)
         {
             object value = reader.GetValue(index);
             if ((value == null) || (value == DBNull.Value))

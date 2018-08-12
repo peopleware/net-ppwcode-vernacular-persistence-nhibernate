@@ -17,7 +17,7 @@ using JetBrains.Annotations;
 
 using NHibernate;
 
-namespace PPWCode.Vernacular.NHibernate.II.Semantics
+namespace PPWCode.Vernacular.NHibernate.II
 {
     public static class AssociationContracts
     {

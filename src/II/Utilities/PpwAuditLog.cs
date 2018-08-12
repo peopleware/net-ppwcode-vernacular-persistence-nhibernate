@@ -14,7 +14,7 @@ using System.Runtime.Serialization;
 
 using JetBrains.Annotations;
 
-namespace PPWCode.Vernacular.NHibernate.II.Utilities
+namespace PPWCode.Vernacular.NHibernate.II
 {
     [Serializable]
     [DataContract]

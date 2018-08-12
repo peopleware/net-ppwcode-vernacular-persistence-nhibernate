@@ -11,7 +11,7 @@
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 

@@ -13,8 +13,6 @@ using System.Collections.Generic;
 
 using NHibernate.Cfg;
 
-using PPWCode.Vernacular.NHibernate.II.Interfaces;
-
 namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
 {
     public class EmptyNhProperties : INhProperties
