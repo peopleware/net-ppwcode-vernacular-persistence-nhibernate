@@ -22,7 +22,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests
         private IPpwHbmMapping _ppwHbmMapping;
 
         protected override string CatalogName
-            => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
+            => $"Test.{GetType().Assembly.GetName().Name}";
 
         protected override string ConnectionString
             => FixedConnectionString;
