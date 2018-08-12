@@ -372,15 +372,6 @@ Task Pack -description 'Create a nuget-package (new 2017 VS csproj).' -depends F
         finally {
             Pop-Location
         }
-
-        if (Test-Path -Path 'scratch') {
-            Set-Location 'scratch'
-            $nupkgDestination = New-Item -ItemType Directory -Path packages -Force
-            Get-ChildItem -Path bin -Filter *.nupkg -Recurse | ForEach-Object {
-                $nupkgFile = $_
-                Copy-item -Force $nupkgFile.FullName -Destination $nupkgDestination.FullName
-            }
-        }
     }
     finally
     {
@@ -656,10 +647,28 @@ Task ChocoInstall `
 }
 
 ###############################################################################
-# Installers, build our choco-installer (portable version), WixInstallers
+# Installers, build our nuget-packages, choco-installer (portable version)
+# and WixInstallers
 #
 Task Installers `
-    -description 'Do a full build starting from a clean solution and create our choco-installer and dsc-package' `
-    -depends ChocoInstaller,WixInstaller
+    -description 'Do a full build starting from a clean solution and create our nuget-packages, choco-installer and wix-installers' `
+    -depends FullBuild,Pack,ChocoInstaller,WixInstaller {
+
+    Push-Location
+    try
+    {
+        if (Test-Path -Path 'scratch') {
+            Set-Location 'scratch'
+            $nupkgDestination = New-Item -ItemType Directory -Path packages -Force
+            Get-ChildItem -Path bin -Filter *.nupkg -Recurse | ForEach-Object {
+                $nupkgFile = $_
+                Copy-item -Force $nupkgFile.FullName -Destination $nupkgDestination.FullName
+            }
+        }
+    }
+    finally {
+        Pop-Location
+    }
+}
 
 #endregion
