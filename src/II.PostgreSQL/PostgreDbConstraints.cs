@@ -60,6 +60,7 @@ select c.relname as constraint_name,
             and tc.constraint_type = 'UNIQUE')
    and c.relkind = 'i'
    and i.indisunique = true
-   and i.indisprimary = false";
+   and i.indisprimary = false
+";
     }
 }

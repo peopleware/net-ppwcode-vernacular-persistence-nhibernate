@@ -42,6 +42,7 @@ select i.[name] as CONSTRAINT_NAME,
  where i.is_unique = 1
    and i.is_unique_constraint = 0
    and i.is_primary_key = 0
-   and o.type = 'U'";
+   and o.type = 'U'
+";
     }
 }
