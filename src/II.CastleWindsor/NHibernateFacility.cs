@@ -24,6 +24,7 @@ using NHibernate.Mapping;
 using PPWCode.Vernacular.Exceptions.III;
 using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Providers;
+using PPWCode.Vernacular.Persistence.III;
 
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -290,6 +291,26 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                             .LifestyleSingleton());
                 IQueryOverCustomExpressions queryOverCustomExpressions = Kernel.Resolve<IQueryOverCustomExpressions>();
                 queryOverCustomExpressions.Initialize();
+            }
+
+            if (!Kernel.HasComponent(typeof(ITimeProvider)))
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ITimeProvider>()
+                            .ImplementedBy<TimeProvider>()
+                            .IsFallback());
+            }
+
+            if (!Kernel.HasComponent(typeof(IIdentityProvider)))
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<IIdentityProvider>()
+                            .ImplementedBy<IdentityProvider>()
+                            .IsFallback());
             }
         }
     }
