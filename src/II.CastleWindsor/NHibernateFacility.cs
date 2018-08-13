@@ -300,7 +300,8 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                         Component
                             .For<ITimeProvider>()
                             .ImplementedBy<TimeProvider>()
-                            .IsFallback());
+                            .IsFallback()
+                            .LifeStyle.Singleton);
             }
 
             if (!Kernel.HasComponent(typeof(IIdentityProvider)))
@@ -310,7 +311,8 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                         Component
                             .For<IIdentityProvider>()
                             .ImplementedBy<IdentityProvider>()
-                            .IsFallback());
+                            .IsFallback()
+                            .LifeStyle.Singleton);
             }
         }
     }
