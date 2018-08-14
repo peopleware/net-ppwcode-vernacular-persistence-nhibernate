@@ -10,6 +10,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics;
 
 using Common.Logging;
 
@@ -85,18 +86,18 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
 
             string StartMessage()
                 => entity != null
-                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} started."
-                       : $"Request {requestDescription} for class {typeof(TEntity).Name} started.";
+                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} started"
+                       : $"Request {requestDescription} for class {typeof(TEntity).Name} started";
 
             string FinishMessage()
                 => entity != null
-                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} finished."
-                       : $"Request {requestDescription} for class {typeof(TEntity).Name} finished.";
+                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} finished"
+                       : $"Request {requestDescription} for class {typeof(TEntity).Name} finished";
 
             string FailedMessage()
                 => entity != null
-                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} failed."
-                       : $"Request {requestDescription} for class {typeof(TEntity).Name} failed.";
+                       ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} failed"
+                       : $"Request {requestDescription} for class {typeof(TEntity).Name} failed";
 
             return Run(StartMessage, FinishMessage, FailedMessage, func);
         }
@@ -116,9 +117,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             [NotNull] Func<string> failedMessage,
             [NotNull] Func<TResult> func)
         {
+            Stopwatch sw = null;
             if (_logger.IsInfoEnabled)
             {
-                _logger.Info(startMessage);
+                _logger.Info(startMessage());
+                sw = new Stopwatch();
+                sw.Start();
             }
 
             TResult result;
@@ -130,10 +134,14 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             {
                 throw ExceptionTranslator.Convert(failedMessage() ?? e.Message, e);
             }
+            finally
+            {
+                sw?.Stop();
+            }
 
             if (_logger.IsInfoEnabled)
             {
-                _logger.Info(finishedMessage);
+                _logger.Info(sw != null ? $"{finishedMessage()}, elapsed {sw.ElapsedMilliseconds} ms." : finishedMessage());
             }
 
             return result;
