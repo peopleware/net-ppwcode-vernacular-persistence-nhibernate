@@ -87,6 +87,10 @@ namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
                     _dbConstraintType = DbConstraintTypeEnum.CHECK;
                     break;
 
+                case "NOT NULL":
+                    _dbConstraintType = DbConstraintTypeEnum.NOT_NULL;
+                    break;
+
                 default:
                     _dbConstraintType = DbConstraintTypeEnum.UNKNOWN;
                     break;

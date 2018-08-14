@@ -9,9 +9,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 
 using FirebirdSql.Data.FirebirdClient;
 
@@ -53,8 +53,16 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
         [CanBeNull]
         public string ExtractConstraintName([NotNull] DbException dbException)
         {
-            FbException sqle = ADOExceptionHelper.ExtractDbException(dbException) as FbException;
-            throw new NotImplementedException();
+            if (ADOExceptionHelper.ExtractDbException(dbException) is FbException sqle)
+            {
+                DbConstraintMetadata dbConstraint =
+                    _dbConstraints
+                        .Constraints
+                        .FirstOrDefault(c => sqle.Message.Contains(c.ConstraintName));
+                return dbConstraint?.ConstraintName;
+            }
+
+            return null;
         }
     }
 }
