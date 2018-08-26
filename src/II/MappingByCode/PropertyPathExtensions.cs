@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
@@ -23,27 +25,69 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
     /// </summary>
     public static class PropertyPathExtensions
     {
-        public static Type Owner(this PropertyPath member)
+        public static Type Owner([NotNull] this PropertyPath member)
             => member.GetRootMember().DeclaringType;
 
-        public static Type CollectionElementType(this PropertyPath member)
+        [CanBeNull]
+        public static Type CollectionElementType([NotNull] this PropertyPath member)
             => member.LocalMember.GetPropertyOrFieldType().DetermineCollectionElementOrDictionaryValueType();
 
-        public static MemberInfo OneToManyOtherSideProperty(this PropertyPath member)
-            => member.CollectionElementType().GetFirstPropertyOfType(member.Owner());
+        [NotNull]
+        public static IEnumerable<MemberInfo> OneToManyOtherSideProperties([NotNull] this PropertyPath member)
+            => member.CollectionElementType().GetAllPropertiesOfType(member.Owner());
 
-        public static string ManyToManyIntermediateTableName(this PropertyPath member, string manyToManyIntermediateTableInfix)
+        [NotNull]
+        public static string ManyToManyIntermediateTableName([NotNull] this PropertyPath member, [NotNull] string manyToManyIntermediateTableInfix)
         {
             return string.Join(manyToManyIntermediateTableInfix, member.ManyToManySidesNames().OrderBy(x => x));
         }
 
-        public static Type MemberType(this PropertyPath member)
+        [NotNull]
+        public static Type MemberType([NotNull] this PropertyPath member)
             => member.LocalMember.GetPropertyOrFieldType();
 
-        private static IEnumerable<string> ManyToManySidesNames(this PropertyPath member)
+        [NotNull]
+        private static IEnumerable<string> ManyToManySidesNames([NotNull] this PropertyPath member)
         {
             yield return member.Owner().Name;
-            yield return member.CollectionElementType().Name;
+            Type collectionElementType = member.CollectionElementType();
+            if (collectionElementType != null)
+            {
+                yield return collectionElementType.Name;
+            }
+        }
+
+        [NotNull]
+        public static IEnumerable<MemberInfo> GetAllPropertiesOfType([CanBeNull] this Type propertyContainerType, [CanBeNull] Type propertyType)
+            => GetAllPropertiesOfType(propertyContainerType, propertyType, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+
+        [NotNull]
+        public static IEnumerable<MemberInfo> GetAllPropertiesOfType([CanBeNull] this Type propertyContainerType, [CanBeNull] Type propertyType, [NotNull] Func<PropertyInfo, bool> acceptPropertyClauses)
+            => GetAllPropertiesOfType(propertyContainerType, propertyType, BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic, acceptPropertyClauses);
+
+        [NotNull]
+        public static IEnumerable<MemberInfo> GetAllPropertiesOfType([CanBeNull] this Type propertyContainerType, [CanBeNull] Type propertyType, BindingFlags bindingFlags)
+        {
+            return GetAllPropertiesOfType(propertyContainerType, propertyType, bindingFlags, x => true);
+        }
+
+        [NotNull]
+        public static IEnumerable<MemberInfo> GetAllPropertiesOfType([CanBeNull] this Type propertyContainerType, [CanBeNull] Type propertyType, BindingFlags bindingFlags, [NotNull] Func<PropertyInfo, bool> acceptPropertyClauses)
+        {
+            if ((propertyContainerType == null) || (propertyType == null))
+            {
+                yield break;
+            }
+
+            IEnumerable<PropertyInfo> candidatePropertyInfos =
+                propertyContainerType
+                    .GetProperties(bindingFlags)
+                    .Where(p => acceptPropertyClauses(p)
+                                && (propertyType == p.PropertyType));
+            foreach (PropertyInfo propertyInfo in candidatePropertyInfos)
+            {
+                yield return propertyInfo;
+            }
         }
     }
 }

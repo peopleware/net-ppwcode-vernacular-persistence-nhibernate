@@ -214,17 +214,19 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             {
                 keyColumnName = member.CollectionElementType().Name;
             }
-            else if (modelInspector.IsManyToOne(member.LocalMember) || modelInspector.IsSet(member.LocalMember))
+            else if (modelInspector.IsManyToOne(member.LocalMember)
+                     || modelInspector.IsSet(member.LocalMember)
+                     || modelInspector.IsBag(member.LocalMember))
             {
-                MemberInfo otherSideProperty = member.OneToManyOtherSideProperty();
+                MemberInfo otherSideProperty = GetOneToManyOtherSideProperty(member);
                 keyColumnName =
-                    modelInspector.IsOneToMany(member.LocalMember) && (otherSideProperty != null)
-                        ? otherSideProperty.GetPropertyOrFieldType().Name
+                    otherSideProperty != null
+                        ? otherSideProperty.Name
                         : member.ToColumnName();
             }
             else
             {
-                throw new NotSupportedException($"Unable to determine foreignkey column-name for {member}.");
+                throw new NotSupportedException($"Unable to determine then foreign key column-name for {member}.");
             }
 
             if (ForeignKeyType == KeyTypeEnum.ID)
@@ -234,6 +236,47 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 
             return GetKeyColumnName(ForeignKeyType, keyColumnName, quoteIdentifier);
         }
+
+        [CanBeNull]
+        protected virtual MemberInfo GetOneToManyOtherSideProperty([NotNull] PropertyPath member)
+        {
+            List<MemberInfo> otherSideProperties =
+                member
+                    .OneToManyOtherSideProperties()
+                    .ToList();
+            if (otherSideProperties.Count == 0)
+            {
+                return null;
+            }
+
+            if (otherSideProperties.Count == 1)
+            {
+                return otherSideProperties.First();
+            }
+
+            OtherSidePropertyName otherSidePropertyNameAttribute =
+                member
+                    .LocalMember
+                    .GetCustomAttributes(typeof(OtherSidePropertyName))
+                    .OfType<OtherSidePropertyName>()
+                    .SingleOrDefault();
+            if (otherSidePropertyNameAttribute != null)
+            {
+                MemberInfo otherSideProperty =
+                    otherSideProperties
+                        .SingleOrDefault(p => p.Name == otherSidePropertyNameAttribute.PropertyName);
+                if (otherSideProperty != null)
+                {
+                    return otherSideProperty;
+                }
+            }
+
+            return GetOneToManyOtherSideProperty(member, otherSideProperties);
+        }
+
+        [CanBeNull]
+        protected virtual MemberInfo GetOneToManyOtherSideProperty([NotNull] PropertyPath member, [NotNull] IList<MemberInfo> otherSideProperties)
+            => throw new ProgrammingError($"Unable to map other side property for {member.ToColumnName()}.");
 
         [NotNull]
         protected virtual string GetPrimaryKeyColumnName(
@@ -744,7 +787,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         }
 
         protected virtual void OnBeforeMappingCollectionConvention(
-            [NotNull] IModelInspector modelinspector,
+            [NotNull] IModelInspector modelInspector,
             [NotNull] PropertyPath member,
             [NotNull] ICollectionPropertiesMapper collectionPropertiesCustomizer)
         {
@@ -764,9 +807,9 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
                 collectionPropertiesCustomizer.BatchSize(CollectionBatchSize.Value);
             }
 
-            if (modelinspector.IsManyToManyItem(member.LocalMember))
+            if (modelInspector.IsManyToManyItem(member.LocalMember))
             {
-                string tableName = GetTableNameForManyToMany(modelinspector, member, null);
+                string tableName = GetTableNameForManyToMany(modelInspector, member, null);
                 collectionPropertiesCustomizer.Table(tableName);
                 collectionPropertiesCustomizer.Key(
                     k =>
@@ -775,30 +818,17 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
                         k.Column(keyColumnName);
                     });
             }
-            else if (modelinspector.IsSet(member.LocalMember))
+            else if (modelInspector.IsSet(member.LocalMember)
+                     || modelInspector.IsBag(member.LocalMember))
             {
-                // If otherside has many-to-one, make it inverse, if not specify foreign key on Key element
-                MemberInfo oneToManyProperty = member.OneToManyOtherSideProperty();
+                // If other side has many-to-one, make it inverse
+                MemberInfo oneToManyProperty = GetOneToManyOtherSideProperty(member);
                 if (oneToManyProperty != null)
                 {
-                    IEnumerable<MemberInfo> candidatesManyToOne =
-                        MembersProvider
-                            .GetRootEntityMembers(oneToManyProperty.DeclaringType)
-                            .Where(modelinspector.IsManyToOne);
-                    if (candidatesManyToOne.Any(mi => mi.GetPropertyOrFieldType() == member.LocalMember.DeclaringType))
-                    {
-                        collectionPropertiesCustomizer.Inverse(true);
-                    }
-                    else
-                    {
-                        if (oneToManyProperty.DeclaringType != null)
-                        {
-                            collectionPropertiesCustomizer.Key(k => k.ForeignKey($"FK_{GetTableName(modelinspector, oneToManyProperty.DeclaringType, false)}_{GetIdentifier(oneToManyProperty.Name)}"));
-                        }
-                    }
+                    collectionPropertiesCustomizer.Inverse(true);
                 }
 
-                string keyColumnName = GetForeignKeyColumnName(modelinspector, member, null);
+                string keyColumnName = GetForeignKeyColumnName(modelInspector, member, null);
                 collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
         }
