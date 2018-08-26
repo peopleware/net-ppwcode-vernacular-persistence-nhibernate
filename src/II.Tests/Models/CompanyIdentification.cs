@@ -25,6 +25,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         [DataMember]
         private Company _company;
 
+        [DataMember]
+        private Company _parentCompany;
+
         [Required]
         [StringLength(256)]
         [DataMember]
@@ -53,6 +56,26 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
                 }
             }
         }
+
+        public virtual Company ParentCompany
+        {
+            get => _parentCompany;
+            set
+            {
+                if (_parentCompany != value)
+                {
+                    if (_parentCompany != null)
+                    {
+                        Company previousParentCompany = _parentCompany;
+                        _parentCompany = null;
+                        previousParentCompany.RemoveParentIdentification(this);
+                    }
+
+                    _parentCompany = value;
+                    _parentCompany?.AddParentIdentification(this);
+                }
+            }
+        }
     }
 
     public class CompanyIdentificationMapper : AuditablePersistentObjectMapper<CompanyIdentification, int>
@@ -62,6 +85,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
             Property(ci => ci.Identification);
             Property(ci => ci.Number);
             ManyToOne(ci => ci.Company);
+            ManyToOne(ci => ci.ParentCompany);
         }
     }
 }
