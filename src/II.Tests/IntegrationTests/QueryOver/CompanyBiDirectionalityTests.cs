@@ -148,7 +148,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
         [Test]
         public void Check_BiDirectionality_Detach_Parent_From_Child()
         {
-            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+            Company company = CreatedCompany;
 
             Company updatedCompany =
                 RunInsideTransaction(

@@ -9,6 +9,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using JetBrains.Annotations;
+
 namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
 {
     public enum SalutationEnum
@@ -19,6 +21,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
         MS = 3
     }
 
+    [UsedImplicitly]
     public class GenericSalutationEnumTranslationMapper : GenericEnumTranslationMapper<SalutationEnum>
     {
     }

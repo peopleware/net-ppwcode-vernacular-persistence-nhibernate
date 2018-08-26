@@ -13,6 +13,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
@@ -40,6 +42,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         public virtual string WebBased { get; set; }
     }
 
+    [UsedImplicitly]
     public class WebBasedIctCompanyMapper : SubclassMapping<WebBasedIctCompany>
     {
         public WebBasedIctCompanyMapper()

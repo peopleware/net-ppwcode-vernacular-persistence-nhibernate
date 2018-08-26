@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -27,13 +29,13 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         [DataMember]
-        private readonly ISet<CompanyIdentification> _identifications = new HashSet<CompanyIdentification>();
-
-        [DataMember]
-        private readonly ISet<CompanyIdentification> _parentIdentifications = new HashSet<CompanyIdentification>();
-
-        [DataMember]
         private FailedCompany _failedCompany;
+
+        [DataMember]
+        private ISet<CompanyIdentification> _identifications = new HashSet<CompanyIdentification>();
+
+        [DataMember]
+        private ISet<CompanyIdentification> _parentIdentifications = new HashSet<CompanyIdentification>();
 
         public Company(int id, int persistenceVersion)
             : base(id, persistenceVersion)
@@ -81,13 +83,13 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         public virtual bool IsFailed
             => FailedCompany != null;
 
-        [DataMember]
         [AuditLogPropertyIgnore]
+        [OtherSidePropertyName(nameof(CompanyIdentification.Company))]
         public virtual ISet<CompanyIdentification> Identifications
             => _identifications;
 
-        [DataMember]
         [AuditLogPropertyIgnore]
+        [OtherSidePropertyName(nameof(CompanyIdentification.ParentCompany))]
         public virtual ISet<CompanyIdentification> ParentIdentifications
             => _parentIdentifications;
 
@@ -124,6 +126,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         }
     }
 
+    [UsedImplicitly]
     public class CompanyMapper : AuditableVersionedPersistentObjectMapper<Company, int, int>
     {
         public CompanyMapper()
@@ -133,12 +136,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
             Set(
                 c => c.Identifications,
                 c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
-                r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
+                r => r.OneToMany());
 
             Set(
                 c => c.ParentIdentifications,
                 c => c.Cascade(Cascade.All.Include(Cascade.DeleteOrphans)),
-                r => r.OneToMany(m => m.Class(typeof(CompanyIdentification))));
+                r => r.OneToMany());
 
             OneToOne(
                 c => c.FailedCompany,

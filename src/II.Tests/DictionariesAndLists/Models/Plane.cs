@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models
@@ -27,6 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models
         public virtual double Translation { get; set; }
     }
 
+    [UsedImplicitly]
     public class PlaneMapper : ComponentMapping<Plane>
     {
         public PlaneMapper()

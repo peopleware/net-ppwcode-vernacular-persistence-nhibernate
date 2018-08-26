@@ -13,6 +13,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
 using PPWCode.Vernacular.Persistence.III;
 
@@ -41,6 +43,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         public virtual string Name { get; set; }
     }
 
+    [UsedImplicitly]
     public class CountryMapper : AuditableVersionedPersistentObjectMapper<Country, int, int>
     {
         public CountryMapper()

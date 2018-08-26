@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.Exceptions.III;
@@ -67,6 +69,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         }
     }
 
+    [UsedImplicitly]
     public class FailedCompanyMapper : InsertAuditablePersistentObjectMapper<FailedCompany, int>
     {
         public FailedCompanyMapper()

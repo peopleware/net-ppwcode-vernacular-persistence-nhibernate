@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
 using PPWCode.Vernacular.Persistence.III;
 
@@ -37,6 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
         public virtual string TranslationFr { get; set; }
     }
 
+    [UsedImplicitly]
     public class EnumTranslationMapper : PersistentObjectMapper<EnumTranslation, int>
     {
         public EnumTranslationMapper()

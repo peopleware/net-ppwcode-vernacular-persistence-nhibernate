@@ -25,6 +25,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
     [DataContract(IsReference = true)]
     public class Role : AuditableVersionedPersistentObject<int, int>
     {
+        [DataMember]
+        private readonly ISet<User> _users = new HashSet<User>();
+
         public Role(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -39,12 +42,14 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         {
         }
 
+        [DataMember]
         [Required]
         [StringLength(200)]
         public virtual string Name { get; set; }
 
         [AuditLogPropertyIgnore]
-        public virtual ISet<User> Users { get; } = new HashSet<User>();
+        public virtual ISet<User> Users
+            => _users;
 
         public virtual void AddUser(User user)
         {

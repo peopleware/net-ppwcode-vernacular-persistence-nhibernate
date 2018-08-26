@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Type;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -40,7 +42,8 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models
         public virtual IDictionary<SideEnum, ClippingPlane> Sides { get; } = new Dictionary<SideEnum, ClippingPlane>();
     }
 
-    public class TowerMapper : PersistentObjectMapper<Tower, int>
+    [UsedImplicitly]
+    internal class TowerMapper : PersistentObjectMapper<Tower, int>
     {
         public TowerMapper()
         {

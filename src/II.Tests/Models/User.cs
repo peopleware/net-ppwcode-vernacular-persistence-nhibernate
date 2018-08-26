@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 using NHibernate.Type;
 
@@ -26,6 +28,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
     [DataContract(IsReference = true)]
     public class User : AuditableVersionedPersistentObject<int, int>
     {
+        [DataMember]
+        private readonly ISet<Role> _roles = new HashSet<Role>();
+
         public User(int id, int persistenceVersion)
             : base(id, persistenceVersion)
         {
@@ -52,9 +57,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         [DataMember]
         public virtual bool HasBlueEyes { get; set; }
 
-        [DataMember]
         [AuditLogPropertyIgnore]
-        public virtual ISet<Role> Roles { get; } = new HashSet<Role>();
+        public virtual ISet<Role> Roles
+            => _roles;
 
         public virtual void AddRole(Role role)
         {
@@ -73,6 +78,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         }
     }
 
+    [UsedImplicitly]
     public class UserMapper : AuditableVersionedPersistentObjectMapper<User, int, int>
     {
         public UserMapper()
@@ -81,11 +87,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
             Table("`User`");
             Property(
                 u => u.Name,
-                m =>
-                {
-                    m.Unique(true);
-                    m.UniqueKey("UQ_User_Name");
-                });
+                m => m.Unique(true));
             Property(u => u.Gender, m => m.Type<EnumStringType<Gender>>());
             Property(u => u.HasBlueEyes, m => m.Type<YesNoType>());
             Set(

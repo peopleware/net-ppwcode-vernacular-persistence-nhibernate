@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
@@ -38,6 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         public virtual Address Address { get; set; }
     }
 
+    [UsedImplicitly]
     public class IctCompanyMapper : SubclassMapping<IctCompany>
     {
         public IctCompanyMapper()

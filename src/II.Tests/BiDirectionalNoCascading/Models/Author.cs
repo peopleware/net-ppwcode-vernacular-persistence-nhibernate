@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -24,6 +26,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading.Models
     [DataContract(IsReference = true)]
     public class Author : PersistentObject<int>
     {
+        [DataMember]
+        private readonly ISet<Book> _books = new HashSet<Book>();
+
         public Author()
         {
         }
@@ -36,8 +41,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading.Models
         [DataMember]
         public virtual string Name { get; set; }
 
-        [DataMember]
-        public virtual ISet<Book> Books { get; } = new HashSet<Book>();
+        [AuditLogPropertyIgnore]
+        public virtual ISet<Book> Books
+            => _books;
 
         public virtual void AddBook(Book book)
         {
@@ -56,6 +62,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading.Models
         }
     }
 
+    [UsedImplicitly]
     public class AuthorMapper : PersistentObjectMapper<Author, int>
     {
         public AuthorMapper()
@@ -64,12 +71,8 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading.Models
 
             Set(
                 c => c.Books,
-                m =>
-                {
-                    m.Inverse(true);
-                    m.Cascade(Cascade.None);
-                },
-                r => r.OneToMany(m => m.Class(typeof(Book))));
+                m => m.Cascade(Cascade.None),
+                r => r.OneToMany());
         }
     }
 }

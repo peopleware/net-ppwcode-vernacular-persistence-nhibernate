@@ -13,6 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -24,6 +26,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models
     [DataContract(IsReference = true)]
     public class Ship : PersistentObject<int>
     {
+        [DataMember]
+        private readonly ISet<CargoContainer> _cargoContainers = new HashSet<CargoContainer>();
+
         public Ship()
         {
         }
@@ -36,9 +41,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models
         [DataMember]
         public virtual string Code { get; set; }
 
-        [DataMember]
         [AuditLogPropertyIgnore]
-        public virtual ISet<CargoContainer> CargoContainers { get; } = new HashSet<CargoContainer>();
+        public virtual ISet<CargoContainer> CargoContainers
+            => _cargoContainers;
 
         public virtual void AddCargoContainer(CargoContainer cargoContainer)
         {
@@ -57,6 +62,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models
         }
     }
 
+    [UsedImplicitly]
     public class ShipMapper : PersistentObjectMapper<Ship, int>
     {
         public ShipMapper()
@@ -65,11 +71,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models
 
             Set(
                 s => s.CargoContainers,
-                m =>
-                {
-                    m.Inverse(true);
-                    m.Cascade(Cascade.All | Cascade.Merge);
-                },
+                m => m.Cascade(Cascade.All | Cascade.Merge),
                 r => r.OneToMany());
         }
     }

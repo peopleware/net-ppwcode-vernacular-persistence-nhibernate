@@ -13,6 +13,8 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
@@ -41,6 +43,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
         public virtual string AllRound { get; set; }
     }
 
+    [UsedImplicitly]
     public class AllRoundIctCompanyMapper : SubclassMapping<AllRoundIctCompany>
     {
         public AllRoundIctCompanyMapper()

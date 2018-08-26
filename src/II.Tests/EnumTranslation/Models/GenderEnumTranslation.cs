@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode.Conformist;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
@@ -30,6 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
         }
     }
 
+    [UsedImplicitly]
     public class GenderEnumTranslationMapper : SubclassMapping<GenderEnumTranslation>
     {
     }

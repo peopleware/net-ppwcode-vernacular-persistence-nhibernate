@@ -12,6 +12,8 @@
 using System;
 using System.Runtime.Serialization;
 
+using JetBrains.Annotations;
+
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -36,6 +38,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey.Models
         public virtual string ModelName { get; set; }
     }
 
+    [UsedImplicitly]
     public class CarMapper : PersistentObjectMapper<Car, Guid>
     {
         public CarMapper()
