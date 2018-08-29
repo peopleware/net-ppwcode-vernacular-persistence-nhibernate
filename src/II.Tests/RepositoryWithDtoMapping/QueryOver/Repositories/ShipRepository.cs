@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 
+using NHibernate;
 using NHibernate.Transform;
 
 using PPWCode.Vernacular.NHibernate.II.Providers;
@@ -27,37 +28,17 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryO
         {
         }
 
-        private PagedList<ContainerDto> InternalFindContainersFromShipsMatchingCodePaged(int pageIndex, int pageSize, string code)
-        {
-            return FindPagedInternal<ContainerDto>(
-                pageIndex,
-                pageSize,
-                () =>
-                {
-                    CargoContainer cargoContainer = null;
-                    ContainerDto dto = null;
-
-                    return
-                        CreateQueryOver()
-                            .JoinAlias(ship => ship.CargoContainers, () => cargoContainer)
-                            .WhereRestrictionOn(ship => ship.Code).IsLike(code + "%")
-                            .OrderBy(ship => ship.Code).Asc
-                            .SelectList(
-                                list =>
-                                    list
-                                        .SelectGroup(ship => ship.Code).WithAlias(() => dto.ShipCode)
-                                        .SelectGroup(ship => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
-                                        .SelectGroup(ship => cargoContainer.Load).WithAlias(() => dto.Load))
-                            .TransformUsing(Transformers.AliasToBean<ContainerDto>());
-                });
-        }
+        public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
+            => Execute(
+                nameof(FindContainersFromShipsMatchingCode),
+                () => FindContainersFromShipsMatchingCodeQuery(code).List<ContainerDto>());
 
         public PagedList<ContainerDto> FindContainersFromShipsMatchingCodePaged(int pageIndex, int pageSize, string code)
-        {
-            return Execute("FindContainersFromShipsMatchingCodePaged", () => InternalFindContainersFromShipsMatchingCodePaged(pageIndex, pageSize, code));
-        }
+            => Execute(
+                nameof(FindContainersFromShipsMatchingCode),
+                () => FindPagedInternal<ContainerDto>(pageIndex, pageSize, () => FindContainersFromShipsMatchingCodeQuery(code)));
 
-        private IList<ContainerDto> InternalFindContainersFromShipsMatchingCode(string code)
+        protected virtual IQueryOver<Ship, Ship> FindContainersFromShipsMatchingCodeQuery(string code)
         {
             CargoContainer cargoContainer = null;
             ContainerDto dto = null;
@@ -72,13 +53,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryO
                                 .SelectGroup(ship => ship.Code).WithAlias(() => dto.ShipCode)
                                 .SelectGroup(ship => cargoContainer.Code).WithAlias(() => dto.ContainerCode)
                                 .SelectGroup(ship => cargoContainer.Load).WithAlias(() => dto.Load))
-                    .TransformUsing(Transformers.AliasToBean<ContainerDto>())
-                    .List<ContainerDto>();
-        }
-
-        public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
-        {
-            return Execute("FindContainersFromShipsMatchingCodeWithExecute", () => InternalFindContainersFromShipsMatchingCode(code));
+                    .TransformUsing(Transformers.AliasToBean<ContainerDto>());
         }
     }
 }
