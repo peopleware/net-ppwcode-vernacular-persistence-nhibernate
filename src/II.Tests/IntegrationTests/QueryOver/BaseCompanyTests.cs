@@ -69,10 +69,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
 
             Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
 
-            Assert.IsNotNull(savedCompany);
-            Assert.AreNotSame(company, savedCompany);
-            Assert.AreEqual(1, savedCompany.PersistenceVersion);
-            Assert.AreEqual(companyCreationType == CompanyCreationType.NO_CHILDREN ? 0 : 2, savedCompany.Identifications.Count);
+            Assert.That(savedCompany, Is.Not.Null);
+            Assert.That(savedCompany.IsTransient, Is.False);
+            Assert.That(savedCompany, Is.Not.SameAs(company));
+            Assert.That(savedCompany.PersistenceVersion, Is.EqualTo(1));
+            Assert.That(companyCreationType == CompanyCreationType.NO_CHILDREN ? 0 : 2, Is.EqualTo(savedCompany.Identifications.Count));
 
             return savedCompany;
         }
@@ -81,20 +82,22 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
         protected Company CreateFailedCompany(CompanyCreationType companyCreationType)
         {
             Company company = CreateCompany(companyCreationType);
-
-            // ReSharper disable once ObjectCreationAsStatement
-            new FailedCompany
-            {
-                FailingDate = UtcNow,
-                Company = company
-            };
+            company.FailedCompany =
+                new FailedCompany
+                {
+                    FailingDate = UtcNow
+                };
 
             Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
 
-            Assert.IsNotNull(savedCompany);
-            Assert.AreNotSame(company, savedCompany);
-            Assert.IsNotNull(savedCompany.FailedCompany);
-            Assert.IsTrue(savedCompany.IsFailed);
+            Assert.That(savedCompany, Is.Not.Null);
+            Assert.That(savedCompany.IsTransient, Is.False);
+            Assert.That(savedCompany, Is.Not.SameAs(company));
+            Assert.That(savedCompany.PersistenceVersion, Is.EqualTo(1));
+            Assert.That(savedCompany.FailedCompany, Is.Not.Null);
+            Assert.That(savedCompany.FailedCompany.IsTransient, Is.False);
+            Assert.That(savedCompany.FailedCompany, Is.Not.SameAs(company.FailedCompany));
+            Assert.That(savedCompany.IsFailed, Is.True);
 
             return savedCompany;
         }
