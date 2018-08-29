@@ -30,19 +30,29 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
         {
         }
 
-        /// <inheritdoc />
         protected override int? ClassBatchSize
-            => 10;
+            => 40;
 
-        /// <inheritdoc />
         protected override int? CollectionBatchSize
             => ClassBatchSize;
 
-        protected override string DefaultSchemaName
-            => @"dbo";
+        protected override bool DynamicInsert
+            => true;
+
+        protected override bool DynamicUpdate
+            => true;
+
+        protected override bool AdjustColumnForForeignGenerator
+            => true;
+
+        protected override bool UseCamelCaseUnderScoreForDbObjects
+            => false;
 
         public override bool QuoteIdentifiers
-            => false;
+            => true;
+
+        protected override string DefaultSchemaName
+            => "dbo";
 
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
