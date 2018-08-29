@@ -101,5 +101,29 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
 
             return savedCompany;
         }
+
+        [NotNull]
+        protected Company CreateExtendedCompany(CompanyCreationType companyCreationType)
+        {
+            Company company = CreateCompany(companyCreationType);
+            company.ExtendedCompany =
+                new ExtendedCompany
+                {
+                    ExtraData = "Test-Test"
+                };
+
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
+
+            Assert.That(savedCompany, Is.Not.Null);
+            Assert.That(savedCompany.IsTransient, Is.False);
+            Assert.That(savedCompany, Is.Not.SameAs(company));
+            Assert.That(savedCompany.PersistenceVersion, Is.EqualTo(2));
+            Assert.That(savedCompany.ExtendedCompany, Is.Not.Null);
+            Assert.That(savedCompany.ExtendedCompany.IsTransient, Is.False);
+            Assert.That(savedCompany.ExtendedCompany, Is.Not.SameAs(company.ExtendedCompany));
+            Assert.That(savedCompany.IsExtended, Is.True);
+
+            return savedCompany;
+        }
     }
 }

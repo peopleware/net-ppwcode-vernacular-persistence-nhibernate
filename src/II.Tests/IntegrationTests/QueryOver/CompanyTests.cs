@@ -14,10 +14,13 @@ using System.Linq;
 
 using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Proxy;
 
 using NUnit.Framework;
 
+using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
@@ -29,7 +32,17 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
         {
             base.OnSetup();
 
-            CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+            CreatedCompany = CreateExtendedCompany(CompanyCreationType.WITH_2_CHILDREN);
+        }
+
+        protected Company CreatedCompany { get; set; }
+
+        public class ExtendedCompanyRepository : TestQueryOverRepository<ExtendedCompany>
+        {
+            public ExtendedCompanyRepository(ISessionProvider sessionProvider)
+                : base(sessionProvider)
+            {
+            }
         }
 
         [Test]
@@ -159,6 +172,35 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
             Assert.That(pagedList.Items.Count, Is.EqualTo(1));
             Assert.That(pagedList.TotalCount, Is.EqualTo(1));
             Assert.That(pagedList.TotalPages, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void ExtendCompany_Is_Lazy_One_To_One_From_Company_Side()
+        {
+            Company company = Repository.GetById(CreatedCompany.Id);
+
+            Assert.That(company, Is.Not.Null);
+            Assert.That(company.ExtendedCompany.IsProxy(), Is.True);
+            Assert.That(NHibernateUtil.IsInitialized(company.ExtendedCompany), Is.False);
+            Assert.That(company.ExtendedCompany, Is.Not.Null);
+            string extraData = company.ExtendedCompany.ExtraData;
+            Assert.That(extraData, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(company.ExtendedCompany), Is.True);
+        }
+
+        [Test]
+        public void ExtendCompany_Is_Lazy_One_To_One_From_ExtendedCompany_Side()
+        {
+            ExtendedCompanyRepository extendedCompanyRepository = new ExtendedCompanyRepository(SessionProvider);
+            ExtendedCompany extendedCompany = extendedCompanyRepository.GetById(CreatedCompany.ExtendedCompany.Id);
+
+            Assert.That(extendedCompany, Is.Not.Null);
+            Assert.That(extendedCompany.Company.IsProxy(), Is.True);
+            Assert.That(NHibernateUtil.IsInitialized(extendedCompany.Company), Is.False);
+            Assert.That(extendedCompany.Company, Is.Not.Null);
+            string name = extendedCompany.Company.Name;
+            Assert.That(name, Is.Not.Null);
+            Assert.That(NHibernateUtil.IsInitialized(extendedCompany.Company), Is.True);
         }
     }
 }

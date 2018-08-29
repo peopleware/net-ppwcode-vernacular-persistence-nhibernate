@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.II.Test;
+using PPWCode.Vernacular.NHibernate.II.Tests.Models;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests
 {
@@ -35,7 +36,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests
 
         protected override IEnumerable<IAuxiliaryDatabaseObject> AuxiliaryDatabaseObjects
         {
-            get { yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping); }
+            get
+            {
+                yield return new TestHighLowPerTableAuxiliaryDatabaseObject(PpwHbmMapping);
+                yield return new UniqueConstraintsForExtendedCompany(PpwHbmMapping);
+            }
         }
     }
 }
