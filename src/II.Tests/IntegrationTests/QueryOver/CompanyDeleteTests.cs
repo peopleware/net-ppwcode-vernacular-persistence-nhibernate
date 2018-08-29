@@ -9,6 +9,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
@@ -22,10 +24,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
         [Test]
         public void Can_Delete_A_Company()
         {
+            Company company = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+
             // Check if no deletes are already performed
             Assert.That(SessionFactory.Statistics.EntityDeleteCount, Is.EqualTo(0));
 
-            RunInsideTransaction(() => Repository.Delete(CreatedCompany), true);
+            RunInsideTransaction(() => Repository.Delete(company), true);
 
             // A company with 2 children are deleted
             Assert.That(SessionFactory.Statistics.EntityDeleteCount, Is.EqualTo(3));

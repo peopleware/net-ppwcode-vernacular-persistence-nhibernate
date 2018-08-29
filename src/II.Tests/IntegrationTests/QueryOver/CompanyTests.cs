@@ -25,6 +25,13 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
     // ReSharper disable InconsistentNaming
     public class CompanyTests : BaseCompanyTests
     {
+        protected override void OnSetup()
+        {
+            base.OnSetup();
+
+            CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
+        }
+
         [Test]
         public void Can_Find_All_Companies()
         {

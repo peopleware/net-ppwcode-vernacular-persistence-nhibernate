@@ -33,23 +33,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq
             WITH_2_CHILDREN
         }
 
-        protected Company CreatedCompany { get; private set; }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
-            SessionFactory.Statistics.Clear();
-        }
-
-        protected override void OnTeardown()
-        {
-            CreatedCompany = null;
-
-            base.OnTeardown();
-        }
-
         protected override Func<ILinqRepository<Company, int>> RepositoryFactory
         {
             get { return () => new CompanyLinqRepository(SessionProvider); }

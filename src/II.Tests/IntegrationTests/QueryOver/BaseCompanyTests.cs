@@ -35,22 +35,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver
             WITH_2_CHILDREN
         }
 
-        protected Company CreatedCompany { get; private set; }
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            CreatedCompany = CreateCompany(CompanyCreationType.WITH_2_CHILDREN);
-        }
-
-        protected override void OnTeardown()
-        {
-            CreatedCompany = null;
-
-            base.OnTeardown();
-        }
-
         [NotNull]
         protected override Func<IQueryOverRepository<Company, int>> RepositoryFactory
         {

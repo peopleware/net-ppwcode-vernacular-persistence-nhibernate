@@ -147,6 +147,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
                 c => c.FailedCompany,
                 m =>
                 {
+                    m.Lazy(LazyRelation.NoLazy);
                     m.ForeignKey(null);
                     m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
                 });
