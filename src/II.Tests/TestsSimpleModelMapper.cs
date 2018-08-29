@@ -30,6 +30,14 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
         {
         }
 
+        /// <inheritdoc />
+        protected override int? ClassBatchSize
+            => 10;
+
+        /// <inheritdoc />
+        protected override int? CollectionBatchSize
+            => ClassBatchSize;
+
         protected override string DefaultSchemaName
             => @"dbo";
 
