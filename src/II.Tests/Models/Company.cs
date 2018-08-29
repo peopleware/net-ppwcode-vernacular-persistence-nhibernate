@@ -29,6 +29,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
     public class Company : AuditableVersionedPersistentObject<int, int>
     {
         [DataMember]
+        private ExtendedCompany _extendedCompany;
+
+        [DataMember]
         private FailedCompany _failedCompany;
 
         [DataMember]
@@ -82,6 +85,33 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 
         public virtual bool IsFailed
             => FailedCompany != null;
+
+        [AuditLogPropertyIgnore]
+        public virtual ExtendedCompany ExtendedCompany
+        {
+            get => _extendedCompany;
+            set
+            {
+                if (_extendedCompany != value)
+                {
+                    if (_extendedCompany != null)
+                    {
+                        ExtendedCompany previousExtendedCompany = _extendedCompany;
+                        _extendedCompany = null;
+                        previousExtendedCompany.Company = null;
+                    }
+
+                    _extendedCompany = value;
+                    if (_extendedCompany != null)
+                    {
+                        _extendedCompany.Company = this;
+                    }
+                }
+            }
+        }
+
+        public virtual bool IsExtended
+            => ExtendedCompany != null;
 
         [AuditLogPropertyIgnore]
         [OtherSidePropertyName(nameof(CompanyIdentification.Company))]
@@ -151,6 +181,23 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
                     m.ForeignKey(null);
                     m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
                 });
+
+            ManyToOne(
+                c => c.ExtendedCompany,
+                m =>
+                {
+                    m.Index(null);
+                    m.Cascade(Cascade.All.Include(Cascade.DeleteOrphans));
+                });
+        }
+    }
+
+    public class UniqueConstraintsForExtendedCompany : UniqueConstraintsForNullableColumn<Company>
+    {
+        public UniqueConstraintsForExtendedCompany(IPpwHbmMapping ppwHbmMapping)
+            : base(ppwHbmMapping)
+        {
+            ColumnName = c => c.ExtendedCompany;
         }
     }
 }
