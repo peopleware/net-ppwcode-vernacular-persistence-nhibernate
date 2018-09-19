@@ -7,15 +7,7 @@
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
     <Description>The PPWCode Vernacular NHibernate Test library version II.</Description>
-    <PackageTags>ppwcode vernacular nhibernate orm</PackageTags>
-    <PackageReleaseNotes>
-      <![CDATA[1.0.0 Initial release]]>
-    </PackageReleaseNotes>
-
-    <!-- version numbers -->
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
+    <PackageTags>ppwcode vernacular nhibernate orm test</PackageTags>
 
     <!-- Stylecop -->
     <CodeAnalysisRuleSet>..\StyleCop-Tests.ruleset</CodeAnalysisRuleSet>
@@ -37,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

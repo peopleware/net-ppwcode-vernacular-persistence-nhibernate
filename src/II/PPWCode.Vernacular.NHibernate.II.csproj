@@ -1,8 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <!-- version number -->
-  <Import Project="..\version.props" />
-
   <PropertyGroup>
     <!-- target frameworks -->
     <TargetFrameworks>net461;netstandard20</TargetFrameworks>
@@ -11,14 +8,6 @@
     <IsPackable>true</IsPackable>
     <Description>The PPWCode Vernacular NHibernate library version II.</Description>
     <PackageTags>ppwcode vernacular nhibernate orm</PackageTags>
-    <PackageReleaseNotes>
-      <![CDATA[1.0.0 Initial release]]>
-    </PackageReleaseNotes>
-
-    <!-- version numbers -->
-    <AssemblyVersion>$(GacVersion)</AssemblyVersion>
-    <Version>$(PackageVersion)</Version>
-    <FileVersion>$(InformationalVersion)</FileVersion>
 
     <!-- Stylecop -->
     <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
@@ -40,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

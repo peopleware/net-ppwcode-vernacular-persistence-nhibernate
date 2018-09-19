@@ -2,7 +2,16 @@
 
   <!-- https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build -->
 
+  <!-- version number -->
+  <Import Project="version.props" />
+
   <PropertyGroup>
+    <!-- version numbers -->
+    <AssemblyVersion>$(GacVersion)</AssemblyVersion>
+    <Version>$(PackageVersion)</Version>
+    <FileVersion>$(InformationalVersion)</FileVersion>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+
     <!-- build paths -->
     <OutputPath>..\..\scratch\bin\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</OutputPath>
     <IntermediateOutputPath>..\..\scratch\obj\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</IntermediateOutputPath>
@@ -20,16 +29,38 @@
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 
     <!-- nuget package -->
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Description>The PPWCode Vernacular NHibernate library version II</Description>
     <Product>PPWCode</Product>
-    <Company>Peopleware NV</Company>
     <Authors>dvdwouwe;rvdginste</Authors>
+    <Company>Peopleware NV</Company>
     <Copyright>Copyright © Peopleware NV 2014-2018</Copyright>
+
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
+
+    <PackageTags>ppwcode vernacular nhibernate</PackageTags>
+    <PackageProjectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</PackageProjectUrl>
     <PackageIconUrl>http://peopleware.github.io/net-ppwcode-util-oddsandends/ppwcode_logo.jpg</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>http://opensource.org/licenses/Apache-2.0</PackageLicenseUrl>
+
+    <PackageReleaseNotes>
+      <![CDATA[
+1.0.0 Initial release
+      ]]>
+    </PackageReleaseNotes>
+
+    <!-- SourceLink support -->
+    <!-- embed source code not in git repository -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- embed all source code in the pdb, so not dependent from remote repo -->
+    <EmbedAllSources>true</EmbedAllSources>
+    <!-- publish the repository URL in the nuget package -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- continuous integration build -->
+    <ContinuousIntegrationBuild>$(TeamCityBuild)</ContinuousIntegrationBuild>
+    <!-- include the pdb in the nuget package -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
 
