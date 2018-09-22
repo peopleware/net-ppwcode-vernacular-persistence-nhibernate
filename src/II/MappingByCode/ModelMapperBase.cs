@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using JetBrains.Annotations;
 
@@ -114,8 +115,51 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
                                     .GetAssemblies()
                                     .SelectMany(a => a.GetExportedTypes());
                             ModelMapper.AddMappings(mappingTypes);
+                            HbmMapping hbmMapping;
 
-                            HbmMapping hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
+                            // Following code is an improvement to pre-order our types topological, nHibernate doesn't do this right at this moment v5.1.3
+                            FieldInfo customizerHolderFieldInfo = typeof(ModelMapper).GetField("customizerHolder", BindingFlags.Instance | BindingFlags.NonPublic);
+                            if (customizerHolderFieldInfo != null)
+                            {
+                                ICustomizersHolder customizerHolder = (ICustomizersHolder)customizerHolderFieldInfo.GetValue(ModelMapper);
+                                IEnumerable<Type> types = customizerHolder.GetAllCustomizedEntities();
+                                HashSet<Type> rootClasses =
+                                    new HashSet<Type>(
+                                        types
+                                            .Where(t => ModelMapper.ModelInspector.IsEntity(t)
+                                                        && ModelMapper.ModelInspector.IsRootEntity(t)));
+                                HashSet<Type> subClasses =
+                                    new HashSet<Type>(
+                                        types
+                                            .Where(t => ModelMapper.ModelInspector.IsEntity(t)
+                                                        && !ModelMapper.ModelInspector.IsRootEntity(t)));
+                                List<Type> orderedClasses = new List<Type>(rootClasses);
+                                HashSet<Type> processedClasses = new HashSet<Type>(orderedClasses);
+                                bool nextLevelEntitiesAvailable;
+                                do
+                                {
+                                    HashSet<Type> nextLevelEntities = new HashSet<Type>();
+                                    foreach (Type subClass in subClasses.ToList())
+                                    {
+                                        if (processedClasses.Contains(subClass.BaseType))
+                                        {
+                                            nextLevelEntities.Add(subClass);
+                                            subClasses.Remove(subClass);
+                                            processedClasses.Add(subClass);
+                                        }
+                                    }
+
+                                    orderedClasses.AddRange(nextLevelEntities);
+                                    nextLevelEntitiesAvailable = nextLevelEntities.Count > 0;
+                                }
+                                while (nextLevelEntitiesAvailable && (subClasses.Count > 0));
+
+                                hbmMapping = ModelMapper.CompileMappingFor(orderedClasses.Concat(subClasses));
+                            }
+                            else
+                            {
+                                hbmMapping = ModelMapper.CompileMappingForAllExplicitlyAddedEntities();
+                            }
 
                             hbmMapping.defaultlazy = DefaultLazy;
                             if (!string.IsNullOrWhiteSpace(DefaultAccess))
