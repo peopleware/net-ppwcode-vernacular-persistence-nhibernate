@@ -37,8 +37,8 @@ select tc.CONSTRAINT_NAME,
        tc.TABLE_SCHEMA,
        tc.CONSTRAINT_TYPE
   from INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
- where tc.CONSTRAINT_CATALOG = 'Phoenix'
-   and tc.CONSTRAINT_SCHEMA in ('dbo')
+ where tc.CONSTRAINT_CATALOG = @catalog
+   and tc.CONSTRAINT_SCHEMA in ({0})
 union all
 select i.[name] as CONSTRAINT_NAME,
        o.[name] as TABLE_NAME,
@@ -49,5 +49,7 @@ select i.[name] as CONSTRAINT_NAME,
  where i.is_unique = 1
    and i.is_unique_constraint = 0
    and i.is_primary_key = 0
-   and o.type = 'U'";    }
+   and o.type = 'U'
+";
+    }
 }
