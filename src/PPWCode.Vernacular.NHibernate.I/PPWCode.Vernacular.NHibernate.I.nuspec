@@ -59,6 +59,9 @@
       - Refactor IHbmMapping to IPpwHbmMapping
 4.0.1 Hotfix
       - Fix nuget dependencies
+4.0.2 Bugfixes
+      - Pre-order types to help nHibernate by mapping by code
+      - Fix hardcode catalog and schema in PpwSqlServerDbConstraints
     </releaseNotes>
 
     <copyright>Copyright 2014-2018 by PeopleWare n.v.</copyright>
