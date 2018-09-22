@@ -47,6 +47,7 @@
     <PackageReleaseNotes>
       <![CDATA[
 1.0.0 Initial release
+1.0.1 Improve ordering of types by pre-order our types (nHibernate v5.1.3 and below doesn't do a descent job on this)
       ]]>
     </PackageReleaseNotes>
 
