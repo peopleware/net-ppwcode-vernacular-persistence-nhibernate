@@ -10,6 +10,7 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 
@@ -79,42 +80,42 @@ namespace PPWCode.Vernacular.NHibernate.II
             [CanBeNull] string defaultCatalog,
             [CanBeNull] string defaultSchema)
         {
-            bool isSqlserver = dialect is MsSql2000Dialect;
-            bool isFirebird = dialect is FirebirdDialect;
+            Context context = new Context(this, dialect, mapping, defaultCatalog, defaultCatalog);
 
-            StringBuilder script = new StringBuilder();
-
-            if (isFirebird)
+            string script;
+            if (dialect is MsSql2000Dialect)
             {
-                script.AppendLine("execute block");
-                script.AppendLine("as");
-                script.AppendLine("begin");
+                script = SqlCreateStringSqlServer(context);
+            }
+            else if (dialect is FirebirdDialect)
+            {
+                script = SqlCreateStringFirebird(context);
+            }
+            else if (dialect is PostgreSQLDialect)
+            {
+                script = SqlCreateStringPostgreSQL(context);
+            }
+            else
+            {
+                script = SqlCreateStringGeneric(context);
             }
 
+            return script;
+        }
+
+        [NotNull]
+        public virtual string SqlCreateStringSqlServer([NotNull] Context context)
+        {
+            StringBuilder script = new StringBuilder();
             foreach (string schemaName in SchemaNames)
             {
-                string generatorTableName = GetTableName(dialect, schemaName, GeneratorTableName);
-
+                string generatorTableName = context.GetTableName(schemaName);
                 script.AppendLine($"DELETE FROM {generatorTableName};");
-                if (isSqlserver)
-                {
-                    script.AppendLine("GO");
-                }
-
-                script.AppendLine();
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorEntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(dialect)}) NOT NULL;");
-                if (isSqlserver)
-                {
-                    script.AppendLine("GO");
-                }
-
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorTableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(dialect)}) NOT NULL;");
-                if (isSqlserver)
-                {
-                    script.AppendLine("GO");
-                }
-
-                script.AppendLine();
+                script.AppendLine("GO");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.EntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(context.Dialect)}) NOT NULL;");
+                script.AppendLine("GO");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL;");
+                script.AppendLine("GO");
 
                 HashSet<HbmClass> hbmClasses = new HashSet<HbmClass>(HbmClasses.Where(c => c.schema == schemaName));
                 foreach (HbmClass hbmClass in hbmClasses)
@@ -123,18 +124,61 @@ namespace PPWCode.Vernacular.NHibernate.II
                     string fullClassName = segments[0];
                     string tableName = RemoveBackTicks(hbmClass.table);
 
-                    script.AppendLine($"INSERT INTO {generatorTableName} ({GeneratorEntityNameColumnName}, {GeneratorNextHiColumnName}, {GeneratorTableNameColumnName})");
-                    script.AppendLine($"VALUES ('{fullClassName}', 0, '{tableName}');");
+                    script.AppendLine($"INSERT INTO {generatorTableName} ({context.NextHiColumnName}, {context.EntityNameColumnName}, {context.TableNameColumnName})");
+                    script.AppendLine($"VALUES (0, '{fullClassName}', '{tableName}');");
                 }
 
-                if (isSqlserver)
-                {
-                    script.AppendLine("GO");
-                }
+                script.AppendLine("GO");
+            }
 
-                if (isFirebird)
+            return script.ToString();
+        }
+
+        [NotNull]
+        public virtual string SqlCreateStringFirebird([NotNull] Context context)
+        {
+            StringBuilder script = new StringBuilder();
+
+            script.AppendLine("execute block");
+            script.AppendLine("as");
+            script.AppendLine("begin");
+
+            foreach (string schemaName in SchemaNames)
+            {
+                string generatorTableName = context.GetTableName(schemaName);
+                script.AppendLine($"  DELETE FROM {generatorTableName};");
+                script.AppendLine($"  execute statement 'ALTER TABLE {generatorTableName} ADD {context.EntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(context.Dialect)}) NOT NULL';");
+                script.AppendLine($"  execute statement 'ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL';");
+            }
+
+            script.AppendLine("end");
+            return script.ToString();
+        }
+
+        [NotNull]
+        public virtual string SqlCreateStringPostgreSQL([NotNull] Context context)
+            => SqlCreateStringGeneric(context);
+
+        [NotNull]
+        public virtual string SqlCreateStringGeneric([NotNull] Context context)
+        {
+            StringBuilder script = new StringBuilder();
+            foreach (string schemaName in SchemaNames)
+            {
+                string generatorTableName = context.GetTableName(schemaName);
+                script.AppendLine($"DELETE FROM {generatorTableName};");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.EntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(context.Dialect)}) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL;");
+
+                HashSet<HbmClass> hbmClasses = new HashSet<HbmClass>(HbmClasses.Where(c => c.schema == schemaName));
+                foreach (HbmClass hbmClass in hbmClasses)
                 {
-                    script.AppendLine("end");
+                    string[] segments = hbmClass.Name.Split(',');
+                    string fullClassName = segments[0];
+                    string tableName = RemoveBackTicks(hbmClass.table);
+
+                    script.AppendLine($"INSERT INTO {generatorTableName} ({context.NextHiColumnName}, {context.EntityNameColumnName}, {context.TableNameColumnName})");
+                    script.AppendLine($"VALUES (0, '{fullClassName}', '{tableName}');");
                 }
             }
 
@@ -148,17 +192,60 @@ namespace PPWCode.Vernacular.NHibernate.II
             [CanBeNull] string defaultSchema)
             => string.Empty;
 
-        [ContractAnnotation("null => null; notnull => notnull")]
-        private string RemoveBackTicks(string identifier)
-            => identifier?.Replace("`", string.Empty);
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "reviewed")]
+        public class Context
+        {
+            public Context(
+                [NotNull] HighLowPerTableAuxiliaryDatabaseObject auxiliaryDatabaseObject,
+                [NotNull] Dialect dialect,
+                [NotNull] IMapping mapping,
+                [CanBeNull] string defaultCatalog,
+                [CanBeNull] string defaultSchema)
+            {
+                Dialect = dialect;
+                Mapping = mapping;
+                DefaultCatalog = defaultCatalog;
+                DefaultSchema = defaultSchema;
+                AuxiliaryDatabaseObject = auxiliaryDatabaseObject;
+                NextHiColumnName = auxiliaryDatabaseObject.PpwHbmMapping.GetIdentifier(auxiliaryDatabaseObject.GeneratorNextHiColumnName);
+                EntityNameColumnName = auxiliaryDatabaseObject.PpwHbmMapping.GetIdentifier(auxiliaryDatabaseObject.GeneratorEntityNameColumnName);
+                TableNameColumnName = auxiliaryDatabaseObject.PpwHbmMapping.GetIdentifier(auxiliaryDatabaseObject.GeneratorTableNameColumnName);
+            }
 
-        [CanBeNull]
-        private string GetTableName(
-            [NotNull] Dialect dialect,
-            [CanBeNull] string schemaName,
-            [CanBeNull] string tableName)
-            => string.IsNullOrWhiteSpace(schemaName)
-                   ? QuoteTableName(dialect, RemoveBackTicks(tableName))
-                   : $"{QuoteSchemaName(dialect, RemoveBackTicks(schemaName))}.{QuoteTableName(dialect, RemoveBackTicks(tableName))}";
+            [NotNull]
+            public HighLowPerTableAuxiliaryDatabaseObject AuxiliaryDatabaseObject { get; }
+
+            [NotNull]
+            public Dialect Dialect { get; }
+
+            [NotNull]
+            public IMapping Mapping { get; }
+
+            [CanBeNull]
+            public string DefaultCatalog { get; }
+
+            [CanBeNull]
+            public string DefaultSchema { get; }
+
+            [NotNull]
+            public string NextHiColumnName { get; }
+
+            [NotNull]
+            public string EntityNameColumnName { get; }
+
+            [NotNull]
+            public string TableNameColumnName { get; }
+
+            [NotNull]
+            public string GetTableName(string schemaName)
+            {
+                string quotedSchemaName = AuxiliaryDatabaseObject.QuoteSchemaName(Dialect, AuxiliaryDatabaseObject.RemoveBackTicks(schemaName));
+                string quotedGeneratorTableName = AuxiliaryDatabaseObject.QuoteTableName(Dialect, AuxiliaryDatabaseObject.PpwHbmMapping.GetIdentifier(AuxiliaryDatabaseObject.GeneratorTableName));
+                return
+                    string.IsNullOrEmpty(quotedSchemaName)
+                        ? quotedGeneratorTableName
+                        : $"{quotedSchemaName}.{quotedGeneratorTableName}";
+            }
+        }
     }
 }

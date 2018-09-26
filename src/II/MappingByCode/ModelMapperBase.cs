@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
 
@@ -96,6 +97,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         public abstract ICandidatePersistentMembersProvider MembersProvider { get; }
 
         public abstract bool QuoteIdentifiers { get; }
+        public abstract bool UseCamelCaseUnderScoreForDbObjects { get; }
 
         public ModelMapper ModelMapper { get; }
 
@@ -446,5 +448,32 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             [NotNull] IAnyMapper propertyCustomizer)
         {
         }
+
+        public virtual string CamelCaseToUnderscore(string camelCase)
+        {
+            const string Rgx = @"([A-Z]+)([A-Z][a-z])";
+            const string Rgx2 = @"([a-z\d])([A-Z])";
+
+            if (camelCase != null)
+            {
+                string result = Regex.Replace(camelCase, Rgx, "$1_$2");
+                result = Regex.Replace(result, Rgx2, "$1_$2");
+                return result.ToUpper();
+            }
+
+            return null;
+        }
+
+        [ContractAnnotation("null => null; notnull => notnull")]
+        public virtual string GetIdentifier(string identifier)
+            => UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
+
+        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
+        public virtual string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier)
+            => quoteIdentifier ?? QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
+
+        [ContractAnnotation("null => null; notnull => notnull")]
+        public virtual string QuoteIdentifier(string identifier)
+            => identifier != null ? $"`{identifier}`" : null;
     }
 }

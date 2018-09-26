@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -63,5 +63,16 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     Returns <see cref="SimpleModelMapper.QuoteIdentifiers" />
         /// </returns>
         bool QuoteIdentifiers { get; }
+
+        bool UseCamelCaseUnderScoreForDbObjects { get; }
+
+        [ContractAnnotation("null => null; notnull => notnull")]
+        string CamelCaseToUnderscore(string camelCase);
+
+        [ContractAnnotation("null => null; notnull => notnull")]
+        string GetIdentifier(string identifier);
+
+        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
+        string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier);
     }
 }

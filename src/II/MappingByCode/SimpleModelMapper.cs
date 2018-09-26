@@ -12,9 +12,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
 
@@ -95,7 +95,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
-        public virtual bool UseCamelCaseUnderScoreForDbObjects
+        public override bool UseCamelCaseUnderScoreForDbObjects
             => false;
 
         protected virtual bool DynamicInsert
@@ -146,34 +146,6 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         protected virtual string DefaultVersionColumnName
             => "PersistenceVersion";
 
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public virtual string CamelCaseToUnderscore(string camelCase)
-        {
-            const string Rgx = @"([A-Z]+)([A-Z][a-z])";
-            const string Rgx2 = @"([a-z\d])([A-Z])";
-
-            if (camelCase != null)
-            {
-                string result = Regex.Replace(camelCase, Rgx, "$1_$2");
-                result = Regex.Replace(result, Rgx2, "$1_$2");
-                return result.ToUpper();
-            }
-
-            return null;
-        }
-
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public virtual string GetIdentifier(string identifier)
-            => UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
-
-        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
-        public virtual string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier)
-            => quoteIdentifier ?? QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
-
-        [ContractAnnotation("null => null; notnull => notnull")]
-        public virtual string QuoteIdentifier(string identifier)
-            => identifier != null ? $"`{identifier}`" : null;
-
         [CanBeNull]
         protected virtual string GetTableName(
             [NotNull] IModelInspector modelInspector,
@@ -196,6 +168,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         }
 
         [CanBeNull]
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "not null")]
         protected virtual string GetColumnName(
             [NotNull] IModelInspector modelInspector,
             [NotNull] PropertyPath member,

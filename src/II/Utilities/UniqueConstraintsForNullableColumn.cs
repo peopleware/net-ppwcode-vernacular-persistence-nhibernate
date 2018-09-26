@@ -10,6 +10,8 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
@@ -17,6 +19,9 @@ using JetBrains.Annotations;
 
 using NHibernate.Dialect;
 using NHibernate.Engine;
+using NHibernate.Mapping;
+
+using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
@@ -31,44 +36,148 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         protected Expression<Func<TEntity, object>> ColumnName { get; set; }
 
-        protected virtual void AddUniqueIndexSqlServer(Dialect dialect, StringBuilder sb, string tableName, string columnName)
-        {
-            sb.AppendLine($"create unique index IX_UQ_{tableName}_{columnName} on {QuoteTableName(dialect, tableName)}({QuoteColumnName(dialect, columnName)})");
-            sb.AppendLine($"  where {QuoteColumnName(dialect, columnName)} is not null;");
-            sb.AppendLine("GO");
-        }
-
-        protected virtual void AddUniqueConstraint(Dialect dialect, StringBuilder sb, string tableName, string columnName)
-        {
-            sb.AppendLine($"alter table {QuoteTableName(dialect, tableName)}");
-            sb.AppendLine($"  add constraint UQ_{tableName}_{columnName} unique({QuoteColumnName(dialect, columnName)});");
-        }
-
         public override string SqlCreateString(Dialect dialect, IMapping mapping, string defaultCatalog, string defaultSchema)
         {
-            StringBuilder sb = new StringBuilder();
+            Context context = new Context(this, dialect, mapping, defaultCatalog, defaultCatalog);
 
+            string script;
             if (ColumnName != null)
             {
-                bool isSqlServer = dialect is MsSql2000Dialect;
-
-                string tableName = GetTableNameFor(typeof(TEntity));
-                string extendedCompanyColumnName = string.Join(",", GetColumnNames(ColumnName));
-
-                if (isSqlServer)
+                if (dialect is MsSql2000Dialect)
                 {
-                    AddUniqueIndexSqlServer(dialect, sb, tableName, extendedCompanyColumnName);
+                    script = SqlCreateStringSqlServer(context);
+                }
+                else if (dialect is FirebirdDialect)
+                {
+                    script = SqlCreateStringFirebird(context);
+                }
+                else if (dialect is PostgreSQLDialect)
+                {
+                    script = SqlCreateStringPostgreSQL(context);
                 }
                 else
                 {
-                    AddUniqueConstraint(dialect, sb, tableName, extendedCompanyColumnName);
+                    script = SqlCreateStringGeneric(context);
                 }
             }
+            else
+            {
+                script = string.Empty;
+            }
+
+            return script;
+        }
+
+        protected virtual string SqlCreateStringSqlServer(Context context)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(
+                context.QuotedSchemaName != null
+                    ? $"create unique index IX_UQ_{context.TableName}_{context.ColumnName} on {context.QuotedSchemaName}.{context.QuotedTableName}({context.QuotedColumnName})"
+                    : $"create unique index IX_UQ_{context.TableName}_{context.ColumnName} on {context.QuotedTableName}({context.QuotedColumnName})");
+            sb.AppendLine($"  where {context.QuotedColumnName} is not null;");
+
+            return sb.ToString();
+        }
+
+        protected virtual string SqlCreateStringFirebird(Context context)
+            => SqlCreateStringGeneric(context);
+
+        protected virtual string SqlCreateStringPostgreSQL(Context context)
+            => SqlCreateStringGeneric(context);
+
+        protected virtual string SqlCreateStringGeneric(Context context)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine(
+                context.QuotedSchemaName != null
+                    ? $"alter table {context.QuotedSchemaName}.{context.QuotedTableName}"
+                    : $"alter table {context.QuotedTableName}");
+            sb.AppendLine($"  add constraint UQ_{context.TableName}_{context.ColumnName} unique({context.QuotedColumnName});");
 
             return sb.ToString();
         }
 
         public override string SqlDropString(Dialect dialect, string defaultCatalog, string defaultSchema)
             => string.Empty;
+
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "reviewed")]
+        [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "reviewed")]
+        public class Context
+        {
+            public Context(
+                [NotNull] UniqueConstraintsForNullableColumn<TEntity> auxiliaryDatabaseObject,
+                [NotNull] Dialect dialect,
+                [NotNull] IMapping mapping,
+                [CanBeNull] string defaultCatalog,
+                [CanBeNull] string defaultSchema)
+            {
+                Dialect = dialect;
+                Mapping = mapping;
+                DefaultCatalog = defaultCatalog;
+                DefaultSchema = defaultSchema;
+                AuxiliaryDatabaseObject = auxiliaryDatabaseObject;
+
+                Table = auxiliaryDatabaseObject.GetPersistentClassFor(typeof(TEntity))?.Table
+                        ?? throw new ProgrammingError($"Unable to determine physical table information for entity type {typeof(TEntity).FullName}");
+
+                SchemaName = Table.Schema;
+                QuotedSchemaName = auxiliaryDatabaseObject.QuoteSchemaName(Dialect, SchemaName);
+                TableName = Table.Name;
+                QuotedTableName = auxiliaryDatabaseObject.QuoteTableName(Dialect, TableName);
+
+                Column[] columns = auxiliaryDatabaseObject.GetColumns(auxiliaryDatabaseObject.ColumnName);
+                if (columns.Length != 1)
+                {
+                    string foundedColumnNames = string.Join(",", columns.Select(c => c.Name));
+                    throw new ProgrammingError($"Unable to determine the physical column needed for creating a unique key for entity type {typeof(TEntity).FullName}, found following columns: {foundedColumnNames}");
+                }
+
+                Column = columns[0];
+                ColumnName = Column.Name;
+                QuotedColumnName = auxiliaryDatabaseObject.QuoteColumnName(Dialect, ColumnName);
+            }
+
+            [NotNull]
+            public UniqueConstraintsForNullableColumn<TEntity> AuxiliaryDatabaseObject { get; }
+
+            [NotNull]
+            public Dialect Dialect { get; }
+
+            [NotNull]
+            public IMapping Mapping { get; }
+
+            [CanBeNull]
+            public string DefaultCatalog { get; }
+
+            [CanBeNull]
+            public string DefaultSchema { get; }
+
+            [CanBeNull]
+            public string SchemaName { get; }
+
+            [CanBeNull]
+            public string QuotedSchemaName { get; }
+
+            [NotNull]
+            public Table Table { get; set; }
+
+            [NotNull]
+            public Column Column { get; set; }
+
+            [NotNull]
+            public string TableName { get; }
+
+            [NotNull]
+            public string QuotedTableName { get; }
+
+            [NotNull]
+            public string ColumnName { get; }
+
+            [NotNull]
+            public string QuotedColumnName { get; }
+        }
     }
 }

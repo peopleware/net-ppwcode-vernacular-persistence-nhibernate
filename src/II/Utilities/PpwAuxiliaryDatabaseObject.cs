@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -29,6 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.II
           IPpwAuxiliaryDatabaseObject
     {
         protected static readonly string[] EmptyStringArray = new string[0];
+        protected static readonly Column[] EmptyColumnArray = new Column[0];
 
         private Configuration _configuration;
 
@@ -92,7 +93,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
-        protected virtual string[] GetColumnNames<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
+        protected virtual Column[] GetColumns<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
         {
             PropertyInfo propInfo = GetPropertyInfo(propertyLambda);
             PersistentClass persistentClass = GetPersistentClassFor(typeof(TSource));
@@ -106,13 +107,18 @@ namespace PPWCode.Vernacular.NHibernate.II
                         .Value
                         .ColumnIterator
                         .OfType<Column>()
-                        .Select(c => c.Name)
                         .ToArray()
-                    : EmptyStringArray;
+                    : EmptyColumnArray;
         }
 
         [NotNull]
-        protected virtual string[] GetIdentifierColumns([NotNull] Type type)
+        protected virtual string[] GetColumnNames<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
+            => GetColumns(propertyLambda)
+                .Select(c => c.Name)
+                .ToArray();
+
+        [NotNull]
+        protected virtual string[] GetIdentifierColumnNames([NotNull] Type type)
         {
             PersistentClass persistentClass = GetPersistentClassFor(type);
             if (persistentClass != null)
@@ -154,16 +160,26 @@ namespace PPWCode.Vernacular.NHibernate.II
             return propInfo;
         }
 
-        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
-        protected virtual string QuoteColumnName([NotNull] Dialect dialect, string identifier)
-            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForColumnName(identifier) : identifier;
+        [ContractAnnotation("null => null; notnull => notnull")]
+        protected virtual string RemoveBackTicks(string identifier)
+            => identifier?.Replace("`", string.Empty);
 
-        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
-        protected virtual string QuoteTableName([NotNull] Dialect dialect, string identifier)
-            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForTableName(identifier) : identifier;
+        [ContractAnnotation("columnName:null => null; columnName:notnull => notnull")]
+        protected virtual string QuoteColumnName([NotNull] Dialect dialect, string columnName)
+            => !string.IsNullOrEmpty(columnName) && !dialect.IsQuoted(columnName) && PpwHbmMapping.QuoteIdentifiers
+                   ? dialect.QuoteForColumnName(columnName)
+                   : columnName;
 
-        [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
-        protected virtual string QuoteSchemaName([NotNull] Dialect dialect, string identifier)
-            => PpwHbmMapping.QuoteIdentifiers ? dialect.QuoteForSchemaName(identifier) : identifier;
+        [ContractAnnotation("tableName:null => null; tableName:notnull => notnull")]
+        protected virtual string QuoteTableName([NotNull] Dialect dialect, string tableName)
+            => !string.IsNullOrEmpty(tableName) && !dialect.IsQuoted(tableName) && PpwHbmMapping.QuoteIdentifiers
+                   ? dialect.QuoteForTableName(tableName)
+                   : tableName;
+
+        [ContractAnnotation("schemaName:null => null; schemaName:notnull => notnull")]
+        protected virtual string QuoteSchemaName([NotNull] Dialect dialect, string schemaName)
+            => !string.IsNullOrEmpty(schemaName) && !dialect.IsQuoted(schemaName) && PpwHbmMapping.QuoteIdentifiers
+                   ? dialect.QuoteForSchemaName(schemaName)
+                   : schemaName;
     }
 }

@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Text;
-
 using NHibernate.Exceptions;
 
 namespace PPWCode.Vernacular.NHibernate.II.Firebird
@@ -29,29 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
             => true;
 
         /// <inheritdoc />
-        public override bool DropConstraints
-            => false;
-
-        /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
             => new FirebirdExceptionConverter(ViolatedConstraintNameExtracter);
-
-        /// <inheritdoc />
-        public override string GetDropTableString(string tableName)
-            => new StringBuilder()
-                .AppendLine("execute block")
-                .AppendLine("as")
-                .AppendLine("declare variable stmt varchar(512);")
-                .AppendLine("begin")
-                .AppendLine("  if (exists(")
-                .AppendLine("        select null")
-                .AppendLine("          from rdb$relations r")
-                .AppendFormat("         where r.rdb$relation_name = '{0}'", tableName).AppendLine()
-                .AppendLine("           and coalesce(r.rdb$system_flag, 0) = 0)) then begin")
-                .AppendFormat("    stmt = 'drop table ' || \"{0}\"", tableName).AppendLine()
-                .AppendLine("    execute statement stmt;")
-                .AppendLine("  end")
-                .AppendLine("end")
-                .ToString();
     }
 }

@@ -20,10 +20,10 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
 {
     public class TestsSimpleModelMapper : SimpleModelMapper
     {
-        public const string GeneratorTableName = "HIBERNATE_HI_LO";
-        public const string GeneratorNextHiColumnName = "NEXT_HI";
-        public const string GeneratorEntityNameColumnName = "ENTITY_NAME";
-        public const string GeneratorTableNameColumnName = "TABLE_NAME";
+        public const string GeneratorTableName = "HibernateHiLo";
+        public const string GeneratorNextHiColumnName = "NextHi";
+        public const string GeneratorEntityNameColumnName = "EntityName";
+        public const string GeneratorTableNameColumnName = "TableName";
         public const int GeneratorMaxLo = 999;
 
         public TestsSimpleModelMapper(IMappingAssemblies mappingAssemblies)
@@ -68,10 +68,10 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
                                 generatorMapper.Params(
                                     new
                                     {
-                                        table = GeneratorTableName,
-                                        column = GeneratorNextHiColumnName,
+                                        table = GetIdentifier(GeneratorTableName),
+                                        column = GetIdentifier(GeneratorNextHiColumnName),
                                         max_lo = GeneratorMaxLo,
-                                        where = $"{GeneratorEntityNameColumnName} = '{type.FullName}'"
+                                        where = $"{GetIdentifier(GeneratorEntityNameColumnName)} = '{type.FullName}'"
                                     }));
                     });
         }
