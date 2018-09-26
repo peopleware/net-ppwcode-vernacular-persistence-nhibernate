@@ -9,6 +9,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Text;
+
 using NHibernate.Exceptions;
 
 namespace PPWCode.Vernacular.NHibernate.II.Firebird
@@ -23,7 +25,31 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
                ?? (_violatedConstraintNameExtracter = new FirebirdViolatedConstraintNameExtracter());
 
         /// <inheritdoc />
+        public override bool SupportsCommentOn
+            => true;
+
+        /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
             => new FirebirdExceptionConverter(ViolatedConstraintNameExtracter);
+
+        /// <inheritdoc />
+        public override string GetDropTableString(string tableName)
+            => new StringBuilder()
+                .AppendLine("execute block")
+                .AppendLine("as")
+                .AppendLine("declare variable relation_name char(31);")
+                .AppendLine("declare variable stmt varchar(512);")
+                .AppendLine("begin")
+                .AppendFormat("  relation_name = '{0}';", tableName).AppendLine()
+                .AppendLine("  if (exists(")
+                .AppendLine("        select null")
+                .AppendLine("          from rdb$relations r")
+                .AppendLine("         where r.rdb$relation_name = :relation_name")
+                .AppendLine("           and coalesce(r.rdb$system_flag, 0) = 0)) then begin")
+                .AppendLine("    stmt = 'drop table ' || \" || :relation_name ||\"")
+                .AppendLine("    execute statement stmt;")
+                .AppendLine("  end")
+                .AppendLine("end")
+                .ToString();
     }
 }
