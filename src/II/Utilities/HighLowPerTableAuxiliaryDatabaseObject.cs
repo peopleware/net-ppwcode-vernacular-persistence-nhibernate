@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -29,19 +29,25 @@ namespace PPWCode.Vernacular.NHibernate.II
         {
         }
 
+        [NotNull]
         protected abstract string GeneratorTableName { get; }
 
+        [NotNull]
         protected abstract string GeneratorEntityNameColumnName { get; }
 
+        [NotNull]
         protected abstract string GeneratorNextHiColumnName { get; }
 
+        [NotNull]
         protected abstract string GeneratorTableNameColumnName { get; }
 
+        [NotNull]
         protected virtual IEnumerable<IGeneratorDef> GeneratorDefs
         {
             get { yield return Generators.HighLow; }
         }
 
+        [NotNull]
         protected virtual IEnumerable<string> SchemaNames
         {
             get { return HbmClasses.Select(c => c.schema).Distinct(); }
@@ -62,6 +68,11 @@ namespace PPWCode.Vernacular.NHibernate.II
             }
         }
 
+        protected abstract int GeneratorEntityNameColumnLength([NotNull] Dialect dialect);
+
+        protected abstract int GeneratorTableNameColumnLength([NotNull] Dialect dialect);
+
+        [NotNull]
         public override string SqlCreateString(
             [NotNull] Dialect dialect,
             [NotNull] IMapping mapping,
@@ -83,13 +94,13 @@ namespace PPWCode.Vernacular.NHibernate.II
                 }
 
                 script.AppendLine();
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorEntityNameColumnName} VARCHAR({dialect.MaxAliasLength}) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorEntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(dialect)}) NOT NULL;");
                 if (isSqlserver)
                 {
                     script.AppendLine("GO");
                 }
 
-                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorTableNameColumnName} VARCHAR({dialect.MaxAliasLength}) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD {GeneratorTableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(dialect)}) NOT NULL;");
                 if (isSqlserver)
                 {
                     script.AppendLine("GO");
@@ -117,6 +128,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             return script.ToString();
         }
 
+        [NotNull]
         public override string SqlDropString(
             [NotNull] Dialect dialect,
             [CanBeNull] string defaultCatalog,

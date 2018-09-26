@@ -11,6 +11,7 @@
 
 using System;
 
+using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
@@ -95,5 +96,13 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
 
         protected override string GeneratorTableNameColumnName
             => TestsSimpleModelMapper.GeneratorTableNameColumnName;
+
+        /// <inheritdoc />
+        protected override int GeneratorEntityNameColumnLength(Dialect dialect)
+            => 255;
+
+        /// <inheritdoc />
+        protected override int GeneratorTableNameColumnLength(Dialect dialect)
+            => dialect.MaxAliasLength;
     }
 }
