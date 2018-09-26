@@ -167,11 +167,11 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             => UseCamelCaseUnderScoreForDbObjects ? CamelCaseToUnderscore(identifier) : identifier;
 
         [ContractAnnotation("identifier:null => null; identifier:notnull => notnull")]
-        protected virtual string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier)
+        public virtual string ConditionalQuoteIdentifier(string identifier, bool? quoteIdentifier)
             => quoteIdentifier ?? QuoteIdentifiers ? QuoteIdentifier(identifier) : identifier;
 
         [ContractAnnotation("null => null; notnull => notnull")]
-        protected virtual string QuoteIdentifier(string identifier)
+        public virtual string QuoteIdentifier(string identifier)
             => identifier != null ? $"`{identifier}`" : null;
 
         [CanBeNull]
