@@ -46,7 +46,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
         protected override bool AdjustColumnForForeignGenerator
             => true;
 
-        protected override bool UseCamelCaseUnderScoreForDbObjects
+        public override bool UseCamelCaseUnderScoreForDbObjects
             => false;
 
         public override bool QuoteIdentifiers

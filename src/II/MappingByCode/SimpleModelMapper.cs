@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -95,7 +95,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             ModelMapper.BeforeMapAny += MemberReadOnlyAccessor;
         }
 
-        protected virtual bool UseCamelCaseUnderScoreForDbObjects
+        public virtual bool UseCamelCaseUnderScoreForDbObjects
             => false;
 
         protected virtual bool DynamicInsert
@@ -119,7 +119,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         public override bool QuoteIdentifiers
             => false;
 
-        protected virtual bool CreateIndexForForeignKey
+        public virtual bool CreateIndexForForeignKey
             => true;
 
         protected virtual bool AdjustColumnForForeignGenerator
@@ -860,9 +860,9 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 
         protected virtual HbmMapping TryGetHbmMapping(object customizer)
             => customizer is ClassMapper classMapper
-                   ? (MapDocPropertyInfo != null
-                          ? MapDocPropertyInfo.GetValue(classMapper) as HbmMapping
-                          : null)
+                   ? MapDocPropertyInfo != null
+                         ? MapDocPropertyInfo.GetValue(classMapper) as HbmMapping
+                         : null
                    : null;
     }
 }
