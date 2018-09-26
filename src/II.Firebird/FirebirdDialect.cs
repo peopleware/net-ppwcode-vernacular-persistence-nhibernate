@@ -29,6 +29,10 @@ namespace PPWCode.Vernacular.NHibernate.II.Firebird
             => true;
 
         /// <inheritdoc />
+        public override bool DropConstraints
+            => false;
+
+        /// <inheritdoc />
         public override ISQLExceptionConverter BuildSQLExceptionConverter()
             => new FirebirdExceptionConverter(ViolatedConstraintNameExtracter);
 
