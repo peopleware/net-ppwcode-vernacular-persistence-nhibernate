@@ -80,8 +80,16 @@ namespace PPWCode.Vernacular.NHibernate.II
             [CanBeNull] string defaultSchema)
         {
             bool isSqlserver = dialect is MsSql2000Dialect;
+            bool isFirebird = dialect is FirebirdDialect;
 
             StringBuilder script = new StringBuilder();
+
+            if (isFirebird)
+            {
+                script.AppendLine("execute block");
+                script.AppendLine("as");
+                script.AppendLine("begin");
+            }
 
             foreach (string schemaName in SchemaNames)
             {
@@ -122,6 +130,11 @@ namespace PPWCode.Vernacular.NHibernate.II
                 if (isSqlserver)
                 {
                     script.AppendLine("GO");
+                }
+
+                if (isFirebird)
+                {
+                    script.AppendLine("end");
                 }
             }
 
