@@ -48,6 +48,9 @@
       <![CDATA[
 1.0.0 Initial release
 1.0.1 Improve ordering of mapped types by pre-ordering them (workaround for a bug in nHibernate v5.1.3 and below)
+2.0.0 Improvements
+      - auxiliary database objects support multiple dialects (SQL Server, PostgreSQL, FireBird)
+      - Hibernate HiLo generator follows settings in model mapper
       ]]>
     </PackageReleaseNotes>
 
