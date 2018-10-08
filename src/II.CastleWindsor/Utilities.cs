@@ -16,7 +16,6 @@ using System.Reflection;
 
 using Castle.MicroKernel;
 using Castle.MicroKernel.Resolvers;
-using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 
 using JetBrains.Annotations;
@@ -51,7 +50,7 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                 && typeof(DefaultDependencyResolver)
                     .GetField("subResolvers", BindingFlags.NonPublic | BindingFlags.Instance)
                     ?.GetValue(currentResolver) is IList<ISubDependencyResolver> subResolvers
-                && subResolvers.OfType<CollectionResolver>().Any())
+                && subResolvers.OfType<T>().Any())
             {
                 return;
             }

@@ -51,6 +51,8 @@
 2.0.0 Improvements
       - auxiliary database objects support multiple dialects (SQL Server, PostgreSQL, FireBird)
       - Hibernate HiLo generator follows settings in model mapper
+2.0.1 Bugfix
+      - AddSubResolverConditionally checked for CollectionResolver instead of the generic type
       ]]>
     </PackageReleaseNotes>
 
