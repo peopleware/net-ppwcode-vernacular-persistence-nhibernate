@@ -10,10 +10,18 @@
 // limitations under the License.
 
 using System;
+using System.IO;
+using System.Reflection;
 
 using HibernatingRhinos.Profiler.Appender.NHibernate;
 
+#if !NET461
+using log4net;
+#endif
 using log4net.Config;
+#if !NET461
+using log4net.Repository;
+#endif
 
 using PPWCode.Vernacular.Persistence.III;
 
@@ -26,8 +34,13 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
     {
         protected override void OnFixtureSetup()
         {
+#if NET461
             // configure for all tests in this class
             XmlConfigurator.Configure();
+#else
+            ILoggerRepository logRepository = LogManager.GetRepository(Assembly.GetEntryAssembly());
+            XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+#endif
 
             // configure for all tests in this class
             if (UseProfiler)

@@ -12,9 +12,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+#if NET461
 using System.Data.Sql;
+#endif
 using System.Data.SqlClient;
+#if NET461
 using System.Linq;
+#endif
 
 using JetBrains.Annotations;
 
@@ -116,6 +120,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
         private static bool DataSourceExists([NotNull] string dataSource)
         {
             bool result = (dataSource == @".") || dataSource.Equals(@"localhost", StringComparison.InvariantCultureIgnoreCase);
+#if NET461
             if (!result)
             {
                 SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
@@ -132,7 +137,9 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
                                       && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
                 }
             }
-
+#else
+            result = true;
+#endif
             return result;
         }
 

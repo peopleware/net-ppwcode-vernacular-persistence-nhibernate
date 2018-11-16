@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- target frameworks -->
     <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildDotNetCoreOnly)'=='true'">netstandard2.0</TargetFrameworks>
 
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
@@ -29,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
+    <PackageReference Condition="'$(BuildDotNetCoreOnly)'!='true'" Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">

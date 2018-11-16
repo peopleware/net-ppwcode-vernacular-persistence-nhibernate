@@ -3,6 +3,7 @@
   <PropertyGroup>
     <!-- target frameworks -->
     <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks Condition="'$(BuildDotNetCoreOnly)'=='true'">netcoreapp2.0</TargetFrameworks>
 
     <!-- nuget package -->
     <IsPackable>false</IsPackable>
@@ -16,14 +17,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
+    <PackageReference Condition="'$(BuildDotNetCoreOnly)'!='true'" Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="log4net" Version="[2.0.8]" />
-    <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" />
+
+    <!-- MUDO: Common.Loging.Log4Net208 only supports net461 -->
+    <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" NoWarn="NU1701" />
 
     <ProjectReference Include="..\II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj" />
   </ItemGroup>
