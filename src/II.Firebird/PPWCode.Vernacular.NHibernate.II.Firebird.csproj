@@ -35,7 +35,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.1.0" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.4.0" />
 
     <ProjectReference Include="..\II\PPWCode.Vernacular.NHibernate.II.csproj" />
   </ItemGroup>
