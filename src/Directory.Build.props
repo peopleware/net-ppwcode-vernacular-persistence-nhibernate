@@ -53,6 +53,11 @@
       - Hibernate HiLo generator follows settings in model mapper
 2.0.1 Bugfix
       - AddSubResolverConditionally checked for CollectionResolver instead of the generic type
+2.0.2 Upgrade packages to latest version
+      - nHibernate (5.1.3) / nHibernate.Profiler (5.0.5031)
+        Firebird (6.4.0), PostgreSQL (4.0.4) and SqlServer ADO.Net drivers (4.6.0)
+        Moq (4.10.1) and NUnit (3.11.0)
+        Stylecop (1.1.1-beta.61)
       ]]>
     </PackageReleaseNotes>
 
