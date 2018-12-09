@@ -109,7 +109,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver
             Company company =
                 Repository.Get(
                     qry => qry.Where(c => c.Name == "Peopleware NV")
-                        .Fetch(c => c.Identifications).Eager);
+                        .Fetch(SelectMode.Fetch, c => c.Identifications));
 
             Assert.That(company, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.Identifications), Is.True);
