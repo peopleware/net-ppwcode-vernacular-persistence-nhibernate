@@ -189,7 +189,11 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 
             if (modelInspector.IsManyToManyItem(member.LocalMember))
             {
-                keyColumnName = member.CollectionElementType().Name;
+                keyColumnName = member.CollectionElementType()?.Name;
+                if (keyColumnName == null)
+                {
+                    throw new ProgrammingError($"Unable to determine the keyColumnName, in case of a m-n relation, for {member.LocalMember.Name}");
+                }
             }
             else if (modelInspector.IsManyToOne(member.LocalMember)
                      || modelInspector.IsSet(member.LocalMember)
