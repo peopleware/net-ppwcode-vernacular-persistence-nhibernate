@@ -34,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey
 
         protected override IPpwHbmMapping PpwHbmMapping
             => _ppwHbmMapping
-               ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
+               ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies(), Configuration));
 
         protected override string IdentityName
             => "Test - IdentityName";

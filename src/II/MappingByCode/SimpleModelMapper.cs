@@ -25,6 +25,8 @@ using NHibernate.Mapping.ByCode.Impl;
 
 using PPWCode.Vernacular.Exceptions.III;
 
+using Environment = NHibernate.Cfg.Environment;
+
 namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 {
     /// <summary>
@@ -42,8 +44,10 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 
         private PropertyInfo _mapPropertyInfo;
 
-        protected SimpleModelMapper(IMappingAssemblies mappingAssemblies)
-            : base(mappingAssemblies)
+        protected SimpleModelMapper(
+            [NotNull] IMappingAssemblies mappingAssemblies,
+            [NotNull] Configuration configuration)
+            : base(mappingAssemblies, configuration)
         {
             ModelMapper.BeforeMapSet += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapBag += OnBeforeMappingCollectionConvention;
