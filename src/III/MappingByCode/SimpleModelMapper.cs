@@ -19,15 +19,11 @@ using System.Reflection;
 using JetBrains.Annotations;
 
 using NHibernate;
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
-using NHibernate.Util;
 
 using PPWCode.Vernacular.Exceptions.IV;
-
-using Environment = NHibernate.Cfg.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
 {
@@ -48,10 +44,8 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
 
         private PropertyInfo _mapPropertyInfo;
 
-        protected SimpleModelMapper(
-            [NotNull] IMappingAssemblies mappingAssemblies,
-            [NotNull] Configuration configuration)
-            : base(mappingAssemblies, configuration)
+        protected SimpleModelMapper([NotNull] IMappingAssemblies mappingAssemblies)
+            : base(mappingAssemblies)
         {
             ModelMapper.BeforeMapSet += OnBeforeMappingCollectionConvention;
             ModelMapper.BeforeMapBag += OnBeforeMappingCollectionConvention;
@@ -705,8 +699,7 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
         {
             OnBeforeEntityMap(modelInspector, type, classCustomizer);
 
-            if (PropertiesHelper.GetBoolean(Environment.UseQueryCache, Configuration.Properties)
-                && modelInspector.IsRootEntity(type)
+            if (modelInspector.IsRootEntity(type)
                 && CachedEntityTypes.TryGetValue(type, out CachedEntityType cachedEntityType))
             {
                 classCustomizer
@@ -844,11 +837,10 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
                 collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
 
-            if (PropertiesHelper.GetBoolean(Environment.UseQueryCache, Configuration.Properties)
-                && (modelInspector.IsSet(member.LocalMember)
-                    || modelInspector.IsBag(member.LocalMember)
-                    || modelInspector.IsList(member.LocalMember)
-                    || modelInspector.IsArray(member.LocalMember)))
+            if (modelInspector.IsSet(member.LocalMember)
+                || modelInspector.IsBag(member.LocalMember)
+                || modelInspector.IsList(member.LocalMember)
+                || modelInspector.IsArray(member.LocalMember))
             {
                 Type propertyOrFieldType =
                     member

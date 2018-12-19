@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
 
 using JetBrains.Annotations;
 
-using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
@@ -30,11 +29,8 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
         private readonly IMappingAssemblies _mappingAssemblies;
         private HbmMapping _hbmMapping;
 
-        protected ModelMapperBase(
-            [NotNull] IMappingAssemblies mappingAssemblies,
-            [NotNull] Configuration configuration)
+        protected ModelMapperBase([NotNull] IMappingAssemblies mappingAssemblies)
         {
-            Configuration = configuration;
             _mappingAssemblies = mappingAssemblies;
             ModelMapper = new ModelMapper();
 
@@ -82,9 +78,6 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
         [NotNull]
         protected IModelInspector ModelInspector
             => ModelMapper.ModelInspector;
-
-        [NotNull]
-        public Configuration Configuration { get; }
 
         [CanBeNull]
         protected virtual IEnumerable<Type> MappingTypes

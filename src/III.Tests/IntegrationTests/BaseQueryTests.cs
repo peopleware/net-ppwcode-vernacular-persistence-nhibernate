@@ -29,7 +29,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
             => FixedConnectionString;
 
         protected override IPpwHbmMapping PpwHbmMapping
-            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies(), Configuration));
+            => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
         protected override string IdentityName
             => "Test - IdentityName";
