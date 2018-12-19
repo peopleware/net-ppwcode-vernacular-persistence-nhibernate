@@ -161,19 +161,6 @@ namespace PPWCode.Vernacular.NHibernate.II.CastleWindsor
                     Component
                         .For<IPpwHbmMapping>()
                         .ImplementedBy(_ppwHbmMapping)
-                        .DynamicParameters(
-                            (k, d) =>
-                            {
-                                INhConfiguration nhConfiguration = k.Resolve<INhConfiguration>();
-                                try
-                                {
-                                    d["configuration"] = nhConfiguration.GetConfiguration();
-                                }
-                                finally
-                                {
-                                    k.ReleaseComponent(nhConfiguration);
-                                }
-                            })
                         .LifeStyle.Singleton,
                     Component
                         .For<INhInterceptor>()
