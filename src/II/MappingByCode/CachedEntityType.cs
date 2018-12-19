@@ -19,7 +19,7 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 {
     public class CachedEntityType
     {
-        public CachedEntityType([NotNull] Type type, [CanBeNull] string regionName, [CanBeNull] CacheUsage cacheUsage)
+        public CachedEntityType([NotNull] Type type, [CanBeNull] string regionName = null, [CanBeNull] CacheUsage cacheUsage = null)
         {
             Type = type;
             RegionName = regionName;
