@@ -19,9 +19,11 @@ using System.Reflection;
 using JetBrains.Annotations;
 
 using NHibernate;
+using NHibernate.Cfg;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Util;
 
 using PPWCode.Vernacular.Exceptions.III;
 
@@ -41,6 +43,8 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
             TYPE_ID,
             ID_TYPE
         }
+
+        private IDictionary<Type, CachedEntityType> _cachedEntityTypes;
 
         private PropertyInfo _mapPropertyInfo;
 
@@ -134,6 +138,20 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
 
         protected virtual KeyTypeEnum ForeignKeyType
             => KeyTypeEnum.TYPE_ID;
+
+        [NotNull]
+        protected virtual string DefaultRegionNameForCachedEntities { get; } = "common";
+
+        [NotNull]
+        protected virtual CacheUsage DefaultCacheUsageForCachedEntities { get; } = CacheUsage.ReadWrite;
+
+        protected virtual IEnumerable<CachedEntityType> GetEntityTypesToCache
+        {
+            get { yield break; }
+        }
+
+        protected IDictionary<Type, CachedEntityType> CachedEntityTypes
+            => _cachedEntityTypes ?? (_cachedEntityTypes = GetEntityTypesToCache.ToDictionary(ce => ce.Type));
 
         public override ICandidatePersistentMembersProvider MembersProvider { get; }
 
@@ -686,6 +704,19 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
         protected override void OnBeforeMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
         {
             OnBeforeEntityMap(modelInspector, type, classCustomizer);
+
+            if (PropertiesHelper.GetBoolean(Environment.UseQueryCache, Configuration.Properties)
+                && modelInspector.IsRootEntity(type)
+                && CachedEntityTypes.TryGetValue(type, out CachedEntityType cachedEntityType))
+            {
+                classCustomizer
+                    .Cache(
+                        m =>
+                        {
+                            m.Region(cachedEntityType.RegionName ?? DefaultRegionNameForCachedEntities);
+                            m.Usage(cachedEntityType.CacheUsage ?? DefaultCacheUsageForCachedEntities);
+                        });
+            }
         }
 
         protected override void OnBeforeMapSubclass(IModelInspector modelInspector, Type type, ISubclassAttributesMapper subclassCustomizer)
@@ -812,6 +843,50 @@ namespace PPWCode.Vernacular.NHibernate.II.MappingByCode
                 string keyColumnName = GetForeignKeyColumnName(modelInspector, member, null);
                 collectionPropertiesCustomizer.Key(k => k.Column(keyColumnName));
             }
+
+            if (PropertiesHelper.GetBoolean(Environment.UseQueryCache, Configuration.Properties)
+                && (modelInspector.IsSet(member.LocalMember)
+                    || modelInspector.IsBag(member.LocalMember)
+                    || modelInspector.IsList(member.LocalMember)
+                    || modelInspector.IsArray(member.LocalMember)))
+            {
+                Type propertyOrFieldType =
+                    member
+                        .GetRootMember()
+                        .GetPropertyOrFieldType();
+                Type itemType = GetCompatibleItemType(propertyOrFieldType);
+                if ((itemType != null)
+                    && CachedEntityTypes.TryGetValue(itemType, out CachedEntityType cachedEntityType))
+                {
+                    collectionPropertiesCustomizer
+                        .Cache(
+                            m =>
+                            {
+                                m.Region(cachedEntityType.RegionName ?? DefaultRegionNameForCachedEntities);
+                                m.Usage(cachedEntityType.CacheUsage ?? DefaultCacheUsageForCachedEntities);
+                            });
+                }
+            }
+        }
+
+        protected virtual Type GetCompatibleItemType(Type type)
+        {
+            if (type == null)
+            {
+                return null;
+            }
+
+            if (type.IsArray)
+            {
+                return type.GetElementType();
+            }
+
+            if (!type.GetTypeInfo().IsGenericType || type.GetTypeInfo().IsGenericTypeDefinition)
+            {
+                return null;
+            }
+
+            return type.GetGenericArguments().FirstOrDefault();
         }
 
         protected override void OnAfterMapClass(IModelInspector modelInspector, Type type, IClassAttributesMapper classCustomizer)
