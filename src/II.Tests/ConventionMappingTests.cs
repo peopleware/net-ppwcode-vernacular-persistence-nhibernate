@@ -35,7 +35,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
                 new Configuration()
                     .DataBaseIntegration(db => db.Dialect<MsSqlDialect>())
                     .Configure();
-            IPpwHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies(), configuration);
+            IPpwHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
             HbmMapping hbmMapping = mapper.HbmMapping;
             configuration.AddMapping(hbmMapping);
             IAuxiliaryDatabaseObject[] auxiliaryDatabaseObjects =
@@ -58,11 +58,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
         [Explicit]
         public void XmlMapping()
         {
-            Configuration configuration =
-                new Configuration()
-                    .DataBaseIntegration(db => db.Dialect<MsSqlDialect>())
-                    .Configure();
-            IPpwHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies(), configuration);
+            IPpwHbmMapping mapper = new TestsSimpleModelMapper(new TestsMappingAssemblies());
             HbmMapping hbmMapping = mapper.HbmMapping;
             Console.WriteLine(hbmMapping.AsString());
         }

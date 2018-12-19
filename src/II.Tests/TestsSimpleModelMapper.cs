@@ -13,7 +13,6 @@ using System;
 
 using JetBrains.Annotations;
 
-using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Mapping.ByCode;
 
@@ -29,10 +28,8 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests
         public const string GeneratorTableNameColumnName = "TableName";
         public const int GeneratorMaxLo = 999;
 
-        public TestsSimpleModelMapper(
-            [NotNull] IMappingAssemblies mappingAssemblies,
-            [NotNull] Configuration configuration)
-            : base(mappingAssemblies, configuration)
+        public TestsSimpleModelMapper([NotNull] IMappingAssemblies mappingAssemblies)
+            : base(mappingAssemblies)
         {
         }
 
