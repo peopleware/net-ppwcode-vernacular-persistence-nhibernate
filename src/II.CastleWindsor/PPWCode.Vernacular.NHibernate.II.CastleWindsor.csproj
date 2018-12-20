@@ -35,7 +35,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.1-beta.61">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Castle.Windsor" Version="4.1.1" />
+    <PackageReference Include="Castle.Windsor" Version="[4.1.1, 5)" />
 
     <ProjectReference Include="..\II\PPWCode.Vernacular.NHibernate.II.csproj" />
   </ItemGroup>
