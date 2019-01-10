@@ -48,11 +48,11 @@ Properties {
     $chattercolor = 'Green'
 
     # choco installer directives
-    $chocoIIncludeXmlFiles = $false
-    $chocoIncludePdb = $false
+    $chocoIncludeXmlFiles = $true
+    $chocoIncludePdb = $true
 
     # used nunit version
-    $nunitVersion = '3.8.0'
+    $nunitVersion = '3.9.0'
     $nUnitFramework = $null
 }
 
@@ -79,9 +79,9 @@ function PropertyDocumentation() {
     Write-Host "`$chattercolor                 Foreground color to use for task output., defaults to Green"
     Write-Host "`$buildconfig                  Build configuration (Debug, Release), defaults to Debug."
     Write-Host "`$buildPlatformTarget          Build Target Platform (AnyCpu, x86, x64), defaults to AnyCpu."
-    Write-Host "`$chocoIIncludeXmlFiles        When creating a chocolatey-package, we can specify to include Xml-Files, defaults to $false."
+    Write-Host "`$chocoIncludeXmlFiles        When creating a chocolatey-package, we can specify to include Xml-Files, defaults to $false."
     Write-Host "`$chocoIncludePdb              When creating a chocolatey-package, we can specify to include Pdb-Files, defaults to $false."
-    Write-Host "`$nunitVersion                 Version of nunit-runner, defaults to 3.8.0"
+    Write-Host "`$nunitVersion                 Version of nunit-runner, defaults to 3.9.0"
     Write-Host "`$nUnitFramework               RuntimeFramework for nunit-runner, defaults to $null, If not specified, tests will run under the framework they are compiled with"
 }
 
@@ -119,28 +119,52 @@ function Get-DefaultMsBuildParameters
 {
     Param (
         [Parameter(Mandatory = $true)]
-        [string]$solution,
+        [System.IO.FileInfo]$targetFile,
 
         [Parameter(Mandatory = $true)]
-        [Array]$tasks,
+        [string[]]$tasks,
 
-        [Parameter(Mandatory = $true)]
-        [string]$configuration,
+        [Parameter(Mandatory = $false)]
+        [string[]]$configuration,
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$platform,
 
         [Parameter(Mandatory = $false)]
         [string[]]$additionalParameters
     )
 
+    if (-Not $configuration) {
+        $configuration = $buildconfig
+    }
+
+    if (-Not $platform) {
+        $platform = $buildPlatformTarget
+        if ($platform -eq "AnyCpu") {
+            $platform = "Any Cpu"
+        }
+    }
+
     $concatedTasks = ($tasks -join ';')
     $params = @(
-        """$solution"""
+        """$targetFile"""
         "/t:$concatedTasks"
         "/m"
         "/nr:false"
-        "/v:quiet"
         "/nologo"
-        "/p:Configuration=$configuration"
+        "/p:Configuration=""$configuration"""
+        "/p:Platform=""$platform"""
     )
+
+    if ($chatter -eq 1) {
+        $params += "/v:quiet"
+    } 
+    elseif ($chatter -eq 2) {
+        $params += "/v:minimal"
+    } 
+    else {
+        $params += "/v:normal"
+    }
 
     if ($additionalParameters) {
         foreach($param in $additionalParameters) {
@@ -158,21 +182,105 @@ function Invoke-MsBuild
 {
     Param (
         [Parameter(Mandatory = $true)]
-        [string]$solution,
+        [System.IO.FileInfo]$targetFile,
 
         [Parameter(Mandatory = $true)]
-        [Array]$tasks,
+        [string[]]$tasks,
 
-        [Parameter(Mandatory = $true)]
-        [string]$configuration,
+        [Parameter(Mandatory = $false)]
+        [string[]]$configuration,
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$platform,
 
         [Parameter(Mandatory = $false)]
         [string[]]$additionalParameters
     )
 
-    $msbuildParams = Get-DefaultMsBuildParameters -solution $solution -tasks $tasks -configuration $configuration -additionalParameters $additionalParameters
-    Chatter "msbuild $msbuildParams" 3
-    Exec { msbuild $msbuildParams }
+    $msbuildParams = Get-DefaultMsBuildParameters -targetFile $targetFile -tasks $tasks -configuration $configuration -platform $platform -additionalParameters $additionalParameters
+    $message = "msbuild $tasks went wrong"
+
+    Chatter "msbuild $msbuildParams" 2
+    Exec { msbuild $msbuildParams } $message
+}
+
+###############################################################################
+# Helper to determine our nuget parameters
+#
+function Get-DefaultNugetParameters
+{
+    Param (
+        [Parameter(Mandatory = $true)]
+        [string]$task,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$additionalParameters,
+
+        [Parameter(Mandatory = $false)]
+        [string]$configuration,
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$properties
+    )
+
+    $params = @($task)
+    if ($additionalParameters) {
+        foreach($param in $additionalParameters) {
+            $params += $param
+        }
+    }
+
+    if ($chatter -eq 1) {
+        $params += "-Verbosity quiet"
+    } 
+    elseif ($chatter -eq 2) {
+        $params += "-Verbosity normal"
+    } 
+    else {
+        $params += "-Verbosity detailed"
+    }
+
+    if ($configuration) {
+        if (-Not $properties) {
+            $properties = @()
+        }
+
+        $properties += "Configuration=$configuration"
+    }
+
+    if ($properties) {
+        $joinedProperties = $properties -join ';'
+        $params += "-Properties ""$joinedProperties"""
+    }
+
+    $params
+}
+
+###############################################################################
+# Helper to invoke Nuget
+# note: nuget commandline transparantly calls msbuild "restore" for new type csproj files
+#
+function Invoke-Nuget
+{
+    Param (
+        [Parameter(Mandatory = $true)]
+        [string]$task,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$additionalParameters,
+
+        [Parameter(Mandatory = $false)]
+        [string]$configuration,
+
+        [Parameter(Mandatory = $false)]
+        [string[]]$properties
+    )
+
+    $nugetParams = Get-DefaultNugetParameters -task $task -additionalParameters $additionalParameters -configuration $configuration -properties $properties
+    $message = "nuget $task went wrong"
+
+    Chatter "nuget $nugetParams" 2
+    Exec { Invoke-Expression "nuget $nugetParams" } $message
 }
 
 #endregion
@@ -205,8 +313,8 @@ Task ShowProperties -description 'Show running properties' {
     Chatter "Properties used:" 1
     Chatter "  buildconfig=$buildconfig" 1
     Chatter "  buildPlatformTarget=$buildPlatformTarget" 1
-    Chatter "  chocoIIncludeXmlFiles=$chocoIIncludeXmlFiles" 1
-    Chatter "  chocoIIncludeXmlFiles=$chocoIIncludeXmlFiles" 1
+    Chatter "  chocoIncludeXmlFiles=$chocoIncludeXmlFiles" 1
+    Chatter "  chocoIncludePdb=$chocoIncludePdb" 1
     Chatter "  nunitVersion=$nunitVersion" 1
     Chatter "  nUnitFramework=$nUnitFramework" 1
 }
@@ -224,7 +332,7 @@ Task Clean -description 'Clean build output.' -depends ShowProperties {
         $solution = Get-Item '*.sln' | Select-Object -First 1
 
         # msbuild clean
-        Invoke-MsBuild -solution $solution.Name -tasks @('Clean') -configuration $buildconfig
+        Invoke-MsBuild -targetFile $solution.Name -tasks @('Clean')
         Set-Location '..'
 
         # clean up scratch folder
@@ -253,7 +361,7 @@ Task ReSharperClean -description 'Clean ReSharper cache folders.' -depends ShowP
     try
     {
         # clean up cache folder
-        $path = Join-Path "src" "_ReSharper.Caches"
+        $path = Join-Path 'src' '_ReSharper.Caches'
         if (Test-Path $path) {
             Remove-Item -Path $path -Recurse -Force
         }
@@ -275,7 +383,7 @@ Task PackageClean -description 'Clean NuGet packages folder.' -depends ReSharper
     try
     {
         # clean up packages folder
-        $path = Join-Path "src" "packages"
+        $path = Join-Path 'src' 'packages'
         if (Test-Path $path) {
             Remove-Item -Path $path -Recurse -Force
         }
@@ -305,12 +413,10 @@ Task PackageRestore -description 'Restore NuGet package dependencies.' -depends 
         # traditional nuget command-line restore
         # note, nuget commandline transparantly calls msbuild "restore" for new type csproj files
         $nugetRestoreParams = @(
-            "$solution"
+            """$solution"""
             "-NonInteractive"
-            "-Verbosity quiet"
         )
-        Chatter "nuget restore $nugetRestoreParams" 3
-        Exec { Invoke-Expression "nuget restore $nugetRestoreParams" }
+        Invoke-Nuget -task restore -additionalParameters $nugetRestoreParams
     }
     finally
     {
@@ -339,7 +445,7 @@ Task Build -description 'Build the solution.' -depends Clean {
     {
         Set-Location 'src'
         $solution = Get-Item '*.sln' | Select-Object -First 1
-        Invoke-MsBuild -solution $solution.Name -tasks @('Restore', 'Build') -configuration $buildconfig
+        Invoke-MsBuild -targetFile $solution.Name -tasks @('Restore', 'Build')
     }
     finally
     {
@@ -353,11 +459,11 @@ Task Build -description 'Build the solution.' -depends Clean {
 Task FullBuild -description 'Do a full build starting from a clean solution.' -depends Restore,Build
 
 ###############################################################################
-# Create a NuGet package
+# Create a NuGet package, based on new project VS2017 style
 #
 # Depends on Clean to ensure a clean build, not using any left-over compile artifacts.
 #
-Task Pack -description 'Create a nuget-package (new 2017 VS csproj).' -depends FullClean {
+Task Pack2017 -description 'Create a nuget-package (new project 2017 style).' -depends FullClean {
 
     Push-Location
     try
@@ -370,7 +476,53 @@ Task Pack -description 'Create a nuget-package (new 2017 VS csproj).' -depends F
                     "/p:IncludeSymbols=True"
                     "/p:IncludeSource=True"
                 )
-                Invoke-MsBuild -solution $solution.Name -tasks @('Restore','Pack') -configuration $buildconfig -additionalParameters $additionalParameters
+                Invoke-MsBuild -targetFile $solution.Name -tasks @('Restore','Pack') -additionalParameters $additionalParameters
+            }
+        }
+        finally {
+            Pop-Location
+        }
+    }
+    finally
+    {
+        Pop-Location
+    }
+}
+
+###############################################################################
+# Create a NuGet package (legacy project style)
+#
+# Depends on Clean to ensure a clean build, not using any left-over compile artifacts.
+#
+Task Pack -description 'Create a nuget-package (legacy project style).' -depends FullBuild {
+
+    Push-Location
+    try
+    {
+        $scratchDirectory = Get-Item -Path 'scratch'
+
+        Push-Location 'src'
+        try {
+            Chatter '  Searching nuspec files ...' 1
+            Get-ChildItem '*.nuspec' -Recurse | ForEach-Object {
+                $nuspecFile = $_
+
+                Chatter "  Found Searching $($nuspecFile.FullName)" 1
+
+                $csprojFile = Get-Item (Join-Path -Path $nuspecFile.Directory.FullName -ChildPath "$($nuspecFile.BaseName).csproj")
+                if ($csprojFile.Exists) {
+                    [System.IO.DirectoryInfo]$outputDirectory = Join-Path -Path $scratchDirectory.FullName -ChildPath 'nuget'
+
+                    if (-Not $outputDirectory.Exists) {
+                        $outputDirectory = New-Item -Path $outputDirectory.FullName -ItemType Directory
+                    }
+
+                    $nugetPackParams = @(
+                        """$($csprojFile.FullName)"""
+                        "-OutputDirectory ""$($outputDirectory.FullName)"""
+                    )
+                    Invoke-Nuget -task pack -additionalParameters $nugetPackParams -configuration $buildconfig
+                }
             }
         }
         finally {
@@ -412,14 +564,12 @@ Task Test -description 'Run the unit tests using NUnit console test runner.' -de
             $scratchNUnitPath = Join-Path -Path '.\scratch' -ChildPath 'nunit'
 
             $nugetRestoreParams = @(
-                "$nunitNugetPackageName"
+                """$nunitNugetPackageName"""
                 "-Version '$($nunitVersion)'"
                 "-OutputDirectory ""$scratchNUnitPath"""
                 "-NonInteractive"
-                "-Verbosity quiet"
             )
-            Chatter "nuget install $nugetRestoreParams" 3
-            Exec { Invoke-Expression "nuget install $nugetRestoreParams" }
+            Invoke-Nuget -task install -additionalParameters $nugetRestoreParams
 
             $runnerPath = `
                 Join-Path -Path $scratchNUnitPath -ChildPath $nunitNugetVersionedPackageName | `
@@ -436,23 +586,24 @@ Task Test -description 'Run the unit tests using NUnit console test runner.' -de
             throw 'Cannot find or fetch nunit runner.'
         }
 
-        Chatter "Found nunit runner: $runner" 3
+        Chatter "Found nunit runner: $runner" 2
 
         # find unit test dlls
-        Chatter 'Searching test projects ...' 3
+        Chatter 'Searching test projects ...' 1
         Get-ChildItem -Path (Join-Path -Path 'scratch' -ChildPath 'bin') -Filter *Tests.dll -Recurse | ForEach-Object {
+            $testdll = $_
+            $testBaseName = $testdll.BaseName
+
             # generate folder for test output
-            Chatter "  Found test project: $_.Name" 3
+            Chatter "  Found test project: $testBaseName" 1
 
             $nunitFolder = New-Item -ItemType Directory -Path (Join-Path -Path "scratch" -ChildPath "nunit") -Force
-            $work = Join-Path $nunitFolder $testdll.BaseName
 
             # intialise runner args
             $testrunnerargs = @(
-                "--work:$work"
-                '--result:nunit-test-results.xml'
-                '--out:nunit-stdout.txt'
-                '--err:nunit-stderr.txt'
+                "--work:$nunitFolder"
+                "--result:nunit-test-results-$testBaseName.xml"
+                "--out:nunit-stdout-$testBaseName.txt"
                 '--labels:all'
             )
 
@@ -461,8 +612,8 @@ Task Test -description 'Run the unit tests using NUnit console test runner.' -de
             }
 
             # execute runner
-            Chatter "$($runner.FullName) $_.FullName $testrunnerargs" 3
-            Exec { & "$($runner.FullName)" $_.FullName $testrunnerargs }
+            Chatter "$($runner.FullName) $testdll.FullName $testrunnerargs" 2
+            Exec { & "$($runner.FullName)" $_.FullName $testrunnerargs } "Running nunit runner went wrong"
         }
     }
     finally
@@ -480,7 +631,26 @@ Task WixInstaller -description 'Do a full build starting from a clean solution a
     try
     {
         Get-ChildItem -Path 'src' -Filter '*.wixproj' -Recurse | ForEach-Object {
-            Invoke-MsBuild -solution $_.FullName -tasks @('Build') -configuration $buildconfig
+            Invoke-MsBuild -targetFile $_.FullName -tasks @('Build')
+        }
+    }
+    finally {
+        Pop-Location
+    }
+}
+
+###############################################################################
+# Open, starting all *.sln files, inside .\src directory
+#
+Task Open -description 'starting all *.sln files, inside .\src directory' -depends Restore {
+
+    Push-Location
+    try
+    {
+        Get-ChildItem -Path 'src' -Filter '*.sln' -Recurse | ForEach-Object {
+            $solution = $_.FullName
+            Chatter "start $solution" 2
+            Invoke-Item $solution
         }
     }
     finally {
@@ -494,7 +664,7 @@ Task WixInstaller -description 'Do a full build starting from a clean solution a
 Task ChocoInstaller `
     -description 'Do a full build starting from a clean solution and create our portable chocolatey-package' `
     -depends FullBuild {
-        
+
     Push-Location
     try
     {
@@ -516,9 +686,36 @@ Task ChocoInstaller `
                 Get-ChildItem -Path $chocoDestination.FullName -Filter *.nuspec | ForEach-Object {
                     $nuspecFile = $_
                     Chatter "  Processing $($nuspecFile.Name)" 1
-                    $packageFolder= "$($nuspecFile.BaseName)-$buildconfig-$buildPlatformTarget"
-                    Chatter "  Searching for PackageFolder $packageFolder" 3
+
+                    # make a difference between Cli and website (by convention IIS)
+                    if ($nuspecFile.Name -match 'IIS') {
+                        Chatter "    Detected a web project, let's publish if we have the publish profile" 1
+                        $projectFolder = Join-path -Path 'src' -ChildPath $nuspecFile.BaseName
+
+                        if (Test-Path -Path $projectFolder) {
+                            $projectFolder = Get-Item -Path $projectFolder
+
+                            $projectFile =
+                                Get-ChildItem $projectFolder.FullName -Recurse -Filter *$($nuspecFile.BaseName).csproj `
+                                    | Select-Object -First 1
+                            $publishProfile =
+                                Join-Path -Path $projectFolder.FullName -ChildPath 'Properties' | `
+                                Join-Path -ChildPath 'PublishProfiles' | `
+                                Join-Path -ChildPath 'Publish-Scratch.pubxml'
+
+                            if ($projectFile -and $publishProfile) {
+                                $additionalParameters = @(
+                                    "/p:DeployOnBuild=True"
+                                    "/p:PublishProfile=""$publishProfile"""
+                                )
+                                Invoke-MsBuild -targetFile $projectFile.FullName -tasks @('Build') -platform 'AnyCPU' -additionalParameters $additionalParameters
+                            }
+                        }
+                    }
+
                     # search for a folder, simular to our nuspec file
+                    $packageFolder= "$($nuspecFile.BaseName)-$buildconfig-$buildPlatformTarget"
+                    Chatter "  Searching for PackageFolder $packageFolder" 1
                     $scratchBin = Join-Path -Path 'scratch' -ChildPath 'bin'
                     $packageFolder = `
                         Get-ChildItem $scratchBin.FullName -Recurse `
@@ -526,22 +723,22 @@ Task ChocoInstaller `
                             | Select-Object -First 1
                     if ($packageFolder) {
                         # search for a executable file, simular to our nuspec file
-                        Chatter "  Searching for *$($nuspecFile.BaseName).exe inside PackageFolder" 3
+                        Chatter "  Searching for *$($nuspecFile.BaseName).exe inside PackageFolder" 1
                         $targetFileName = `
                             Get-ChildItem $($packageFolder.FullName) -Recurse -Filter *$($nuspecFile.BaseName).exe `
                                 | Select-Object -First 1
                         if (-Not $targetFileName) {
-                            Chatter "  Searching for *$($nuspecFile.BaseName).dll inside PackageFolder" 3
+                            Chatter "  Searching for *$($nuspecFile.BaseName).dll inside PackageFolder" 1
                             $targetFileName = `
-                            Get-ChildItem $($packageFolder.FullName) -Recurse -Filter *$($nuspecFile.BaseName).dll `
-                                | Select-Object -First 1
+                                Get-ChildItem $($packageFolder.FullName) -Recurse -Filter *$($nuspecFile.BaseName).dll `
+                                    | Select-Object -First 1
                         }
 
                         if ($targetFileName) {
                             $targetVersionInfo = (Get-Item $targetFileName.FullName).VersionInfo
                             $id = $targetVersionInfo.FileDescription
                             $zipProg = Join-Path (Join-Path $env:ChocolateyInstall "tools") "7z.exe"
-                            $zipPackage = (Join-Path $chocoDestination.FullName $id) + ".7z"
+                            $zipPackage = (Join-Path -Path $chocoDestination.FullName -ChildPath $id) + ".7z"
 
                             $zipProgParams = @(
                                 "a '$zipPackage'"
@@ -549,7 +746,7 @@ Task ChocoInstaller `
                                 "-t7z -r -m0=BCJ2 -m1=LZMA2:d=1024m -aoa"
                             )
 
-                            if ($chocoIIncludeXmlFiles -eq $false) {
+                            if ($chocoIncludeXmlFiles -eq $false) {
                                 $zipProgParams += "'-x!*.xml'"
                             }
 
@@ -557,7 +754,7 @@ Task ChocoInstaller `
                                 $zipProgParams += "'-x!*.pdb'"
                             }
 
-                            Chatter "$zipProg $zipProgParams" 3
+                            Chatter "$zipProg $zipProgParams" 2
                             Exec { Invoke-Expression "$zipProg $zipProgParams" } "7z not available or something went wrong"
 
                             Push-Location $chocoDestination.FullName
@@ -579,7 +776,7 @@ Task ChocoInstaller `
                                     "copyright='$copyright'"
                                     "zipPackage='$zipPackage'"
                                 );
-                                Chatter "choco pack $chocoPackParams" 3
+                                Chatter "choco pack $chocoPackParams" 2
                                 Exec { Invoke-Expression "choco pack $chocoPackParams" } "choco pack went wrong"
                             }
                             finally {
@@ -610,14 +807,15 @@ Task ChocoInstall `
             # choco should be installed
             if ($env:ChocolateyInstall) {
                 $chocoDestination = Get-Item -Path (Join-Path "scratch" "choco")
-                Chatter $chocoDestination 3
+                Chatter $chocoDestination 2
                 Get-ChildItem $chocoDestination.FullName -Filter *.nuspec | ForEach-Object {
-                    Chatter "  Searching for *$($nuspecFile.BaseName).exe inside PackageFolder" 3
+                    $nuspecFile = $_
+                    Chatter "  Searching for *$($nuspecFile.BaseName).exe inside PackageFolder" 1
                     $targetFileName = `
                         Get-ChildItem $($packageFolder.FullName) -Recurse -Filter *$($nuspecFile.BaseName).exe `
                             | Select-Object -First 1
                     if (-Not $targetFileName) {
-                        Chatter "  Searching for *$($nuspecFile.BaseName).dll inside PackageFolder" 3
+                        Chatter "  Searching for *$($nuspecFile.BaseName).dll inside PackageFolder" 1
                         $targetFileName = `
                         Get-ChildItem $($packageFolder.FullName) -Recurse -Filter *$($nuspecFile.BaseName).dll `
                             | Select-Object -First 1
@@ -635,7 +833,7 @@ Task ChocoInstall `
                             "--side-by-side"
                             "--params '/CONFIG:$buildConfig'"
                         )
-                        Chatter "choco install $chocoInstallParams" 3
+                        Chatter "choco install $chocoInstallParams" 2
                         Exec { Invoke-Expression "choco install $chocoInstallParams" } "choco install went wrong"
                     }
                 }
@@ -646,33 +844,22 @@ Task ChocoInstall `
         }
     }
     else {
-        Chatter "This taks is only available when running asn an administrator."
+        Chatter "This taks is only available when running asn an administrator." 1
     }
 }
 
 ###############################################################################
-# Installers, build our nuget-packages, choco-installer (portable version)
-# and WixInstallers
+# Installers, build our choco-installer / dsc-installer / wix-installer / nuget packs
 #
 Task Installers `
-    -description 'Do a full build starting from a clean solution and create our nuget-packages, choco-installer and wix-installers' `
-    -depends FullBuild,Pack,ChocoInstaller,WixInstaller {
+    -description 'Do a full build starting from a clean solution and create following packages if available: choco, dsc, wix, nuget' `
+    -depends ChocoInstaller,WixInstaller,Pack
 
-    Push-Location
-    try
-    {
-        if (Test-Path -Path 'scratch') {
-            Set-Location 'scratch'
-            $nupkgDestination = New-Item -ItemType Directory -Path packages -Force
-            Get-ChildItem -Path bin -Filter *.nupkg -Recurse | ForEach-Object {
-                $nupkgFile = $_
-                Copy-item -Force $nupkgFile.FullName -Destination $nupkgDestination.FullName
-            }
-        }
-    }
-    finally {
-        Pop-Location
-    }
-}
+###############################################################################
+# Installers, build our choco-installer / dsc-installer / wix-installer / nuget packs
+#
+Task Installers2017 `
+    -description 'Do a full build starting from a clean solution and create following packages if available: choco, dsc, wix, nuget' `
+    -depends ChocoInstaller,WixInstaller,Pack2017
 
 #endregion

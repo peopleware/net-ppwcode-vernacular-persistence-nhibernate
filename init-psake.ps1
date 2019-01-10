@@ -117,7 +117,7 @@ try
     $module = $null
 
     $psakeNugetPackageName = 'psake'
-    $psakeVersion = '4.7.0'
+    $psakeVersion = '4.7.4'
     $psakeNugetVersionedPackageName = "$psakeNugetPackageName.$($psakeVersion)"
 
     # Can we find psake in our traditional packages directory?
