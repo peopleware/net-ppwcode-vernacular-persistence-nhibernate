@@ -17,7 +17,7 @@
     <PackageReference Include="PPWCode.Vernacular.Persistence.IV" Version="[1.0.0-rc010000, 2)" />
     <PackageReference Include="NHibernate" Version="[5.2.1, 6)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5)" />
-    <PackageReference Include="Remotion.Linq" Version="[2.2.0, 6)" />
+    <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3)" />
     <PackageReference Include="Common.Logging" Version="[3.4.1, 4)" />
 
