@@ -59,7 +59,9 @@
           Moq (4.10.1) and NUnit (3.11.0)
           Stylecop (1.1.1-beta.61)
       - Introduce support for caching (entities and associations) in SimpleModelMapper
-      ]]>
+2.0.3- Upgrade packages to latest version
+      -   nHibernate (5.2.2)
+      -   Microsoft.SourceLink.GitHub (1.0.0-beta2-18618-05)]]>
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
