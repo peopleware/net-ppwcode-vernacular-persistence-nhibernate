@@ -247,3 +247,6 @@ desktop.ini
 
 # our scratch directory
 scratch/
+
+# rider
+.idea
