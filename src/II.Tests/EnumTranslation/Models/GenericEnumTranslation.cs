@@ -15,7 +15,7 @@ using System.Runtime.Serialization;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models
 {

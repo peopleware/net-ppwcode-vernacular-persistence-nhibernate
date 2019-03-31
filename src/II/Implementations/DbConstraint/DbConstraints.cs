@@ -18,7 +18,7 @@ using System.Data.Common;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 
 using Environment = NHibernate.Cfg.Environment;
 

@@ -18,7 +18,7 @@ using NUnit.Framework;
 using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Linq.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Linq
 {

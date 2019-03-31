@@ -19,7 +19,7 @@ using NUnit.Framework;
 using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryOver.Repositories;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.QueryOver
 {

@@ -21,7 +21,7 @@ using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {

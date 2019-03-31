@@ -17,7 +17,7 @@ using Common.Logging;
 using JetBrains.Annotations;
 
 using PPWCode.Vernacular.NHibernate.II.DbConstraint;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Providers
 {

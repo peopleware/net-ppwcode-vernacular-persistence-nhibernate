@@ -18,7 +18,7 @@ using JetBrains.Annotations;
 using NHibernate.Type;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models
 {

@@ -24,8 +24,8 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Event;
 
-using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Exceptions.IV;
+using PPWCode.Vernacular.Persistence.IV;
 
 using Environment = System.Environment;
 

@@ -19,7 +19,7 @@ using NHibernate;
 using NHibernate.Linq;
 
 using PPWCode.Vernacular.NHibernate.II.Providers;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {

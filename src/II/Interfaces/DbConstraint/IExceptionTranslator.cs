@@ -26,12 +26,12 @@ namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
         /// </summary>
         /// <param name="message">
         ///     This message will be used in the logging in the case <paramref name="exception" /> is of type
-        ///     <see cref="Exceptions.III.Error" />.
+        ///     <see cref="Exceptions.IV.Error" />.
         /// </param>
         /// <param name="exception">The hibernate exception we are triaging.</param>
         /// <returns>
-        ///     An exception that is a sub class either from <see cref="Exceptions.III.SemanticException" />
-        ///     or from <see cref="Exceptions.III.Error" />.
+        ///     An exception that is a sub class either from <see cref="Exceptions.IV.SemanticException" />
+        ///     or from <see cref="Exceptions.IV.Error" />.
         /// </returns>
         [NotNull]
         Exception Convert([NotNull] string message, [NotNull] Exception exception);

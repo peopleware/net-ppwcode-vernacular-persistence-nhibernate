@@ -13,7 +13,7 @@ using System;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Providers
 {

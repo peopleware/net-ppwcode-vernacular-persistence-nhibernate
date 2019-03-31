@@ -23,7 +23,7 @@ using NHibernate.Event;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.II.SqlServer;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 using Environment = NHibernate.Cfg.Environment;
 

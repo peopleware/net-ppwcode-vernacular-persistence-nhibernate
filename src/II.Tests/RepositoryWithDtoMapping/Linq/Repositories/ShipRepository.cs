@@ -16,7 +16,7 @@ using System.Linq;
 using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Models;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Linq.Repositories
 {

@@ -16,7 +16,7 @@ using NHibernate.Criterion;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation.Models;
 using PPWCode.Vernacular.NHibernate.II.Tests.Repositories;

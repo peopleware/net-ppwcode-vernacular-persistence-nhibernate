@@ -22,7 +22,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Test
 {

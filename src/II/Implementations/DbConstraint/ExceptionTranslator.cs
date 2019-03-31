@@ -14,8 +14,8 @@ using System;
 using NHibernate;
 using NHibernate.Exceptions;
 
-using PPWCode.Vernacular.Exceptions.III;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Exceptions.IV;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.DbConstraint
 {

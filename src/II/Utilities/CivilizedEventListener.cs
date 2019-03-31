@@ -20,7 +20,7 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Event;
 
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {

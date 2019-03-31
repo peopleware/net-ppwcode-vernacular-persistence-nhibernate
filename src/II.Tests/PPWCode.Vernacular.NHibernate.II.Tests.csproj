@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFrameworks>net461</TargetFrameworks>
-    <TargetFrameworks Condition="'$(BuildDotNetCoreOnly)'=='true'">netcoreapp2.0</TargetFrameworks>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>false</IsPackable>
@@ -17,9 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Condition="'$(BuildDotNetCoreOnly)'!='true'" Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>

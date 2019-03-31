@@ -21,10 +21,10 @@ using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using NHibernate;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.Exceptions.III;
+using PPWCode.Vernacular.Exceptions.IV;
 using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Providers;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 using Component = Castle.MicroKernel.Registration.Component;
 

@@ -17,7 +17,7 @@ using System.Runtime.Serialization;
 using NHibernate.Mapping.ByCode;
 
 using PPWCode.Vernacular.NHibernate.II.MappingByCode;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Models
 {

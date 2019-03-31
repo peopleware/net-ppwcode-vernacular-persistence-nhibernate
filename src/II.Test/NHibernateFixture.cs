@@ -24,7 +24,7 @@ using NHibernate.Tool.hbm2ddl;
 
 using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.Providers;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Test
 {

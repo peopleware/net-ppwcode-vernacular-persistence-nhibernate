@@ -23,7 +23,7 @@ using log4net.Config;
 using log4net.Repository;
 #endif
 
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Test
 {

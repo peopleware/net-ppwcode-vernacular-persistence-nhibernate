@@ -8,7 +8,7 @@ using NHibernate.Exceptions;
 
 using PPWCode.Vernacular.NHibernate.II.DbConstraint;
 using PPWCode.Vernacular.NHibernate.II.DbExceptionConverters;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.II.Firebird
 {
