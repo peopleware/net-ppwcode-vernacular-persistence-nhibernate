@@ -39,7 +39,10 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
                 {
                     DataSource = dataSource,
                     InitialCatalog = catalog ?? @"master",
-                    IntegratedSecurity = true,
+                    /* IntegratedSecurity = true, */
+                    IntegratedSecurity = false,
+                    UserID = "sa",
+                    Password = "ppw*123ppw",
                     Pooling = pooling
                 };
             return builder.ConnectionString;

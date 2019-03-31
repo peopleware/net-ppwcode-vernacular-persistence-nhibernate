@@ -70,7 +70,15 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
 
         [NotNull]
         protected virtual string ConnectionString
-            => _connectionString ?? (_connectionString = RandomizedConnectionString);
+        {
+            get
+            {
+                /* => _connectionString ?? (_connectionString = RandomizedConnectionString); */
+                string result = _connectionString ?? (_connectionString = RandomizedConnectionString);
+                Console.WriteLine($"Connection string: {result}");
+                return result;
+            }
+        }
 
         [NotNull]
         protected virtual string RandomizedConnectionString
@@ -98,7 +106,11 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
                     {
                         DataSource = "localhost",
                         InitialCatalog = CatalogName,
-                        IntegratedSecurity = true
+                        /* IntegratedSecurity = true */
+                        IntegratedSecurity = false,
+                        UserID = "sa",
+                        Password = "ppw*123ppw",
+                        Pooling = true
                     };
                 return builder.ToString();
             }

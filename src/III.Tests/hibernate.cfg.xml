@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+    <session-factory name="SessionFactory">
+        <property name="connection.isolation">ReadCommitted</property>
+        <!--<property name="connection.provider">PPWCode.Vernacular.NHibernate.I.Utilities.PPWDriverConnectionProvider, PPWCode.Vernacular.NHibernate.I</property>-->
+        <!--<property name="connection.driver_class">NHibernate.Driver.NpgsqlDriver</property>-->
+        <!--<property name="dialect">Deme.GeoSea.Inspections.Server.Bootstrap.NHibernate.SqlDialect, Deme.GeoSea.Inspections.Server</property>-->
+        <!--<property name="connection.connection_string_name">inspections</property>-->
+        <property name="prepare_sql">true</property>
+        <property name="generate_statistics">false</property>
+        <property name="show_sql">false</property>
+        <property name="format_sql">false</property>
+    </session-factory>
+</hibernate-configuration>
