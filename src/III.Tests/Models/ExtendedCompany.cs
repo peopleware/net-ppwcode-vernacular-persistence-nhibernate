@@ -87,7 +87,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.Models
                     m =>
                     {
                         m.Constrained(true);
-                        m.ForeignKey(null);
+                        m.PropertyReference(c => c.ExtendedCompany);
                     });
             }
         }
