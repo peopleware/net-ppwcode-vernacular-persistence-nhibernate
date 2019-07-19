@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2019 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -70,8 +70,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, ref context);
+                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -83,8 +84,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event);
-                    SaveAuditLogs(@event, auditLogs);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, ref context);
+                    SaveAuditLogs(@event, auditLogs, context);
                 }
             }
         }
@@ -97,8 +99,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
+                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -110,8 +113,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                    SaveAuditLogs(@event, auditLogs);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
+                    SaveAuditLogs(@event, auditLogs, context);
                 }
             }
         }
@@ -124,8 +128,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
+                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -137,8 +142,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
                 {
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem);
-                    SaveAuditLogs(@event, auditLogs);
+                    object context = null;
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
+                    SaveAuditLogs(@event, auditLogs, context);
                 }
             }
         }
@@ -184,7 +190,7 @@ namespace PPWCode.Vernacular.NHibernate.III
                };
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostInsertEvent @event, AuditLogItem auditLogItem)
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostInsertEvent @event, AuditLogItem auditLogItem, ref object context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -211,7 +217,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostUpdateEvent @event, AuditLogItem auditLogItem)
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostUpdateEvent @event, AuditLogItem auditLogItem, ref object context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -266,7 +272,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostDeleteEvent @event)
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostDeleteEvent @event, ref object context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -280,9 +286,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             return auditLogs;
         }
 
-        protected virtual void SaveAuditLogs(
-            [NotNull] AbstractEvent @event,
-            [NotNull] ICollection<TAuditEntity> auditLogs)
+        protected virtual void SaveAuditLogs([NotNull] AbstractEvent @event, [NotNull] ICollection<TAuditEntity> auditLogs, object context)
         {
             if (auditLogs.Count > 0)
             {
@@ -302,6 +306,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected virtual async Task SaveAuditLogsAsync(
             [NotNull] AbstractEvent @event,
             [NotNull] ICollection<TAuditEntity> auditLogs,
+            object context,
             CancellationToken cancellationToken)
         {
             if (auditLogs.Count > 0)
