@@ -59,11 +59,16 @@
           Moq (4.10.1) and NUnit (3.11.0)
           Stylecop (1.1.1-beta.61)
       - Introduce support for caching (entities and associations) in SimpleModelMapper
-2.0.3- Upgrade packages to latest version
+2.0.3 - Upgrade packages to latest version
       -   nHibernate (5.2.2)
       -   Microsoft.SourceLink.GitHub (1.0.0-beta2-18618-05)
-2.0.4- Upgrade packages to latest version
-      -   nHibernate (5.2.3)]]>
+3.0.0 - Upgrade packages to latest version
+      -   nHibernate (5.2.5) / NHibernateProfiler.Appender (5.0.5036)
+          Firebird (6.6.0), PostgreSQL (4.0.8) and SqlServer ADO.Net drivers (4.6.1)
+          Moq (4.12.0) and NUnit (3.13.0)
+          Stylecop (1.1.118)
+          Castle.Windsor (5.0.0)
+      - Add object context to uditLogEventListener]]>
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
