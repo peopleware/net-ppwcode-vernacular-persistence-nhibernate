@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- target frameworks -->
@@ -36,7 +36,7 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="PPWCode.Vernacular.Persistence.III" Version="[1.0.1, 2)" />
-    <PackageReference Include="NHibernate" Version="[5.2.3, 6)" />
+    <PackageReference Include="NHibernate" Version="[5.2.5, 6)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5)" />
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3)" />
