@@ -60,11 +60,29 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
-            => func.Invoke(CreateQueryable()).SingleOrDefault();
+        {
+            try
+            {
+                return func.Invoke(CreateQueryable()).SingleOrDefault();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         [CanBeNull]
         protected virtual TRoot GetAtIndexInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
-            => func.Invoke(CreateQueryable()).Skip(index).Take(1).SingleOrDefault();
+        {
+            try
+            {
+                return func.Invoke(CreateQueryable()).Skip(index).Take(1).SingleOrDefault();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         protected override IList<TRoot> FindAllInternal()
             => FindInternal(null);
@@ -88,19 +106,26 @@ namespace PPWCode.Vernacular.NHibernate.III
         [NotNull]
         protected virtual IList<TSubType> FindInternal<TSubType>([NotNull] Func<IQueryable<TSubType>> queryFactory, int? skip, int? count)
         {
-            IQueryable<TSubType> query = queryFactory();
-
-            if (skip.HasValue)
+            try
             {
-                query = query.Skip(skip.Value);
-            }
+                IQueryable<TSubType> query = queryFactory();
 
-            if (count.HasValue)
+                if (skip.HasValue)
+                {
+                    query = query.Skip(skip.Value);
+                }
+
+                if (count.HasValue)
+                {
+                    query = query.Take(count.Value);
+                }
+
+                return query.ToList();
+            }
+            catch (EmptyResultException)
             {
-                query = query.Take(count.Value);
+                return new List<TSubType>();
             }
-
-            return query.ToList();
         }
 
         [NotNull]
@@ -114,19 +139,26 @@ namespace PPWCode.Vernacular.NHibernate.III
         [NotNull]
         protected virtual PagedList<TSubType> FindPagedInternal<TSubType>(int pageIndex, int pageSize, [NotNull] Func<IQueryable<TSubType>> queryFactory)
         {
-            IQueryable<TSubType> rowCountQueryOver = queryFactory();
-            IFutureValue<int> rowCount =
-                rowCountQueryOver
-                    .ToFutureValue(x => x.Count());
+            try
+            {
+                IQueryable<TSubType> rowCountQueryOver = queryFactory();
+                IFutureValue<int> rowCount =
+                    rowCountQueryOver
+                        .ToFutureValue(x => x.Count());
 
-            IQueryable<TSubType> pagingQueryOver = queryFactory();
-            IFutureEnumerable<TSubType> qryResult =
-                pagingQueryOver
-                    .Skip((pageIndex - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToFuture();
+                IQueryable<TSubType> pagingQueryOver = queryFactory();
+                IFutureEnumerable<TSubType> qryResult =
+                    pagingQueryOver
+                        .Skip((pageIndex - 1) * pageSize)
+                        .Take(pageSize)
+                        .ToFuture();
 
-            return new PagedList<TSubType>(qryResult, pageIndex, pageSize, rowCount.Value);
+                return new PagedList<TSubType>(qryResult, pageIndex, pageSize, rowCount.Value);
+            }
+            catch (EmptyResultException)
+            {
+                return new PagedList<TSubType>(Enumerable.Empty<TSubType>(), 1, pageSize, 0);
+            }
         }
 
         [NotNull]

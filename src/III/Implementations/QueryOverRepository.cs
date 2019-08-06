@@ -66,19 +66,55 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
-            => func(CreateQueryOver()).SingleOrDefault<TRoot>();
+        {
+            try
+            {
+                return func(CreateQueryOver()).SingleOrDefault<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         [CanBeNull]
         protected virtual TRoot GetInternal(Expression<Func<TRoot>> alias, [NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
-            => func(CreateQueryOver(alias)).SingleOrDefault<TRoot>();
+        {
+            try
+            {
+                return func(CreateQueryOver(alias)).SingleOrDefault<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         [CanBeNull]
         protected virtual TRoot GetAtIndexInternal([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index)
-            => func(CreateQueryOver()).Skip(index).Take(1).SingleOrDefault<TRoot>();
+        {
+            try
+            {
+                return func(CreateQueryOver()).Skip(index).Take(1).SingleOrDefault<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         [CanBeNull]
         protected virtual TRoot GetAtIndexInternal([CanBeNull] Expression<Func<TRoot>> alias, [NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index)
-            => func(CreateQueryOver(alias)).Skip(index).Take(1).SingleOrDefault<TRoot>();
+        {
+            try
+            {
+                return func(CreateQueryOver(alias)).Skip(index).Take(1).SingleOrDefault<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return null;
+            }
+        }
 
         protected override IList<TRoot> FindAllInternal()
             => CreateQueryOver().List<TRoot>();
@@ -86,51 +122,79 @@ namespace PPWCode.Vernacular.NHibernate.III
         [NotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
-            IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
-            return queryOver.List<TRoot>();
+            try
+            {
+                IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
+                return queryOver.List<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return new List<TRoot>();
+            }
         }
 
         [NotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
-            IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
-            return queryOver.List<TRoot>();
+            try
+            {
+                IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
+                return queryOver.List<TRoot>();
+            }
+            catch (EmptyResultException)
+            {
+                return new List<TRoot>();
+            }
         }
 
         [NotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
-            IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
-
-            if (skip.HasValue)
+            try
             {
-                queryOver = queryOver.Skip(skip.Value);
-            }
+                IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver()) : CreateQueryOver();
 
-            if (count.HasValue)
+                if (skip.HasValue)
+                {
+                    queryOver = queryOver.Skip(skip.Value);
+                }
+
+                if (count.HasValue)
+                {
+                    queryOver = queryOver.Take(count.Value);
+                }
+
+                return queryOver.List<TRoot>();
+            }
+            catch (EmptyResultException)
             {
-                queryOver = queryOver.Take(count.Value);
+                return new List<TRoot>();
             }
-
-            return queryOver.List<TRoot>();
         }
 
         [NotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
-            IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
-
-            if (skip.HasValue)
+            try
             {
-                queryOver = queryOver.Skip(skip.Value);
-            }
+                IQueryOver<TRoot> queryOver = func != null ? func(CreateQueryOver(alias)) : CreateQueryOver(alias);
 
-            if (count.HasValue)
+                if (skip.HasValue)
+                {
+                    queryOver = queryOver.Skip(skip.Value);
+                }
+
+                if (count.HasValue)
+                {
+                    queryOver = queryOver.Take(count.Value);
+                }
+
+                return queryOver.List<TRoot>();
+            }
+            catch (EmptyResultException)
             {
-                queryOver = queryOver.Take(count.Value);
+                return new List<TRoot>();
             }
-
-            return queryOver.List<TRoot>();
         }
 
         [NotNull]
@@ -152,23 +216,30 @@ namespace PPWCode.Vernacular.NHibernate.III
         [NotNull]
         protected virtual PagedList<TDto> FindPagedInternal<TDto, TSubType>(int pageIndex, int pageSize, [NotNull] Func<IQueryOver<TRoot, TSubType>> queryFactory)
         {
-            IQueryOver<TRoot, TSubType> rowCountQueryOver = queryFactory();
-            IFutureValue<int> rowCount =
-                rowCountQueryOver
-                    .ToRowCountQuery()
-                    .FutureValue<int>();
+            try
+            {
+                IQueryOver<TRoot, TSubType> rowCountQueryOver = queryFactory();
+                IFutureValue<int> rowCount =
+                    rowCountQueryOver
+                        .ToRowCountQuery()
+                        .FutureValue<int>();
 
-            IQueryOver<TRoot, TSubType> pagingQueryOver = queryFactory();
-            IList<TDto> qryResult =
-                pagingQueryOver
-                    .Skip((pageIndex - 1) * pageSize)
-                    .Take(pageSize)
-                    .Future<TDto>()
-                    .ToList();
+                IQueryOver<TRoot, TSubType> pagingQueryOver = queryFactory();
+                IList<TDto> qryResult =
+                    pagingQueryOver
+                        .Skip((pageIndex - 1) * pageSize)
+                        .Take(pageSize)
+                        .Future<TDto>()
+                        .ToList();
 
-            PagedList<TDto> result = new PagedList<TDto>(qryResult, pageIndex, pageSize, rowCount.Value);
+                PagedList<TDto> result = new PagedList<TDto>(qryResult, pageIndex, pageSize, rowCount.Value);
 
-            return result;
+                return result;
+            }
+            catch (EmptyResultException)
+            {
+                return new PagedList<TDto>(Enumerable.Empty<TDto>(), 1, pageSize, 0);
+            }
         }
 
         [NotNull]
