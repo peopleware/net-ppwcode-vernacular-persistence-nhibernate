@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- target frameworks -->
@@ -39,7 +39,7 @@
   <Choose>
     <When Condition=" '$(TargetFramework)' == 'netstandard20' ">
       <ItemGroup>
-        <PackageReference Include="System.Data.SqlClient" Version="[4.6.1, 5)" />
+        <PackageReference Include="System.Data.SqlClient" Version="[4.8.0, 5)" />
       </ItemGroup>
     </When>
   </Choose>
