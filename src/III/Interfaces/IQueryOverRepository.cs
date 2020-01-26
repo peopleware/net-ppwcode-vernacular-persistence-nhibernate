@@ -161,5 +161,24 @@ namespace PPWCode.Vernacular.NHibernate.III
         /// </returns>
         [NotNull]
         IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, [CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
+
+        /// <summary>
+        ///     Calculates the number of records complying with the given function.
+        /// </summary>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <returns>
+        ///     Number of records that satisfying the given <paramref name="func" />.
+        /// </returns>
+        int Count([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
+
+        /// <summary>
+        ///     Calculates the number of records complying with the given function.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <returns>
+        ///     Number of records that satisfying the given <paramref name="func" />.
+        /// </returns>
+        int Count([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func);
     }
 }

@@ -64,6 +64,14 @@ namespace PPWCode.Vernacular.NHibernate.III
         public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, alias, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
 
+        /// <inheritdoc />
+        public virtual int Count(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(Count), () => CountInternal(func));
+
+        /// <inheritdoc />
+        public virtual int Count(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(Count), () => CountInternal(alias, func));
+
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
@@ -239,6 +247,25 @@ namespace PPWCode.Vernacular.NHibernate.III
             catch (EmptyResultException)
             {
                 return new PagedList<TDto>(Enumerable.Empty<TDto>(), 1, pageSize, 0);
+            }
+        }
+
+        protected virtual int CountInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => CountInternal(null, func);
+
+        protected virtual int CountInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+        {
+            try
+            {
+                IQueryOver<TRoot, TRoot> queryOver =
+                    alias != null
+                        ? CreateQueryOver(alias)
+                        : CreateQueryOver();
+                return func?.Invoke(queryOver).RowCount() ?? queryOver.RowCount();
+            }
+            catch (EmptyResultException)
+            {
+                return 0;
             }
         }
 
