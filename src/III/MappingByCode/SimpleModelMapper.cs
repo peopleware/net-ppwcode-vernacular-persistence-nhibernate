@@ -757,14 +757,25 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
             }
         }
 
+        /// <inheritdoc />
         protected override void OnBeforeMapManyToMany(IModelInspector modelInspector, PropertyPath member, IManyToManyMapper collectionRelationManyToManyCustomizer)
         {
-            string columnName = GetForeignKeyColumnName(modelInspector, member, false);
-            collectionRelationManyToManyCustomizer.Column(ConditionalQuoteIdentifier(columnName, null));
-
             string tableName = GetTableNameForManyToMany(modelInspector, member, false);
+            string columnName = GetForeignKeyColumnName(modelInspector, member, false);
             string foreignKeyName = $"FK_{tableName}_{columnName}";
+            string indexName = $"IX_{foreignKeyName}";
+
             collectionRelationManyToManyCustomizer.ForeignKey(foreignKeyName);
+            collectionRelationManyToManyCustomizer
+                .Columns(
+                    m =>
+                    {
+                        m.Name(ConditionalQuoteIdentifier(columnName, null));
+                        if (CreateIndexForForeignKey)
+                        {
+                            m.Index(indexName);
+                        }
+                    });
         }
 
         protected override void OnBeforeMapManyToOne(IModelInspector modelInspector, PropertyPath member, IManyToOneMapper propertyCustomizer)
