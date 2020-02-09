@@ -35,7 +35,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
         where TAuditEntity : AuditLog<TId>, new()
     {
         public class TestAuditLogEventListener
-            : AuditLogEventListener<TId, TAuditEntity>
+            : AuditLogEventListener<TId, TAuditEntity, AuditLogEventContext>
         {
             public TestAuditLogEventListener(
                 [NotNull] IIdentityProvider identityProvider,
@@ -47,6 +47,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Test
 
             protected override bool CanAuditLogFor(AbstractEvent @event, AuditLogItem auditLogItem, AuditLogActionEnum requestedLogAction)
                 => true;
+
+            /// <inheritdoc />
+            protected override void OnAddAuditEntities(object entity, AuditLogEventContext context)
+            {
+                // NOP
+            }
         }
 
         private Configuration _configuration;
