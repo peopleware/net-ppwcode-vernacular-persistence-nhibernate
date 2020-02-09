@@ -269,6 +269,10 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc />
+        protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
+            => FindInternal(qry => qry.Where(e => ids.Contains(e.Id)));
+
         [NotNull]
         protected virtual IQueryOver<TRoot, TRoot> CreateQueryOver()
             => Session.QueryOver<TRoot>();
