@@ -33,13 +33,14 @@ namespace PPWCode.Vernacular.NHibernate.II
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
-    public abstract class AuditLogEventListener<TId, TAuditEntity>
+    public abstract class AuditLogEventListener<TId, TAuditEntity, TContext>
         : IRegisterEventListener,
           IPostUpdateEventListener,
           IPostInsertEventListener,
           IPostDeleteEventListener
         where TId : IEquatable<TId>
         where TAuditEntity : AuditLog<TId>, new()
+        where TContext : AuditLogEventContext
     {
         private static readonly ConcurrentDictionary<Type, AuditLogItem> _domainTypes =
             new ConcurrentDictionary<Type, AuditLogItem>();
@@ -70,9 +71,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, ref context);
-                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, context);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -84,9 +85,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.DELETE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, ref context);
-                    SaveAuditLogs(@event, auditLogs, context);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, context);
+                    SaveAuditLogs(@event, auditLogs);
                 }
             }
         }
@@ -99,9 +100,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
-                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, context);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -113,9 +114,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.CREATE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
-                    SaveAuditLogs(@event, auditLogs, context);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, context);
+                    SaveAuditLogs(@event, auditLogs);
                 }
             }
         }
@@ -128,9 +129,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
-                    await SaveAuditLogsAsync(@event, auditLogs, context, cancellationToken).ConfigureAwait(false);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, context);
+                    await SaveAuditLogsAsync(@event, auditLogs, cancellationToken).ConfigureAwait(false);
                 }
             }
         }
@@ -142,9 +143,9 @@ namespace PPWCode.Vernacular.NHibernate.II
             {
                 if (CanAuditLogFor(@event, auditLogItem, AuditLogActionEnum.UPDATE))
                 {
-                    object context = null;
-                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, ref context);
-                    SaveAuditLogs(@event, auditLogs, context);
+                    TContext context = CreateContext(@event);
+                    ICollection<TAuditEntity> auditLogs = GetAuditLogsFor(@event, auditLogItem, context);
+                    SaveAuditLogs(@event, auditLogs);
                 }
             }
         }
@@ -170,11 +171,16 @@ namespace PPWCode.Vernacular.NHibernate.II
             [NotNull] AuditLogItem auditLogItem,
             AuditLogActionEnum requestedLogAction);
 
+        protected abstract TContext CreateContext(IPostDatabaseOperationEventArgs postDatabaseOperationEventArgs);
+
+        protected abstract void OnAddAuditEntities([NotNull] TContext context);
+
         [NotNull]
         protected virtual TAuditEntity CreateAuditEntity(
             [NotNull] string entryType,
             [NotNull] string entityName,
             [NotNull] string entityId,
+            [NotNull] TContext context,
             [CanBeNull] PpwAuditLog old,
             [CanBeNull] PpwAuditLog @new)
             => new TAuditEntity
@@ -190,34 +196,46 @@ namespace PPWCode.Vernacular.NHibernate.II
                };
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostInsertEvent @event, AuditLogItem auditLogItem, ref object context)
+        [ItemNotNull]
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
+            [NotNull] PostInsertEvent @event,
+            [NotNull] AuditLogItem auditLogItem,
+            [NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
 
-            List<TAuditEntity> auditEntities = new List<TAuditEntity>();
+            List<PpwAuditLog> auditLogs = new List<PpwAuditLog>();
             int length = @event.State.Length;
             for (int fieldIndex = 0; fieldIndex < length; fieldIndex++)
             {
                 string propertyName = @event.Persister.PropertyNames[fieldIndex];
-                if (auditLogItem.Properties.TryGetValue(propertyName, out AuditLogActionEnum auditLogAction))
+                if ((auditLogItem.Properties != null)
+                    && auditLogItem.Properties.TryGetValue(propertyName, out AuditLogActionEnum auditLogAction))
                 {
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
-                        PpwAuditLog[] auditLogs =
-                            GetValuesFromStateArray(entityName, entityId, propertyName, @event.State, fieldIndex)
-                                .Where(l => l != null)
-                                .ToArray();
-                        auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, null, auditLog)));
+                        auditLogs.AddRange(GetValuesFromStateArray(propertyName, @event.State, fieldIndex));
                     }
                 }
+            }
+
+            List<TAuditEntity> auditEntities = new List<TAuditEntity>();
+            if (auditLogs.Count > 0)
+            {
+                OnAddAuditEntities(context);
+                auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, context, null, auditLog)));
             }
 
             return auditEntities;
         }
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostUpdateEvent @event, AuditLogItem auditLogItem, ref object context)
+        [ItemNotNull]
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
+            [NotNull] PostUpdateEvent @event,
+            [NotNull] AuditLogItem auditLogItem,
+            [NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -231,25 +249,24 @@ namespace PPWCode.Vernacular.NHibernate.II
                         entityName));
             }
 
-            List<TAuditEntity> auditLogs = new List<TAuditEntity>();
+            List<PpwAuditLogPair> auditLogPairs = new List<PpwAuditLogPair>();
             int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
             foreach (int dirtyFieldIndex in fieldIndices)
             {
                 string dirtyPropertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
-                if (auditLogItem.Properties.TryGetValue(dirtyPropertyName, out AuditLogActionEnum auditLogAction))
+                if ((auditLogItem.Properties != null)
+                    && auditLogItem.Properties.TryGetValue(dirtyPropertyName, out AuditLogActionEnum auditLogAction))
                 {
                     if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                     {
-                        Dictionary<string, PpwAuditLog> oldAuditLogs =
-                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.OldState, dirtyFieldIndex)
-                                .Where(l => l != null)
+                        IDictionary<string, PpwAuditLog> oldAuditLogs =
+                            GetValuesFromStateArray(dirtyPropertyName, @event.OldState, dirtyFieldIndex)
                                 .ToDictionary(l => l.PropertyName);
-                        Dictionary<string, PpwAuditLog> newAuditLogs =
-                            GetValuesFromStateArray(entityName, entityId, dirtyPropertyName, @event.State, dirtyFieldIndex)
-                                .Where(l => l != null)
+                        IDictionary<string, PpwAuditLog> newAuditLogs =
+                            GetValuesFromStateArray(dirtyPropertyName, @event.State, dirtyFieldIndex)
                                 .ToDictionary(l => l.PropertyName);
 
-                        HashSet<string> propertyNames =
+                        ISet<string> propertyNames =
                             new HashSet<string>(
                                 oldAuditLogs
                                     .Select(al => al.Key)
@@ -261,32 +278,45 @@ namespace PPWCode.Vernacular.NHibernate.II
                             newAuditLogs.TryGetValue(propertyName, out PpwAuditLog newAuditLog);
                             if (oldAuditLog?.Value != newAuditLog?.Value)
                             {
-                                auditLogs.Add(CreateAuditEntity("U", entityName, entityId, oldAuditLog, newAuditLog));
+                                auditLogPairs.Add(new PpwAuditLogPair(oldAuditLog, newAuditLog));
                             }
                         }
                     }
                 }
             }
 
+            List<TAuditEntity> auditLogs = new List<TAuditEntity>();
+            if (auditLogPairs.Count > 0)
+            {
+                OnAddAuditEntities(context);
+                auditLogs.AddRange(auditLogPairs.Select(ap => CreateAuditEntity("U", entityName, entityId, context, ap.Old, ap.New)));
+            }
+
             return auditLogs;
         }
 
         [NotNull]
-        protected virtual ICollection<TAuditEntity> GetAuditLogsFor([NotNull] PostDeleteEvent @event, ref object context)
+        [ItemNotNull]
+        protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
+            [NotNull] PostDeleteEvent @event,
+            [NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
 
+            OnAddAuditEntities(context);
             List<TAuditEntity> auditLogs =
                 new List<TAuditEntity>
                 {
-                    CreateAuditEntity("D", entityName, entityId, null, null)
+                    CreateAuditEntity("D", entityName, entityId, context, null, null)
                 };
 
             return auditLogs;
         }
 
-        protected virtual void SaveAuditLogs([NotNull] AbstractEvent @event, [NotNull] ICollection<TAuditEntity> auditLogs, object context)
+        protected virtual void SaveAuditLogs(
+            [NotNull] AbstractEvent @event,
+            [NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs)
         {
             if (auditLogs.Count > 0)
             {
@@ -305,8 +335,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         [NotNull]
         protected virtual async Task SaveAuditLogsAsync(
             [NotNull] AbstractEvent @event,
-            [NotNull] ICollection<TAuditEntity> auditLogs,
-            object context,
+            [NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs,
             CancellationToken cancellationToken)
         {
             if (auditLogs.Count > 0)
@@ -325,11 +354,10 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(
-            [NotNull] string entityName,
-            [NotNull] string entityId,
             [NotNull] string propertyName,
-            [NotNull] object[] stateArray,
+            [NotNull] [ItemCanBeNull] object[] stateArray,
             int position)
         {
             object value = stateArray[position];
@@ -357,7 +385,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                     }
                     else
                     {
-                        yield return CreatePpwAuditLog(entityName, entityId, propertyName, value);
+                        yield return CreatePpwAuditLog(propertyName, value);
                     }
                 }
             }
@@ -369,8 +397,6 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         [NotNull]
         protected virtual PpwAuditLog CreatePpwAuditLog(
-            [NotNull] string entityName,
-            [NotNull] string entityId,
             [NotNull] string propertyName,
             [NotNull] object value)
             => value is DateTime dt
@@ -387,9 +413,11 @@ namespace PPWCode.Vernacular.NHibernate.II
 
             public AuditLogActionEnum AuditLogAction { get; private set; }
 
-            public Dictionary<string, AuditLogActionEnum> Properties { get; private set; }
+            [CanBeNull]
+            public IDictionary<string, AuditLogActionEnum> Properties { get; private set; }
 
-            public static AuditLogItem Find(Type t)
+            [NotNull]
+            public static AuditLogItem Find([NotNull] Type t)
             {
                 AuditLogItem result =
                     _domainTypes
@@ -428,6 +456,23 @@ namespace PPWCode.Vernacular.NHibernate.II
 
                 return result;
             }
+        }
+
+        private class PpwAuditLogPair
+        {
+            public PpwAuditLogPair(
+                [CanBeNull] PpwAuditLog old,
+                [CanBeNull] PpwAuditLog @new)
+            {
+                Old = old;
+                New = @new;
+            }
+
+            [CanBeNull]
+            public PpwAuditLog Old { get; }
+
+            [CanBeNull]
+            public PpwAuditLog New { get; }
         }
     }
 }

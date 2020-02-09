@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,21 +9,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
+using System;
+using System.Runtime.Serialization;
 
 using JetBrains.Annotations;
 
+using NHibernate.Event;
+
 namespace PPWCode.Vernacular.NHibernate.II
 {
-    public interface IPpwAuditLog
+    [Serializable]
+    [DataContract]
+    public class AuditLogEventContext
     {
-        bool IsMultiLog { get; }
+        public AuditLogEventContext(
+            [NotNull] IPostDatabaseOperationEventArgs postDatabaseOperationEventArgs)
+        {
+            PostDatabaseOperationEventArgs = postDatabaseOperationEventArgs;
+        }
 
         [NotNull]
-        [ItemNotNull]
-        IEnumerable<PpwAuditLog> GetMultiLogs([NotNull] string propertyName);
-
-        [NotNull]
-        PpwAuditLog GetSingleLog([NotNull] string propertyName);
+        public IPostDatabaseOperationEventArgs PostDatabaseOperationEventArgs { get; }
     }
 }
