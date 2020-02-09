@@ -49,13 +49,16 @@ namespace PPWCode.Vernacular.NHibernate.II
             => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
         public virtual IList<TRoot> Find(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
-            => Execute(nameof(Find), () => FindInternal(func)) ?? new List<TRoot>();
+            => Execute(nameof(Find), () => FindInternal(func))
+               ?? new List<TRoot>();
 
         public virtual IList<TResult> Find<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func)
-            => Execute(nameof(Find), () => FindInternal(func)) ?? new List<TResult>();
+            => Execute(nameof(Find), () => FindInternal(func))
+               ?? new List<TResult>();
 
         public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
-            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func))
+               ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
 
         /// <inheritdoc />
         public virtual int Count(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
@@ -68,7 +71,8 @@ namespace PPWCode.Vernacular.NHibernate.II
             => Execute(nameof(Find), () => FindInternal(func, skip, count));
 
         public virtual IPagedList<TResult> FindPaged<TResult>(int pageIndex, int pageSize, Func<IQueryable<TRoot>, IQueryable<TResult>> func)
-            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func));
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func))
+               ?? new PagedList<TResult>(Enumerable.Empty<TResult>(), pageIndex, pageSize, 0);
 
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
@@ -209,6 +213,10 @@ namespace PPWCode.Vernacular.NHibernate.II
                 return 0;
             }
         }
+
+        /// <inheritdoc />
+        protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
+            => FindInternal(qry => qry.Where(e => ids.Contains(e.Id)));
 
         [NotNull]
         protected virtual IQueryable<TRoot> CreateQueryable()

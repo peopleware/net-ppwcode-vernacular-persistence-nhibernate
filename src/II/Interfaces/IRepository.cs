@@ -39,6 +39,15 @@ namespace PPWCode.Vernacular.NHibernate.II
         [NotNull]
         IList<T> FindAll();
 
+        /// <summary>Gets an list of entities by their ids.</summary>
+        /// <param name="ids">The given primary keys.</param>
+        /// <returns>
+        ///     The entities with the given ids which could be found, if not found no entity with the id is returned.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
+        IList<T> FindByIds([NotNull] IEnumerable<TId> ids);
+
         /// <summary>
         ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
         ///     An object is returned that represents the new record, this object is always a <e>new</e> object.

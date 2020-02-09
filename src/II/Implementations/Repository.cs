@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using JetBrains.Annotations;
 
@@ -37,6 +38,21 @@ namespace PPWCode.Vernacular.NHibernate.II
         /// <inheritdoc />
         public virtual IList<TRoot> FindAll()
             => Execute(nameof(FindAll), FindAllInternal) ?? new List<TRoot>();
+
+        /// <inheritdoc />
+        public IList<TRoot> FindByIds(IEnumerable<TId> ids)
+            => Execute(
+                   nameof(FindByIds),
+                   () =>
+                   {
+                       List<TRoot> result = new List<TRoot>();
+                       foreach (TId[] segment in GetSegmentedIds(ids).Where(s => s.Length > 0))
+                       {
+                           result.AddRange(FindByIdsInternal(segment));
+                       }
+
+                       return result;
+                   }) ?? new List<TRoot>();
 
         /// <inheritdoc />
         public virtual TRoot Merge(TRoot entity)
@@ -104,6 +120,25 @@ namespace PPWCode.Vernacular.NHibernate.II
                     Session.Delete(mergedEntity);
                 }
             }
+        }
+
+        protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
+
+        protected virtual int SegmentedBatchSize
+            => 320;
+
+        [NotNull]
+        protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] IEnumerable<TId> ids)
+        {
+            ISet<TId> uniqueIds = new HashSet<TId>(ids);
+            int count = uniqueIds.Count;
+            int nrSegments = (count / SegmentedBatchSize) + (count % SegmentedBatchSize > 0 ? 1 : 0);
+            return count == 0
+                       ? Enumerable.Empty<TId[]>()
+                       : uniqueIds
+                           .OrderBy(id => id)
+                           .Segment(nrSegments)
+                           .Select(s => s.Select(o => o).ToArray());
         }
     }
 }

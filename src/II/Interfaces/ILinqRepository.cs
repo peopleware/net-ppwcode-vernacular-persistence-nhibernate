@@ -128,7 +128,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     An implementation of <see cref="IPagedList{TResult}" />, that holds a max. of <paramref name="pageSize" /> records of type <typeparamref name="TResult"/>.
         /// </returns>
         [NotNull]
-        IPagedList<TResult> FindPaged<TResult>(int pageIndex, int pageSize, [CanBeNull] Func<IQueryable<T>, IQueryable<TResult>> func);
+        IPagedList<TResult> FindPaged<TResult>(int pageIndex, int pageSize, [NotNull] Func<IQueryable<T>, IQueryable<TResult>> func);
 
         /// <summary>
         ///     Calculates the number of records complying with the given function.
