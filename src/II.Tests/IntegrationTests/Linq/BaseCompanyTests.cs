@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
@@ -33,10 +31,21 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq
             WITH_2_CHILDREN
         }
 
-        protected override Func<ILinqRepository<Company, int>> RepositoryFactory
+        protected override void OnSetup()
         {
-            get { return () => new CompanyLinqRepository(SessionProvider); }
+            base.OnSetup();
+
+            Repository = new CompanyLinqRepository(SessionProvider);
         }
+
+        protected override void OnTeardown()
+        {
+            Repository = null;
+
+            base.OnTeardown();
+        }
+
+        protected CompanyLinqRepository Repository { get; private set; }
 
         protected Company CreateCompany(CompanyCreationType companyCreationType)
         {
