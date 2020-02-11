@@ -13,7 +13,7 @@ using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.Repositories
 {
-    public interface ITestLinqRepository<T> : ILinqRepository<T, int>
+    public interface ITestLinqRepository<T> : IRepository<T, int>
         where T : class, IIdentity<int>
     {
     }

@@ -9,7 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,11 +23,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.RepositoryWithDtoMapping.Linq
 {
     public class DtoMappingTests : BaseRepositoryTests<Ship>
     {
-        protected override Func<ILinqRepository<Ship, int>> RepositoryFactory
-        {
-            get { return () => new ShipRepository(SessionProvider); }
-        }
-
         public ShipRepository ShipRepository
             => new ShipRepository(SessionProvider);
 

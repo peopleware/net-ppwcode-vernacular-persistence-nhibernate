@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq
@@ -18,23 +16,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Linq
     public abstract class BaseRepositoryTests<T> : BaseQueryTests
         where T : class, IIdentity<int>
     {
-        protected abstract Func<ILinqRepository<T, int>> RepositoryFactory { get; }
-
-        protected ILinqRepository<T, int> Repository { get; private set; }
-
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            Repository = RepositoryFactory();
             SessionFactory.Statistics.Clear();
-        }
-
-        protected override void OnTeardown()
-        {
-            Repository = null;
-
-            base.OnTeardown();
         }
     }
 }
