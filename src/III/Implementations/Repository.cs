@@ -15,6 +15,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
+using PPWCode.Vernacular.Exceptions.IV;
 using PPWCode.Vernacular.NHibernate.III.Providers;
 using PPWCode.Vernacular.Persistence.IV;
 
@@ -31,16 +32,24 @@ namespace PPWCode.Vernacular.NHibernate.III
         {
         }
 
+        protected virtual int SegmentedBatchSize
+            => 320;
+
         /// <inheritdoc />
         public virtual TRoot GetById(TId id)
             => Execute(nameof(GetById), () => GetByIdInternal(id));
+
+        /// <inheritdoc />
+        public virtual TRoot LoadById(TId id)
+            => Execute(nameof(LoadById), () => LoadByIdInternal(id))
+               ?? throw new ProgrammingError($"Unexpected null result while load<{typeof(TRoot).FullName}>({id}).");
 
         /// <inheritdoc />
         public virtual IList<TRoot> FindAll()
             => Execute(nameof(FindAll), FindAllInternal) ?? new List<TRoot>();
 
         /// <inheritdoc />
-        public IList<TRoot> FindByIds(IEnumerable<TId> ids)
+        public virtual IList<TRoot> FindByIds(IEnumerable<TId> ids)
             => Execute(
                    nameof(FindByIds),
                    () =>
@@ -71,8 +80,16 @@ namespace PPWCode.Vernacular.NHibernate.III
             => Session.Get<TRoot>(id);
 
         [NotNull]
+        protected virtual TRoot LoadByIdInternal([NotNull] TId id)
+            => Session.Load<TRoot>(id);
+
+        /// <inheritdoc cref="FindAll" />
+        [NotNull]
+        [ItemNotNull]
         protected abstract IList<TRoot> FindAllInternal();
 
+        /// <inheritdoc cref="Merge" />
+        /// <remarks>Runs in an isolated envinonment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         [ContractAnnotation("entity:null => null; entity:notnull => notnull")]
         protected virtual TRoot MergeInternal(TRoot entity)
         {
@@ -91,6 +108,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             return default(TRoot);
         }
 
+        /// <inheritdoc cref="SaveOrUpdate" />
+        /// <remarks>Runs in an isolated envinonment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         protected virtual void SaveOrUpdateInternal([CanBeNull] TRoot entity)
         {
             if (entity != null)
@@ -123,9 +142,6 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
-
-        protected virtual int SegmentedBatchSize
-            => 320;
 
         [NotNull]
         protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] IEnumerable<TId> ids)

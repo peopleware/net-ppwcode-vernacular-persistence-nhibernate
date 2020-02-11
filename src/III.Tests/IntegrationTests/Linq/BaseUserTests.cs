@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using PPWCode.Vernacular.NHibernate.III.Tests.Models;
 using PPWCode.Vernacular.NHibernate.III.Tests.Repositories;
 
@@ -18,9 +16,20 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Linq
 {
     public abstract class BaseUserTests : BaseRepositoryTests<User>
     {
-        protected override Func<ILinqRepository<User, int>> RepositoryFactory
+        protected override void OnSetup()
         {
-            get { return () => new UserLinqRepository(SessionProvider); }
+            base.OnSetup();
+
+            Repository = new UserLinqRepository(SessionProvider);
         }
+
+        protected override void OnTeardown()
+        {
+            Repository = null;
+
+            base.OnTeardown();
+        }
+
+        protected UserLinqRepository Repository { get; private set; }
     }
 }

@@ -24,8 +24,7 @@ using PPWCode.Vernacular.Persistence.IV;
 namespace PPWCode.Vernacular.NHibernate.III
 {
     public abstract class LinqRepository<TRoot, TId>
-        : Repository<TRoot, TId>,
-          ILinqRepository<TRoot, TId>
+        : Repository<TRoot, TId>
         where TRoot : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
@@ -34,34 +33,138 @@ namespace PPWCode.Vernacular.NHibernate.III
         {
         }
 
-        public virtual TRoot Get(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
+        public virtual TRoot Get([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
             => Execute(nameof(Get), () => GetInternal(func));
 
-        /// <inheritdoc />
-        public TResult Get<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func)
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
+        /// <returns>
+        ///     An entity projected to an instance of type <typeparamref name="TResult" />, that satisfying the given
+        ///     <paramref name="func" />.
+        /// </returns>
+        [CanBeNull]
+        public TResult Get<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
             => Execute(nameof(Get), () => GetInternal(func));
 
-        public virtual TRoot GetAtIndex(Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
+        /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <param name="index">The given index.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
+        public virtual TRoot GetAtIndex([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
             => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
-        /// <inheritdoc />
-        public TResult GetAtIndex<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func, int index)
+        /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
+        /// <param name="func">The given function.</param>
+        /// <param name="index">The given index.</param>
+        /// <returns>
+        ///     An entity projected to an instance of type <typeparamref name="TResult" />, that satisfying the given
+        ///     <paramref name="func" />.
+        /// </returns>
+        [CanBeNull]
+        public TResult GetAtIndex<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func, int index)
             => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
-        public virtual IList<TRoot> Find(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
+        public virtual IList<TRoot> Find([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(func))
                ?? new List<TRoot>();
 
-        public virtual IList<TResult> Find<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func)
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of projected entities to an instance of type <typeparamref name="TResult" />, that satisfying the given
+        ///     <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
+        public virtual IList<TResult> Find<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
             => Execute(nameof(Find), () => FindInternal(func))
                ?? new List<TResult>();
 
-        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" />, that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        [NotNull]
+        public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, [CanBeNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
             => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func))
                ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
 
-        /// <inheritdoc />
-        public virtual int Count(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{TResult}" />, that holds a max. of <paramref name="pageSize" /> records
+        ///     of type <typeparamref name="TResult" />.
+        /// </returns>
+        [NotNull]
+        public virtual IPagedList<TResult> FindPaged<TResult>(int pageIndex, int pageSize, [NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
+            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func))
+               ?? new PagedList<TResult>(Enumerable.Empty<TResult>(), pageIndex, pageSize, 0);
+
+        /// <summary>
+        ///     Calculates the number of records complying with the given function.
+        /// </summary>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <returns>
+        ///     Number of records that satisfying the given <paramref name="func" />.
+        /// </returns>
+        public virtual int Count([CanBeNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
             => Execute(nameof(Count), () => CountInternal(func));
 
         public virtual IList<TRoot> Find(Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int? skip, int? count)
@@ -70,10 +173,10 @@ namespace PPWCode.Vernacular.NHibernate.III
         public virtual IList<TResult> Find<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(func, skip, count));
 
-        public virtual IPagedList<TResult> FindPaged<TResult>(int pageIndex, int pageSize, Func<IQueryable<TRoot>, IQueryable<TResult>> func)
-            => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func))
-               ?? new PagedList<TResult>(Enumerable.Empty<TResult>(), pageIndex, pageSize, 0);
-
+        /// <inheritdoc cref="Get" />
+        /// <exception cref="EmptyResultException">
+        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        /// </exception>
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
         {
@@ -83,10 +186,15 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default;
+                return default(TRoot);
             }
         }
 
+        /// <inheritdoc cref="Get{TResult}" />
+        /// <exception cref="EmptyResultException">
+        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        /// </exception>
+        [CanBeNull]
         protected virtual TResult GetInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
         {
             try
@@ -95,10 +203,14 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default;
+                return default(TResult);
             }
         }
 
+        /// <inheritdoc cref="GetAtIndex" />
+        /// <exception cref="EmptyResultException">
+        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        /// </exception>
         [CanBeNull]
         protected virtual TRoot GetAtIndexInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
         {
@@ -108,10 +220,14 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default;
+                return default(TRoot);
             }
         }
 
+        /// <inheritdoc cref="GetAtIndex{TResult}" />
+        /// <exception cref="EmptyResultException">
+        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        /// </exception>
         [CanBeNull]
         protected virtual TResult GetAtIndexInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func, int index)
         {
@@ -121,36 +237,66 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default;
+                return default(TResult);
             }
         }
 
         protected override IList<TRoot> FindAllInternal()
             => FindInternal(null);
 
+        /// <inheritdoc
+        ///     cref="FindInternal(System.Func{System.Linq.IQueryable{TRoot},System.Linq.IQueryable{TRoot}},int?,int?)" />
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
             => FindInternal(func, null, null);
 
+        /// <inheritdoc
+        ///     cref="FindInternal(System.Func{System.Linq.IQueryable{TRoot},System.Linq.IQueryable{TRoot}},int?,int?)" />
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TResult> FindInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
             => FindInternal(func, null, null);
 
+        /// <inheritdoc
+        ///     cref="FindInternal(System.Func{System.Linq.IQueryable{TRoot},System.Linq.IQueryable{TRoot}},int?,int?)" />
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int? skip, int? count)
             => FindInternal(() => func != null ? func(CreateQueryable()) : CreateQueryable(), skip, count);
 
+        /// <inheritdoc
+        ///     cref="FindInternal{TResult}(System.Func{System.Linq.IQueryable{TResult}},int?,int?)" />
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TResult> FindInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func, int? skip, int? count)
             => FindInternal(() => func(CreateQueryable()), skip, count);
 
+        /// <summary>
+        ///     <para>
+        ///         Find a set of records that fullfills the <paramref name="queryFactory" /> and optionally we have a maximum of
+        ///         <paramref name="count" /> records.In the result set we kan optionally skip the first <paramref name="skip" />
+        ///         records.
+        ///     </para>
+        ///     <para>
+        ///         When using the optional parameters think about the order of the set of records, aka sorting.
+        ///     </para>
+        /// </summary>
+        /// <param name="queryFactory">Create the base of the query of type <typeparamref name="TResult" />.</param>
+        /// <param name="skip">Optional parameter to skip a number of records.</param>
+        /// <param name="count">Maximum number of records to be included in our result.</param>
+        /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
+        /// <returns>A set of records </returns>
+        /// <exception cref="EmptyResultException">
+        ///     If <paramref name="queryFactory" /> throws this type of excpetion, a <c>null</c> will be returned.
+        /// </exception>
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TResult> FindInternal<TResult>([NotNull] Func<IQueryable<TResult>> queryFactory, int? skip, int? count)
         {
             try
             {
                 IQueryable<TResult> query = queryFactory();
-
                 if (skip.HasValue)
                 {
                     query = query.Skip(skip.Value);
@@ -202,7 +348,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        protected virtual int CountInternal(Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
+        protected virtual int CountInternal([CanBeNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
         {
             try
             {
@@ -214,8 +360,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        /// <inheritdoc />
-        protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
+        [NotNull]
+        [ItemNotNull]
+        protected override IEnumerable<TRoot> FindByIdsInternal([NotNull] IEnumerable<TId> ids)
             => FindInternal(qry => qry.Where(e => ids.Contains(e.Id)));
 
         [NotNull]
