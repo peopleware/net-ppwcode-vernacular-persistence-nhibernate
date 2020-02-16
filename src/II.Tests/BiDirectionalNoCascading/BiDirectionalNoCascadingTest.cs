@@ -9,7 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Linq;
 
 using NUnit.Framework;
@@ -22,11 +21,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.BiDirectionalNoCascading
 {
     public class BiDirectionalNoCascadingTest : BaseRepositoryTests<Author>
     {
-        protected override Func<IQueryOverRepository<Author, int>> RepositoryFactory
-        {
-            get { return () => new AuthorRepository(SessionProvider); }
-        }
-
         public AuthorRepository AuthorRepository
             => new AuthorRepository(SessionProvider);
 

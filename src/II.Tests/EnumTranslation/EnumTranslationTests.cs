@@ -21,11 +21,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.EnumTranslation
 {
     public class EnumTranslationTests : BaseRepositoryTests<GenderEnumTranslation>
     {
-        protected override Func<IQueryOverRepository<GenderEnumTranslation, int>> RepositoryFactory
-        {
-            get { return () => new GenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum>(SessionProvider); }
-        }
-
         public IGenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum> GenderEnumTranslationRepository
             => new GenericEnumTranslationRepository<GenderEnumTranslation, GenderEnum>(SessionProvider);
 

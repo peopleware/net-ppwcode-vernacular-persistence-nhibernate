@@ -23,7 +23,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey
     {
         private IPpwHbmMapping _ppwHbmMapping;
 
-        protected IQueryOverRepository<Car, Guid> Repository { get; private set; }
+        protected CarRepository Repository { get; private set; }
 
         protected override string CatalogName
             => "Test.PPWCode.Vernacular.NHibernate.I.Tests";
@@ -39,16 +39,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey
         protected override string IdentityName
             => "Test - IdentityName";
 
-        protected virtual Func<IQueryOverRepository<Car, Guid>> RepositoryFactory
-        {
-            get { return () => new CarRepository(SessionProvider); }
-        }
-
         protected override void OnSetup()
         {
             base.OnSetup();
 
-            Repository = RepositoryFactory();
+            Repository = new CarRepository(SessionProvider);
         }
 
         protected override void OnTeardown()
@@ -69,7 +64,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.GuidPrimaryKey
                                   ModelName = "Fiat"
                               };
 
-                    RepositoryFactory().SaveOrUpdate(car);
+                    Repository.SaveOrUpdate(car);
 
                     Assert.AreNotEqual(Guid.Empty, car.Id);
                 },

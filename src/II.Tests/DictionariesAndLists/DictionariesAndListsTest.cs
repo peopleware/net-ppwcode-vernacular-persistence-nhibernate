@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,23 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Models;
-using PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.DictionariesAndLists
 {
     public class DictionariesAndListsTest : BaseRepositoryTests<Tower>
     {
-        protected override Func<IQueryOverRepository<Tower, int>> RepositoryFactory
-        {
-            get { return () => new TowerRepository(SessionProvider); }
-        }
-
         /// <summary>
         ///     Override this method for setup code that needs to run for each test separately.
         /// </summary>
