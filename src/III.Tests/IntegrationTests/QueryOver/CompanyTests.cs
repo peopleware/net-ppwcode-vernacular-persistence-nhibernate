@@ -187,5 +187,39 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver
             Assert.That(extraData, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.ExtendedCompany), Is.True);
         }
+
+        [Test]
+        public void Can_Load_Company_By_Id()
+        {
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            Company loadedCompany = Repository.LoadById(company.Id);
+
+            Assert.That(loadedCompany, Is.Not.Null);
+            Assert.AreEqual(loadedCompany.Id, company.Id);
+        }
+
+        [Test]
+        public void Can_Find_Companies_By_Ids()
+        {
+            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+            Company company2 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            IList<Company> companies = Repository.FindByIds(new[] { company1.Id, company2.Id });
+
+            Assert.That(companies, Is.Not.Null);
+            Assert.AreEqual(2, companies.Count);
+        }
+
+        [Test]
+        public void Can_Count_Companies()
+        {
+            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+            CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            int count = Repository.Count(companies => companies.Where(c => c.Id == company1.Id));
+
+            Assert.AreEqual(1, count);
+        }
     }
 }
