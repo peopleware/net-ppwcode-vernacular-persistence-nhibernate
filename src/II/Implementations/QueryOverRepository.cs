@@ -10,6 +10,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,6 +18,7 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 using NHibernate;
+using NHibernate.Criterion;
 
 using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
@@ -400,7 +402,7 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         /// <inheritdoc />
         protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
-            => FindInternal(qry => qry.Where(e => ids.Contains(e.Id)));
+            => FindInternal(qry => qry.Where(e => e.Id.IsIn((ICollection)ids)));
 
         [NotNull]
         protected virtual IQueryOver<TRoot, TRoot> CreateQueryOver()
