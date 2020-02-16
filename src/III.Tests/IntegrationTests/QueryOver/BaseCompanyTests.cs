@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using JetBrains.Annotations;
 
 using NUnit.Framework;
@@ -35,11 +33,21 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver
             WITH_2_CHILDREN
         }
 
-        [NotNull]
-        protected override Func<IQueryOverRepository<Company, int>> RepositoryFactory
+        protected override void OnSetup()
         {
-            get { return () => new CompanyQueryOverRepository(SessionProvider); }
+            base.OnSetup();
+
+            Repository = new CompanyQueryOverRepository(SessionProvider);
         }
+
+        protected override void OnTeardown()
+        {
+            Repository = null;
+
+            base.OnTeardown();
+        }
+
+        protected CompanyQueryOverRepository Repository { get; private set; }
 
         [NotNull]
         protected Company CreateCompany(CompanyCreationType companyCreationType)

@@ -9,8 +9,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-
 using PPWCode.Vernacular.NHibernate.III.Tests.Models;
 using PPWCode.Vernacular.NHibernate.III.Tests.Repositories;
 
@@ -22,12 +20,16 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver
         {
             base.OnSetup();
 
-            SessionFactory.Statistics.Clear();
+            Repository = new UserQueryOverRepository(SessionProvider);
         }
 
-        protected override Func<IQueryOverRepository<User, int>> RepositoryFactory
+        protected override void OnTeardown()
         {
-            get { return () => new UserQueryOverRepository(SessionProvider); }
+            Repository = null;
+
+            base.OnTeardown();
         }
+
+        protected UserQueryOverRepository Repository { get; private set; }
     }
 }
