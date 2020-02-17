@@ -23,6 +23,7 @@ using JetBrains.Annotations;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Event;
+using NHibernate.Type;
 
 using PPWCode.Vernacular.Exceptions.III;
 using PPWCode.Vernacular.Persistence.III;
@@ -215,7 +216,9 @@ namespace PPWCode.Vernacular.NHibernate.II
                 {
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
-                        auditLogs.AddRange(GetValuesFromStateArray(propertyName, @event.State, fieldIndex));
+                        object value = @event.State[fieldIndex];
+                        IType valueNHibernateType = @event.Persister.PropertyTypes[fieldIndex];
+                        auditLogs.AddRange(CreatePpwAuditLogs(propertyName, value, valueNHibernateType, context));
                     }
                 }
             }
@@ -259,11 +262,14 @@ namespace PPWCode.Vernacular.NHibernate.II
                 {
                     if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                     {
+                        object oldValue = @event.OldState[dirtyFieldIndex];
+                        IType valueNHibernateType = @event.Persister.PropertyTypes[dirtyFieldIndex];
+                        object newValue = @event.State[dirtyFieldIndex];
                         IDictionary<string, PpwAuditLog> oldAuditLogs =
-                            GetValuesFromStateArray(dirtyPropertyName, @event.OldState, dirtyFieldIndex)
+                            CreatePpwAuditLogs(dirtyPropertyName, oldValue, valueNHibernateType, context)
                                 .ToDictionary(l => l.PropertyName);
                         IDictionary<string, PpwAuditLog> newAuditLogs =
-                            GetValuesFromStateArray(dirtyPropertyName, @event.State, dirtyFieldIndex)
+                            CreatePpwAuditLogs(dirtyPropertyName, newValue, valueNHibernateType, context)
                                 .ToDictionary(l => l.PropertyName);
 
                         ISet<string> propertyNames =
@@ -355,12 +361,12 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         [NotNull]
         [ItemNotNull]
-        protected virtual IEnumerable<PpwAuditLog> GetValuesFromStateArray(
+        protected virtual IEnumerable<PpwAuditLog> CreatePpwAuditLogs(
             [NotNull] string propertyName,
-            [NotNull] [ItemCanBeNull] object[] stateArray,
-            int position)
+            [CanBeNull] object value,
+            [NotNull] IType valueNHibernateType,
+            [NotNull] TContext context)
         {
-            object value = stateArray[position];
             if (value != null)
             {
                 if (value is IPersistentObject<TId> persistentObject)
@@ -385,7 +391,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                     }
                     else
                     {
-                        yield return CreatePpwAuditLog(propertyName, value);
+                        yield return CreatePpwAuditLog(propertyName, value, valueNHibernateType, context);
                     }
                 }
             }
@@ -398,9 +404,13 @@ namespace PPWCode.Vernacular.NHibernate.II
         [NotNull]
         protected virtual PpwAuditLog CreatePpwAuditLog(
             [NotNull] string propertyName,
-            [NotNull] object value)
-            => value is DateTime dt
-                   ? new PpwAuditLog(propertyName, dt.ToString("u"))
+            [NotNull] object value,
+            [NotNull] IType valueNhibernateType,
+            [NotNull] TContext context)
+            => value is DateTime dateTime
+                   ? valueNhibernateType is DateType
+                         ? new PpwAuditLog(propertyName, dateTime.ToString("yyyy-MM-dd"))
+                         : new PpwAuditLog(propertyName, dateTime.ToString("o"))
                    : new PpwAuditLog(propertyName, value.ToString());
 
         protected class AuditLogItem
