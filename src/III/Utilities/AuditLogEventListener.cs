@@ -217,8 +217,11 @@ namespace PPWCode.Vernacular.NHibernate.III
                     if ((auditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.NONE)
                     {
                         object value = @event.State[fieldIndex];
-                        IType valueNHibernateType = @event.Persister.PropertyTypes[fieldIndex];
-                        auditLogs.AddRange(CreatePpwAuditLogs(propertyName, value, valueNHibernateType, context));
+                        if (value != null)
+                        {
+                            IType valueNHibernateType = @event.Persister.PropertyTypes[fieldIndex];
+                            auditLogs.AddRange(CreatePpwAuditLogs(propertyName, value, valueNHibernateType, context));
+                        }
                     }
                 }
             }
@@ -227,7 +230,10 @@ namespace PPWCode.Vernacular.NHibernate.III
             if (auditLogs.Count > 0)
             {
                 OnAddAuditEntities(context);
-                auditEntities.AddRange(auditLogs.Select(auditLog => CreateAuditEntity("I", entityName, entityId, context, null, auditLog)));
+                auditEntities.AddRange(
+                    auditLogs
+                        .Select(auditLog => CreateAuditEntity("I", entityName, entityId, context, null, auditLog))
+                        .Where(ae => ae.NewValue != null));
             }
 
             return auditEntities;
