@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>false</IsPackable>
@@ -12,18 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="PPWCode.Vernacular.NHibernate.II.Tests.csproj.DotSettings" />
+    <None Remove="PPWCode.Vernacular.NHibernate.III.Tests.csproj.DotSettings" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.Bitbucket.Git" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.0-beta008">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="log4net" Version="[2.0.8]" />
 
     <!-- MUDO: Common.Loging.Log4Net208 only supports net461 -->
     <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" NoWarn="NU1701" />
+
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
