@@ -12,7 +12,6 @@
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.III.Tests.DictionariesAndLists.Models;
-using PPWCode.Vernacular.NHibernate.III.Tests.DictionariesAndLists.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.DictionariesAndLists
