@@ -22,8 +22,6 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Providers;
-
 using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.II
@@ -33,7 +31,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         private const string ConfigFile = "hibernate.cfg.xml";
 
         [NotNull]
-        private static readonly ILog _logger = LogManager.GetLogger<SafeEnvironmentProvider>();
+        private static readonly ILog _logger = LogManager.GetLogger<NhFasterConfiguration>();
 
         protected NhFasterConfiguration(
             [NotNull] INhInterceptor nhInterceptor,
