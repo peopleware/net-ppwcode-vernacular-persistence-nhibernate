@@ -29,16 +29,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
                        };
             }
 
-            if (session == null)
-            {
-                throw new ArgumentNullException(nameof(session));
-            }
-
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-
             Run(session, isolationLevel, ActionWrapper());
         }
 
