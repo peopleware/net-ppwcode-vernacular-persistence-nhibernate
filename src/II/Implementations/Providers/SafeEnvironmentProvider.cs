@@ -111,7 +111,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
                };
 
         [CanBeNull]
-        private TResult Run<TResult>(
+        protected virtual TResult Run<TResult>(
             [NotNull] Func<string> startMessage,
             [NotNull] Func<string> finishedMessage,
             [NotNull] Func<string> failedMessage,
