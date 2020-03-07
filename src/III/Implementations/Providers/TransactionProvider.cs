@@ -1,4 +1,4 @@
-// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -14,11 +14,13 @@ using System.Transactions;
 
 using NHibernate;
 
+using IsolationLevel = System.Data.IsolationLevel;
+
 namespace PPWCode.Vernacular.NHibernate.III.Providers
 {
     public class TransactionProvider : ITransactionProvider
     {
-        public void Run(ISession session, System.Data.IsolationLevel isolationLevel, Action action)
+        public void Run(ISession session, IsolationLevel isolationLevel, Action action)
         {
             Func<int> ActionWrapper()
             {
@@ -32,7 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Providers
             Run(session, isolationLevel, ActionWrapper());
         }
 
-        public TResult Run<TResult>(ISession session, System.Data.IsolationLevel isolationLevel, Func<TResult> func)
+        public TResult Run<TResult>(ISession session, IsolationLevel isolationLevel, Func<TResult> func)
         {
             if (session == null)
             {
