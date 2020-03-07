@@ -10,8 +10,6 @@
 // limitations under the License.
 
 using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
@@ -32,6 +30,5 @@ namespace PPWCode.Vernacular.NHibernate.III.Providers
 
         IsolationLevel IsolationLevel { get; }
         void Flush();
-        Task FlushAsync(CancellationToken cancellationToken);
     }
 }
