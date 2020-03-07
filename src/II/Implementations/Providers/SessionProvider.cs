@@ -10,8 +10,6 @@
 // limitations under the License.
 
 using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
@@ -40,8 +38,5 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
 
         public void Flush()
             => TransactionProvider.Run(Session, IsolationLevel, () => SafeEnvironmentProvider.Run(nameof(Flush), () => Session.Flush()));
-
-        public Task FlushAsync(CancellationToken cancellationToken)
-            => TransactionProvider.Run(Session, IsolationLevel, () => SafeEnvironmentProvider.Run(nameof(Flush), () => Session.FlushAsync(cancellationToken)));
     }
 }
