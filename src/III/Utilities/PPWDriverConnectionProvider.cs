@@ -20,8 +20,6 @@ using JetBrains.Annotations;
 
 using NHibernate.Connection;
 
-using PPWCode.Vernacular.NHibernate.III.Providers;
-
 namespace PPWCode.Vernacular.NHibernate.III
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
@@ -29,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.III
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
         [NotNull]
-        private static readonly ILog _logger = LogManager.GetLogger<SafeEnvironmentProvider>();
+        private static readonly ILog _logger = LogManager.GetLogger<PPWDriverConnectionProvider>();
 
         /// <summary>
         ///     Closes and Disposes of the <see cref="T:System.Data.IDbConnection" />.
