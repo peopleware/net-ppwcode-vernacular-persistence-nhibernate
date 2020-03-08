@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -192,7 +192,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         /// <inheritdoc cref="Get{TResult}" />
         /// <exception cref="EmptyResultException">
-        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        ///     If <paramref name="func" /> throws this type of exception, a <c>null</c> will be returned.
         /// </exception>
         [CanBeNull]
         protected virtual TResult GetInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
@@ -226,7 +226,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         /// <inheritdoc cref="GetAtIndex{TResult}" />
         /// <exception cref="EmptyResultException">
-        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
+        ///     If <paramref name="func" /> throws this type of exception, a <c>null</c> will be returned.
         /// </exception>
         [CanBeNull]
         protected virtual TResult GetAtIndexInternal<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func, int index)
@@ -274,7 +274,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         /// <summary>
         ///     <para>
-        ///         Find a set of records that fullfills the <paramref name="queryFactory" /> and optionally we have a maximum of
+        ///         Find a set of records that fulfills the <paramref name="queryFactory" /> and optionally we have a maximum of
         ///         <paramref name="count" /> records.In the result set we kan optionally skip the first <paramref name="skip" />
         ///         records.
         ///     </para>
@@ -288,7 +288,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
         /// <returns>A set of records </returns>
         /// <exception cref="EmptyResultException">
-        ///     If <paramref name="queryFactory" /> throws this type of excpetion, a <c>null</c> will be returned.
+        ///     If <paramref name="queryFactory" /> throws this type of exception, a <c>null</c> will be returned.
         /// </exception>
         [NotNull]
         [ItemNotNull]
