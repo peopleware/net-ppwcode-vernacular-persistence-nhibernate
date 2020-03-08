@@ -203,7 +203,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default(TResult);
+                return default;
             }
         }
 
@@ -237,7 +237,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
             catch (EmptyResultException)
             {
-                return default(TResult);
+                return default;
             }
         }
 
