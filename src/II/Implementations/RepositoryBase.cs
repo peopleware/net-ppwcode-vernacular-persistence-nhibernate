@@ -10,7 +10,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 using JetBrains.Annotations;
 
@@ -48,6 +50,9 @@ namespace PPWCode.Vernacular.NHibernate.II
         protected IsolationLevel IsolationLevel
             => SessionProvider.IsolationLevel;
 
+        protected virtual int SegmentedBatchSize
+            => 320;
+
         protected virtual void Execute([NotNull] string requestDescription, [NotNull] Action action)
             => Execute(requestDescription, action, null);
 
@@ -61,5 +66,19 @@ namespace PPWCode.Vernacular.NHibernate.II
         [CanBeNull]
         protected virtual TResult Execute<TResult>([NotNull] string requestDescription, [NotNull] Func<TResult> func)
             => Execute(requestDescription, func, null);
+
+        [NotNull]
+        protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] IEnumerable<TId> ids)
+        {
+            ISet<TId> uniqueIds = new HashSet<TId>(ids);
+            int count = uniqueIds.Count;
+            int nrSegments = (count / SegmentedBatchSize) + (count % SegmentedBatchSize > 0 ? 1 : 0);
+            return count == 0
+                       ? Enumerable.Empty<TId[]>()
+                       : uniqueIds
+                           .OrderBy(id => id)
+                           .Segment(nrSegments)
+                           .Select(s => s.Select(o => o).ToArray());
+        }
     }
 }
