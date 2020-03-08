@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -37,15 +37,6 @@ namespace PPWCode.Vernacular.NHibernate.III
         ///     Gets an entity by a function.
         /// </summary>
         /// <param name="func">The given function.</param>
-        /// <returns>The entity that is filtered by the function or null if not found.</returns>
-        [CanBeNull]
-        public virtual TRoot Get([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
-            => Execute(nameof(Get), () => GetInternal(func));
-
-        /// <summary>
-        ///     Gets an entity by a function.
-        /// </summary>
-        /// <param name="func">The given function.</param>
         /// <typeparam name="TResult">A type that is projected from our <typeparamref name="TRoot" /></typeparam>
         /// <returns>
         ///     An entity projected to an instance of type <typeparamref name="TResult" />, that satisfying the given
@@ -54,17 +45,6 @@ namespace PPWCode.Vernacular.NHibernate.III
         [CanBeNull]
         public TResult Get<TResult>([NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> func)
             => Execute(nameof(Get), () => GetInternal(func));
-
-        /// <summary>
-        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
-        ///     in the result.
-        /// </summary>
-        /// <param name="func">The given function.</param>
-        /// <param name="index">The given index.</param>
-        /// <returns>The entity that is filtered by the function or null if not found.</returns>
-        [CanBeNull]
-        public virtual TRoot GetAtIndex([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
-            => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
         /// <summary>
         ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
@@ -173,23 +153,6 @@ namespace PPWCode.Vernacular.NHibernate.III
         public virtual IList<TResult> Find<TResult>(Func<IQueryable<TRoot>, IQueryable<TResult>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(func, skip, count));
 
-        /// <inheritdoc cref="Get" />
-        /// <exception cref="EmptyResultException">
-        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
-        /// </exception>
-        [CanBeNull]
-        protected virtual TRoot GetInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func)
-        {
-            try
-            {
-                return func.Invoke(CreateQueryable()).SingleOrDefault();
-            }
-            catch (EmptyResultException)
-            {
-                return default(TRoot);
-            }
-        }
-
         /// <inheritdoc cref="Get{TResult}" />
         /// <exception cref="EmptyResultException">
         ///     If <paramref name="func" /> throws this type of exception, a <c>null</c> will be returned.
@@ -204,23 +167,6 @@ namespace PPWCode.Vernacular.NHibernate.III
             catch (EmptyResultException)
             {
                 return default;
-            }
-        }
-
-        /// <inheritdoc cref="GetAtIndex" />
-        /// <exception cref="EmptyResultException">
-        ///     If <paramref name="func" /> throws this type of excpetion, a <c>null</c> will be returned.
-        /// </exception>
-        [CanBeNull]
-        protected virtual TRoot GetAtIndexInternal([NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> func, int index)
-        {
-            try
-            {
-                return func.Invoke(CreateQueryable()).Skip(index).Take(1).SingleOrDefault();
-            }
-            catch (EmptyResultException)
-            {
-                return default(TRoot);
             }
         }
 
