@@ -1,4 +1,4 @@
-// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,18 +9,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
+using PPWCode.Vernacular.NHibernate.II.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.Linq
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
 {
-    public abstract class BaseRepositoryTests<T> : BaseQueryTests
-        where T : class, IIdentity<int>
+    public class RoleRepository
+        : TestRepository<Role>,
+          IRoleRepository
     {
-        protected override void OnSetup()
+        public RoleRepository(ISessionProviderAsync sessionProvider)
+            : base(sessionProvider)
         {
-            base.OnSetup();
-
-            SessionFactory.Statistics.Clear();
         }
     }
 }

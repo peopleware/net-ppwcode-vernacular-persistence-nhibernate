@@ -9,14 +9,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.II.Providers;
+using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
 {
-    public class CargoContainerRepository : TestRepository<CargoContainer>
+    public class CompanyRepository
+        : TestRepository<Company>,
+          ICompanyRepository
     {
-        public CargoContainerRepository(ISessionProvider sessionProvider)
+        public CompanyRepository(ISessionProviderAsync sessionProvider)
             : base(sessionProvider)
         {
         }
