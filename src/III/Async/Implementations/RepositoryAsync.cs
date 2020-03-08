@@ -155,7 +155,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
         /// <inheritdoc cref="FindByIdsAsync" />
         [NotNull]
         [ItemNotNull]
-        protected abstract Task<IList<TRoot>> FindByIdsInternalAsync([NotNull] [ItemNotNull] TId[] segment, CancellationToken cancellationToken);
+        protected abstract Task<IList<TRoot>> FindByIdsInternalAsync([NotNull] [ItemNotNull] TId[] ids, CancellationToken cancellationToken);
 
         /// <inheritdoc cref="MergeAsync" />
         [NotNull]
