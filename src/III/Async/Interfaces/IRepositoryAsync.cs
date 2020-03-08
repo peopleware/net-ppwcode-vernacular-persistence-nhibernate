@@ -23,8 +23,7 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III.Async.Interfaces
 {
-    /// <inheritdoc />
-    public interface IRepositoryAsync<TRoot, in TId> : IRepository<TRoot, TId>
+    public interface IRepositoryAsync<TRoot, in TId>
         where TRoot : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {

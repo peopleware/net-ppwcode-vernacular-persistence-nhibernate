@@ -26,7 +26,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
 {
     /// <inheritdoc cref="IRepositoryAsync{TRoot,TId}" />
     public abstract class RepositoryAsync<TRoot, TId>
-        : Repository<TRoot, TId>,
+        : RepositoryBase<TRoot, TId>,
           IRepositoryAsync<TRoot, TId>
         where TRoot : class, IIdentity<TId>
         where TId : IEquatable<TId>
@@ -166,9 +166,15 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
             {
                 // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
                 // NHibernate MERGE transforms an UPDATE for a not-found-PK into a CREATE
-                if (!entity.IsTransient && (GetById(entity.Id) == null))
+                if (!entity.IsTransient)
                 {
-                    throw new NotFoundException("Merge executed for an entity that no longer exists in the database.");
+                    TRoot foundEntity =
+                        await GetByIdInternalAsync(entity.Id, cancellationToken)
+                            .ConfigureAwait(false);
+                    if (foundEntity == null)
+                    {
+                        throw new NotFoundException("Merge executed for an entity that no longer exists in the database.");
+                    }
                 }
 
                 return await Session.MergeAsync(entity, cancellationToken).ConfigureAwait(false);
@@ -184,9 +190,15 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
             if (entity != null)
             {
                 // Note: Prevent a CREATE for something that was assumed to be an UPDATE.
-                if (!entity.IsTransient && (GetById(entity.Id) == null))
+                if (!entity.IsTransient)
                 {
-                    throw new NotFoundException("SaveOrUpdate executed for an entity that no longer exists in the database.");
+                    TRoot foundEntity =
+                        await GetByIdInternalAsync(entity.Id, cancellationToken)
+                            .ConfigureAwait(false);
+                    if (foundEntity == null)
+                    {
+                        throw new NotFoundException("SaveOrUpdate executed for an entity that no longer exists in the database.");
+                    }
                 }
 
                 await Session.SaveOrUpdateAsync(entity, cancellationToken).ConfigureAwait(false);

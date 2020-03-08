@@ -32,9 +32,6 @@ namespace PPWCode.Vernacular.NHibernate.III
         {
         }
 
-        protected virtual int SegmentedBatchSize
-            => 320;
-
         /// <inheritdoc />
         public virtual TRoot GetById(TId id)
             => Execute(nameof(GetById), () => GetByIdInternal(id));
@@ -142,19 +139,5 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
-
-        [NotNull]
-        protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] IEnumerable<TId> ids)
-        {
-            ISet<TId> uniqueIds = new HashSet<TId>(ids);
-            int count = uniqueIds.Count;
-            int nrSegments = (count / SegmentedBatchSize) + (count % SegmentedBatchSize > 0 ? 1 : 0);
-            return count == 0
-                       ? Enumerable.Empty<TId[]>()
-                       : uniqueIds
-                           .OrderBy(id => id)
-                           .Segment(nrSegments)
-                           .Select(s => s.Select(o => o).ToArray());
-        }
     }
 }
