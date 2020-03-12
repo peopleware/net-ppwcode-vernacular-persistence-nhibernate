@@ -85,8 +85,11 @@ namespace PPWCode.Vernacular.NHibernate.III
         [ItemNotNull]
         protected abstract IList<TRoot> FindAllInternal();
 
+        /// <inheritdoc cref="FindByIds"/>
+        protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
+
         /// <inheritdoc cref="Merge" />
-        /// <remarks>Runs in an isolated envinonment. This ensures a transaction is active and exceptions are being triaged.</remarks>
+        /// <remarks>Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         [ContractAnnotation("entity:null => null; entity:notnull => notnull")]
         protected virtual TRoot MergeInternal(TRoot entity)
         {
@@ -106,7 +109,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="SaveOrUpdate" />
-        /// <remarks>Runs in an isolated envinonment. This ensures a transaction is active and exceptions are being triaged.</remarks>
+        /// <remarks>Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         protected virtual void SaveOrUpdateInternal([CanBeNull] TRoot entity)
         {
             if (entity != null)
@@ -121,6 +124,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="Delete" />
         protected virtual void DeleteInternal([CanBeNull] TRoot entity)
         {
             if ((entity != null) && !entity.IsTransient)
@@ -137,7 +141,5 @@ namespace PPWCode.Vernacular.NHibernate.III
                 }
             }
         }
-
-        protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
     }
 }

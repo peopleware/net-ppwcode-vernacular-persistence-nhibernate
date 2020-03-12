@@ -31,7 +31,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
             => Find(FindContainersQuery(code));
 
         public IPagedList<ContainerDto> FindContainersFromShipsMatchingCodePaged(int pageIndex, int pageSize, string code)
-            => FindPaged(pageIndex, pageSize, FindContainersQuery(code));
+            => FindPaged(FindContainersQuery(code), pageIndex, pageSize);
 
         protected virtual Func<IQueryable<Ship>, IQueryable<ContainerDto>> FindContainersQuery(string code)
             => qry =>

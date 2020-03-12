@@ -187,12 +187,12 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
             try
             {
                 IQueryable<TResult> query = lambda();
-                if (skip.HasValue)
+                if (skip != null)
                 {
                     query = query.Skip(skip.Value);
                 }
 
-                if (count.HasValue)
+                if (count != null)
                 {
                     query = query.Take(count.Value);
                 }
@@ -209,7 +209,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
         }
 
         /// <inheritdoc
-        ///     cref="LinqRepository{TRoot,TId}.FindPagedInternal{TResult}(int,int,System.Func{System.Linq.IQueryable{TResult}})" />
+        ///     cref="LinqRepository{TRoot,TId}.FindPagedInternal{TResult}(System.Func{System.Linq.IQueryable{TResult}},int,int)" />
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
         [NotNull]
         [ItemNotNull]
