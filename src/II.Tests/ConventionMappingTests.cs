@@ -20,7 +20,7 @@ using NHibernate.Tool.hbm2ddl;
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.II.SqlServer;
-using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests
 {

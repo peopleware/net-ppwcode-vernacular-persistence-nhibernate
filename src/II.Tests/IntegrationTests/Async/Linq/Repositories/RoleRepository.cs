@@ -10,7 +10,7 @@
 // limitations under the License.
 
 using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
 {

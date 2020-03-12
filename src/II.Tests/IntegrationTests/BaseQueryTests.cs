@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.NHibernate.II.Test;
-using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests
 {

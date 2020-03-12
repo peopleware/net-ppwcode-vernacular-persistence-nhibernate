@@ -12,7 +12,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 
-using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests
 {

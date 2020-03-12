@@ -11,8 +11,8 @@
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.QueryOver;
-using PPWCode.Vernacular.NHibernate.II.Tests.Models;
+using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.QueryOver.Common;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.Audit
 {
