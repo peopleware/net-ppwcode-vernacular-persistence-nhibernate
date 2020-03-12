@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -46,12 +46,35 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.QueryOver
         }
 
         [Test]
+        public void Can_Count_Companies()
+        {
+            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+            CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            int count = Repository.Count(companies => companies.Where(c => c.Id == company1.Id));
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
         public void Can_Find_All_Companies()
         {
             IList<Company> companies = Repository.FindAll();
 
             Assert.That(companies, Is.Not.Null);
             Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
+        }
+
+        [Test]
+        public void Can_Find_Companies_By_Ids()
+        {
+            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+            Company company2 = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            IList<Company> companies = Repository.FindByIds(new[] { company1.Id, company2.Id });
+
+            Assert.That(companies, Is.Not.Null);
+            Assert.AreEqual(2, companies.Count);
         }
 
         [Test]
@@ -161,6 +184,17 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.QueryOver
         }
 
         [Test]
+        public void Can_Load_Company_By_Id()
+        {
+            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
+
+            Company loadedCompany = Repository.LoadById(company.Id);
+
+            Assert.That(loadedCompany, Is.Not.Null);
+            Assert.AreEqual(loadedCompany.Id, company.Id);
+        }
+
+        [Test]
         public void Can_Page_All_Companies()
         {
             IPagedList<Company> pagedList =
@@ -186,40 +220,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.QueryOver
             string extraData = company.ExtendedCompany.ExtraData;
             Assert.That(extraData, Is.Not.Null);
             Assert.That(NHibernateUtil.IsInitialized(company.ExtendedCompany), Is.True);
-        }
-
-        [Test]
-        public void Can_Load_Company_By_Id()
-        {
-            Company company = CreateCompany(CompanyCreationType.NO_CHILDREN);
-
-            Company loadedCompany = Repository.LoadById(company.Id);
-
-            Assert.That(loadedCompany, Is.Not.Null);
-            Assert.AreEqual(loadedCompany.Id, company.Id);
-        }
-
-        [Test]
-        public void Can_Find_Companies_By_Ids()
-        {
-            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
-            Company company2 = CreateCompany(CompanyCreationType.NO_CHILDREN);
-
-            IList<Company> companies = Repository.FindByIds(new[] { company1.Id, company2.Id });
-
-            Assert.That(companies, Is.Not.Null);
-            Assert.AreEqual(2, companies.Count);
-        }
-
-        [Test]
-        public void Can_Count_Companies()
-        {
-            Company company1 = CreateCompany(CompanyCreationType.NO_CHILDREN);
-            CreateCompany(CompanyCreationType.NO_CHILDREN);
-
-            int count = Repository.Count(companies => companies.Where(c => c.Id == company1.Id));
-
-            Assert.AreEqual(1, count);
         }
     }
 }

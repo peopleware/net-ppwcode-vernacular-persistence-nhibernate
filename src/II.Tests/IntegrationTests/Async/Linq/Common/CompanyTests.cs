@@ -25,34 +25,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Com
 {
     public class CompanyTests : BaseCompanyTests
     {
-        [Test]
-        public async Task Can_Count_Companies()
-        {
-            Company company = await CreateCompanyAsync(CompanyCreationType.WITH_2_CHILDREN, CancellationToken);
-            int count =
-                await Repository
-                    .CountAsync(
-                        query => query.Where(c => c.Id == company.Id),
-                        CancellationToken);
-
-            Assert.AreEqual(1, count);
-        }
-
-        [Test]
-        public async Task Can_Find_All_Companies()
-        {
-            await CreateCompanyAsync(CompanyCreationType.WITH_2_CHILDREN, CancellationToken);
-            SessionProviderAsync.Session.Clear();
-            IList<Company> companies =
-                await Repository
-                    .FindAllAsync(CancellationToken)
-                    .ConfigureAwait(false);
-
-            Assert.That(companies, Is.Not.Null);
-            Assert.That(companies.Count, Is.EqualTo(1));
-            Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
-        }
-
         [TestCase(1, 0, 1)]
         [TestCase(5, 2, 3)]
         public async Task Can_Find_Companies_With_Skip_And_Count(int numberOfTuples, int skip, int count)
@@ -80,6 +52,58 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Com
             {
                 Assert.That(foundCompanies[i].Id, Is.EqualTo(companies[skip + i].Id));
             }
+        }
+
+        [TestCase(1, 0)]
+        [TestCase(2, 0)]
+        [TestCase(2, 1)]
+        public async Task Can_Get_Company_At_Index(int numberOfTuples, int index)
+        {
+            Assert.That(numberOfTuples, Is.GreaterThanOrEqualTo(index));
+            IList<Company> companies = new List<Company>();
+            for (int i = 0; i < numberOfTuples; i++)
+            {
+                companies.Add(await CreateCompanyAsync(CompanyCreationType.NO_CHILDREN, CancellationToken));
+            }
+
+            SessionProviderAsync.Session.Clear();
+            Company companyAtIndex =
+                await Repository
+                    .GetAtIndexAsync(
+                        query => query.OrderBy(c => c.Id),
+                        index,
+                        CancellationToken);
+
+            Assert.That(companyAtIndex, Is.Not.Null);
+            Assert.AreEqual(companyAtIndex.Id, companies[index].Id);
+        }
+
+        [Test]
+        public async Task Can_Count_Companies()
+        {
+            Company company = await CreateCompanyAsync(CompanyCreationType.WITH_2_CHILDREN, CancellationToken);
+            int count =
+                await Repository
+                    .CountAsync(
+                        query => query.Where(c => c.Id == company.Id),
+                        CancellationToken);
+
+            Assert.AreEqual(1, count);
+        }
+
+        [Test]
+        public async Task Can_Find_All_Companies()
+        {
+            await CreateCompanyAsync(CompanyCreationType.WITH_2_CHILDREN, CancellationToken);
+            SessionProviderAsync.Session.Clear();
+            IList<Company> companies =
+                await Repository
+                    .FindAllAsync(CancellationToken)
+                    .ConfigureAwait(false);
+
+            Assert.That(companies, Is.Not.Null);
+            Assert.That(companies.Count, Is.EqualTo(1));
+            Assert.That(companies.Any(c => NHibernateUtil.IsInitialized(c.Identifications)), Is.False);
         }
 
         [Test]
@@ -126,30 +150,6 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Com
 
             Assert.That(loadedCompany, Is.Not.Null);
             Assert.AreEqual(loadedCompany.Id, company.Id);
-        }
-
-        [TestCase(1, 0)]
-        [TestCase(2, 0)]
-        [TestCase(2, 1)]
-        public async Task Can_Get_Company_At_Index(int numberOfTuples, int index)
-        {
-            Assert.That(numberOfTuples, Is.GreaterThanOrEqualTo(index));
-            IList<Company> companies = new List<Company>();
-            for (int i = 0; i < numberOfTuples; i++)
-            {
-                companies.Add(await CreateCompanyAsync(CompanyCreationType.NO_CHILDREN, CancellationToken));
-            }
-
-            SessionProviderAsync.Session.Clear();
-            Company companyAtIndex =
-                await Repository
-                    .GetAtIndexAsync(
-                        query => query.OrderBy(c => c.Id),
-                        index,
-                        CancellationToken);
-
-            Assert.That(companyAtIndex, Is.Not.Null);
-            Assert.AreEqual(companyAtIndex.Id, companies[index].Id);
         }
 
         [Test]
