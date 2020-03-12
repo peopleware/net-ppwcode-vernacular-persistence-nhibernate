@@ -68,12 +68,12 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.Linq.Comm
         public void Can_FindPaged_Company()
         {
             IPagedList<Company> pagedList =
-                Repository
-                    .FindPaged(
-                        1,
-                        20,
-                        qry => qry.Where(c => c.Name == "Peopleware NV")
-                            .OrderBy(c => c.Name));
+                Repository.FindPaged(
+                    qry => qry
+                        .Where(c => c.Name == "Peopleware NV")
+                        .OrderBy(c => c.Name),
+                    1,
+                    20);
 
             Assert.That(pagedList, Is.Not.Null);
             Assert.That(pagedList.HasPreviousPage, Is.False);
@@ -140,7 +140,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Sync.Linq.Comm
         public void Can_Page_All_Companies()
         {
             IPagedList<Company> pagedList =
-                Repository.FindPaged(1, 20, null);
+                Repository.FindPaged(qry => qry, 1, 20);
 
             Assert.That(pagedList, Is.Not.Null);
             Assert.That(pagedList.HasPreviousPage, Is.False);
