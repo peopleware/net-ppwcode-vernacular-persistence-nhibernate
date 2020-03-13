@@ -12,7 +12,7 @@
 using NUnit.Framework;
 
 using PPWCode.Vernacular.NHibernate.III.Test;
-using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.QueryOver;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
 {
