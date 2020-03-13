@@ -9,16 +9,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Providers;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.Tests.Models;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Repositories
 {
-    public class CargoContainerRepository : TestRepository<CargoContainer>
+    public class UserRepository
+        : TestRepository<User>,
+          IUserRepository
     {
-        public CargoContainerRepository(ISessionProvider sessionProvider)
+        public UserRepository(ISessionProviderAsync sessionProvider)
             : base(sessionProvider)
         {
         }
+
+        public async Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken)
+            => await GetAsync(qry => qry.Where(u => u.Name == name), cancellationToken);
     }
 }

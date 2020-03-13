@@ -11,6 +11,8 @@
 
 using System;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 using HibernatingRhinos.Profiler.Appender;
 
@@ -22,6 +24,8 @@ using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
 
+using PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers;
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.DbConstraint;
 using PPWCode.Vernacular.NHibernate.III.Providers;
 using PPWCode.Vernacular.Persistence.IV;
@@ -37,6 +41,9 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
 
         [CanBeNull]
         private ISessionProvider _sessionProvider;
+
+        [CanBeNull]
+        private ISessionProviderAsync _sessionProviderAsync;
 
         protected abstract Configuration Configuration { get; }
         protected abstract string IdentityName { get; }
@@ -96,6 +103,24 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
                            new SafeEnvironmentProvider(new ExceptionTranslator()),
                            IsolationLevel.ReadCommitted));
 
+        [NotNull]
+        protected virtual ITransactionProvider TransactionProvider
+            => SessionProvider.TransactionProvider;
+
+        [NotNull]
+        protected virtual ISessionProviderAsync SessionProviderAsync
+            => _sessionProviderAsync
+               ?? (_sessionProviderAsync =
+                       new SessionProviderAsync(
+                           OpenSession(),
+                           new TransactionProviderAsync(),
+                           new SafeEnvironmentProviderAsync(new ExceptionTranslator()),
+                           IsolationLevel.ReadCommitted));
+
+        [NotNull]
+        protected virtual ITransactionProviderAsync TransactionProviderAsync
+            => SessionProviderAsync.TransactionProviderAsync;
+
         protected virtual void BuildSchema()
         {
             SchemaExport schemaExport = new SchemaExport(Configuration);
@@ -122,14 +147,16 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         {
             _sessionProvider?.Session.Close();
             _sessionProvider = null;
+
+            _sessionProviderAsync?.Session.Close();
+            _sessionProviderAsync = null;
         }
 
         [CanBeNull]
         protected T RunInsideTransaction<T>([NotNull] Func<T> func, bool clearSession)
         {
             T result =
-                SessionProvider
-                    .TransactionProvider
+                TransactionProvider
                     .Run(SessionProvider.Session, SessionProvider.IsolationLevel, func);
 
             if (clearSession)
@@ -142,13 +169,56 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
 
         protected void RunInsideTransaction([NotNull] Action action, bool clearSession)
         {
-            SessionProvider
-                .TransactionProvider
+            TransactionProvider
                 .Run(SessionProvider.Session, SessionProvider.IsolationLevel, action);
 
             if (clearSession)
             {
                 SessionProvider.Session.Clear();
+            }
+        }
+
+        [NotNull]
+        [ItemCanBeNull]
+        protected async Task<T> RunInsideTransactionAsync<T>(
+            [NotNull] Func<CancellationToken, Task<T>> lambda,
+            bool clearSession,
+            CancellationToken cancellationToken)
+        {
+            T result =
+                await TransactionProviderAsync
+                    .RunAsync(
+                        SessionProviderAsync.Session,
+                        SessionProviderAsync.IsolationLevel,
+                        lambda,
+                        cancellationToken)
+                    .ConfigureAwait(false);
+
+            if (clearSession)
+            {
+                SessionProviderAsync.Session.Clear();
+            }
+
+            return result;
+        }
+
+        [NotNull]
+        protected async Task RunInsideTransactionAsync(
+            [NotNull] Func<CancellationToken, Task> lambda,
+            bool clearSession,
+            CancellationToken cancellationToken)
+        {
+            await TransactionProviderAsync
+                .RunAsync(
+                    SessionProviderAsync.Session,
+                    SessionProviderAsync.IsolationLevel,
+                    lambda,
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            if (clearSession)
+            {
+                SessionProviderAsync.Session.Clear();
             }
         }
     }

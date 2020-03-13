@@ -9,6 +9,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading;
+
+using JetBrains.Annotations;
+
 using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
@@ -16,11 +20,30 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
     public abstract class BaseRepositoryTests<T> : BaseQueryTests
         where T : class, IIdentity<int>
     {
+        [CanBeNull]
+        private CancellationTokenSource _cancellationTokenSource;
+
         protected override void OnSetup()
         {
             base.OnSetup();
 
             SessionFactory.Statistics.Clear();
         }
+
+        /// <inheritdoc />
+        protected override void OnTeardown()
+        {
+            _cancellationTokenSource?.Dispose();
+            _cancellationTokenSource = null;
+
+            base.OnTeardown();
+        }
+
+        [NotNull]
+        protected CancellationTokenSource CancellationTokenSource
+            => _cancellationTokenSource ?? (_cancellationTokenSource = new CancellationTokenSource());
+
+        protected CancellationToken CancellationToken
+            => CancellationTokenSource.Token;
     }
 }
