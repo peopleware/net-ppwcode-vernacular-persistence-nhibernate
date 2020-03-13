@@ -1,4 +1,4 @@
-﻿// Copyright 2020 by PeopleWare n.v..
+// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,140 +9,146 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using JetBrains.Annotations;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common
 {
     public class UserTests : BaseUserTests
     {
-        private RoleRepository _roleRepository;
-
-        protected RoleRepository RoleRepository
-            => _roleRepository;
-
-        protected IUserRepository UserRepository
-            => Repository;
-
-        protected override void OnSetup()
-        {
-            base.OnSetup();
-
-            _roleRepository = new RoleRepository(SessionProvider);
-        }
-
-        protected override void OnTeardown()
-        {
-            _roleRepository = null;
-
-            base.OnTeardown();
-        }
-
-        protected User CreateUser(string name = @"Ruben", Gender gender = Gender.MALE)
+        protected User CreateUserModel(string name = "Ruben", Gender gender = Gender.MALE)
             => new User
                {
                    Name = name,
                    Gender = gender
                };
 
-        protected Role CreateRole(string name)
+        protected Role CreateRoleModel(string name)
             => new Role
                {
                    Name = name
                };
 
-        [Test]
-        public void CreateUserWithOneRole()
+        protected async Task<IList<Role>> CreateRolesAsync(
+            [NotNull] [ItemNotNull] IEnumerable<string> roleNames,
+            bool clearSession,
+            CancellationToken cancellationToken)
         {
-            Role role = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+            long previousEntityInsertCount = SessionFactory.Statistics.EntityInsertCount;
+            List<Role> roles = new List<Role>();
 
-            User user = CreateUser();
+            async Task Action(CancellationToken can)
+            {
+                foreach (string roleName in roleNames)
+                {
+                    roles.Add(await RoleRepository.MergeAsync(CreateRoleModel(roleName), can));
+                }
+            }
+
+            await RunInsideTransactionAsync(Action, clearSession, cancellationToken);
+            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(previousEntityInsertCount + roleNames.Count()));
+            return roles;
+        }
+
+        protected async Task<Role> CreateRoleAsync(
+            [NotNull] string roleName,
+            bool clearSession,
+            CancellationToken cancellationToken)
+            => (await CreateRolesAsync(new[] { roleName }, clearSession, cancellationToken)
+                    .ConfigureAwait(false))
+                .Single();
+
+        [Test]
+        public async Task CreateUserWithOneRole()
+        {
+            Role role = await CreateRoleAsync("Architect", true, CancellationToken);
+            User user = CreateUserModel();
             user.AddRole(role);
-            RunInsideTransaction(() => Repository.Merge(user), true);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(user, can), true, CancellationToken);
 
             // A company with 2 children are deleted
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
         }
 
         [Test]
-        public void CreateUserWithoutRoles()
+        public async Task CreateUserWithoutRoles()
         {
-            RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(CreateUserModel(), can), true, CancellationToken);
 
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
         }
 
         [Test]
-        public void CreateUserWithThreeRoles()
+        public async Task CreateUserWithThreeRoles()
         {
-            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+            User user = CreateUserModel();
+            IList<Role> roles =
+                await CreateRolesAsync(
+                    new[] { "Architect", "Designer", "Developer" },
+                    true,
+                    CancellationToken);
+            foreach (Role role in roles)
+            {
+                user.AddRole(role);
+            }
 
-            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
-
-            Role role3 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Developer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
-
-            User user = CreateUser();
-            user.AddRole(role1);
-            user.AddRole(role2);
-            user.AddRole(role3);
-
-            RunInsideTransaction(() => Repository.Merge(user), true);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(user, can), true, CancellationToken);
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(4));
         }
 
         [Test]
-        public void CreateUserWithThreeRolesAndRemoveOneRole()
+        public async Task CreateUserWithThreeRolesAndRemoveOneRole()
         {
-            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+            User user = CreateUserModel();
+            IList<Role> roles =
+                await CreateRolesAsync(
+                    new[] { "Architect", "Designer", "Developer" },
+                    true,
+                    CancellationToken);
+            foreach (Role role in roles)
+            {
+                user.AddRole(role);
+            }
 
-            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
-
-            Role role3 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Developer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
-
-            User user = CreateUser();
-            user.AddRole(role1);
-            user.AddRole(role2);
-            user.AddRole(role3);
-
-            RunInsideTransaction(
-                () =>
+            await RunInsideTransactionAsync(
+                async can =>
                 {
-                    User savedUser = Repository.Merge(user);
+                    User savedUser = await Repository.MergeAsync(user, can);
                     savedUser.RemoveRole(savedUser.Roles.Single(r => r.Name == "Developer"));
-                    Repository.Merge(savedUser);
-                }, true);
+                    await Repository.MergeAsync(savedUser, can);
+                },
+                true,
+                CancellationToken);
         }
 
         [Test]
-        public void CreateUserWithTwoRoles()
+        public async Task CreateUserWithTwoRoles()
         {
-            Role role1 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Architect")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(1));
+            User user = CreateUserModel();
+            IList<Role> roles =
+                await CreateRolesAsync(
+                    new[] { "Architect", "Designer" },
+                    true,
+                    CancellationToken);
+            foreach (Role role in roles)
+            {
+                user.AddRole(role);
+            }
 
-            Role role2 = RunInsideTransaction(() => RoleRepository.Merge(CreateRole(@"Designer")), true);
-            Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(2));
-
-            User user = CreateUser();
-            user.AddRole(role1);
-            user.AddRole(role2);
-
-            RunInsideTransaction(() => Repository.Merge(user), true);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(user, can), true, CancellationToken);
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(3));
         }
 
         [Test]
-        public void FindUserByName()
+        public async Task FindUserByName()
         {
             User ruben =
                 new User
@@ -156,14 +162,14 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Co
                     Name = "Danny",
                     Gender = Gender.FEMALE
                 };
-            RunInsideTransaction(() => UserRepository.Merge(ruben), true);
-            RunInsideTransaction(() => UserRepository.Merge(danny), true);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(ruben, can), true, CancellationToken);
+            await RunInsideTransactionAsync(can => Repository.MergeAsync(danny, can), true, CancellationToken);
 
-            User foundRuben = RunInsideTransaction(() => UserRepository.GetUserByName("Ruben"), true);
+            User foundRuben = await RunInsideTransactionAsync(can => Repository.GetUserByNameAsync("Ruben", can), true, CancellationToken);
             Assert.That(foundRuben, Is.Not.Null);
             Assert.That(foundRuben.Name, Is.EqualTo("Ruben"));
 
-            User jef = RunInsideTransaction(() => UserRepository.GetUserByName("Jef"), true);
+            User jef = await RunInsideTransactionAsync(can => Repository.GetUserByNameAsync("Jef", can), true, CancellationToken);
             Assert.That(jef, Is.Null);
         }
     }

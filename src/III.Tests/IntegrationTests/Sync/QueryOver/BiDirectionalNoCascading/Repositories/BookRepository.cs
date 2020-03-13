@@ -9,16 +9,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using JetBrains.Annotations;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.Common.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.Model.BiDirectionalNoCascading;
+
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.BiDirectionalNoCascading.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public class BookRepository : TestRepository<Book>
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
+        public BookRepository([NotNull] ISessionProvider sessionProvider)
             : base(sessionProvider)
         {
         }

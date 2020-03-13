@@ -9,18 +9,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using System;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.Common.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.Model.EnumTranslation;
+
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.EnumTranslation.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public interface IGenericEnumTranslationRepository<TRoot, in TEnum> : ITestRepository<TRoot>
+        where TRoot : GenericEnumTranslation<TEnum>
+        where TEnum : struct, IComparable, IConvertible, IFormattable
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
-            : base(sessionProvider)
-        {
-        }
+        string Translate(TEnum code, string language);
     }
 }

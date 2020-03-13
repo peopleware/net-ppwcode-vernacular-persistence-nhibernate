@@ -9,7 +9,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
@@ -18,7 +18,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Co
         : TestRepository<Role>,
           IRoleRepository
     {
-        public RoleRepository(ISessionProvider sessionProvider)
+        public RoleRepository(ISessionProviderAsync sessionProvider)
             : base(sessionProvider)
         {
         }

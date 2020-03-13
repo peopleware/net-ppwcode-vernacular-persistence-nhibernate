@@ -9,16 +9,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using System;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Tests.Model.GuidPrimaryKey;
+
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.GuidPrimaryKey.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public class CarRepository : QueryOverRepository<Car, Guid>
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
+        public CarRepository(ISessionProvider sessionProvider)
             : base(sessionProvider)
         {
         }

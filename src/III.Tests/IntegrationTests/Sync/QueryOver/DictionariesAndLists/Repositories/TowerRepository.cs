@@ -9,16 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.Common.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.Model.DictionariesAndLists;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.DictionariesAndLists.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public class TowerRepository : TestRepository<Tower>
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
+        public TowerRepository(ISessionProvider sessionProvider)
             : base(sessionProvider)
         {
         }

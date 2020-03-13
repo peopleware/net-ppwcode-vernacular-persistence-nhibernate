@@ -1,4 +1,4 @@
-﻿// Copyright 2020 by PeopleWare n.v..
+// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -12,8 +12,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.RepositoryWithDtoMapping;
 using PPWCode.Vernacular.Persistence.IV;
@@ -22,16 +24,16 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
 {
     public class ShipRepository : TestRepository<Ship>
     {
-        public ShipRepository(ISessionProvider sessionProvider)
+        public ShipRepository(ISessionProviderAsync sessionProvider)
             : base(sessionProvider)
         {
         }
 
-        public IList<ContainerDto> FindContainersFromShipsMatchingCode(string code)
-            => Find(FindContainersQuery(code));
+        public async Task<IList<ContainerDto>> FindContainersFromShipsMatchingCodeAsync(string code, CancellationToken cancellationToken)
+            => await FindAsync(FindContainersQuery(code), cancellationToken);
 
-        public IPagedList<ContainerDto> FindContainersFromShipsMatchingCodePaged(int pageIndex, int pageSize, string code)
-            => FindPaged(FindContainersQuery(code), pageIndex, pageSize);
+        public async Task<IPagedList<ContainerDto>> FindContainersFromShipsMatchingCodePagedAsync(int pageIndex, int pageSize, string code, CancellationToken cancellationToken)
+            => await FindPagedAsync(FindContainersQuery(code), pageIndex, pageSize, cancellationToken);
 
         protected virtual Func<IQueryable<Ship>, IQueryable<ContainerDto>> FindContainersQuery(string code)
             => qry =>

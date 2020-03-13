@@ -1,4 +1,4 @@
-﻿// Copyright 2020 by PeopleWare n.v..
+// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -13,17 +13,15 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.Common.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using PPWCode.Vernacular.Persistence.IV;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.Common
 {
     public class UserTests : BaseUserTests
     {
-        private RoleRepository _roleRepository;
-
-        protected RoleRepository RoleRepository
-            => _roleRepository;
+        protected RoleRepository RoleRepository { get; private set; }
 
         protected IUserRepository UserRepository
             => Repository;
@@ -32,12 +30,12 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Com
         {
             base.OnSetup();
 
-            _roleRepository = new RoleRepository(SessionProvider);
+            RoleRepository = new RoleRepository(SessionProvider);
         }
 
         protected override void OnTeardown()
         {
-            _roleRepository = null;
+            RoleRepository = null;
 
             base.OnTeardown();
         }
@@ -54,6 +52,14 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Com
                {
                    Name = name
                };
+
+        [Test]
+        public void CanNotAddDuplicateUserName()
+        {
+            RunInsideTransaction(() => Repository.Merge(CreateUser()), true);
+
+            Assert.That((TestDelegate)(() => Repository.Merge(CreateUser())), Throws.TypeOf<DbUniqueConstraintException>());
+        }
 
         [Test]
         public void CreateUserWithOneRole()

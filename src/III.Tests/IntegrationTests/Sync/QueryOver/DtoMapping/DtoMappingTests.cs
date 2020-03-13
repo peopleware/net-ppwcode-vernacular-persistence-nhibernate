@@ -1,4 +1,4 @@
-// Copyright 2020 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -10,24 +10,33 @@
 // limitations under the License.
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.DtoMapping.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.DtoMapping.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.RepositoryWithDtoMapping;
 using PPWCode.Vernacular.Persistence.IV;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.DtoMapping
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.DtoMapping
 {
+    [SuppressMessage("ReSharper", "ObjectCreationAsStatement", Justification = "Bi-directional associations")]
     public class DtoMappingTests : BaseRepositoryTests<Ship>
     {
         public ShipRepository ShipRepository
-            => new ShipRepository(SessionProviderAsync);
+            => new ShipRepository(SessionProvider);
 
-        private async Task GenerateShipAndContainersAsync(CancellationToken cancellationToken)
+        /// <summary>
+        ///     Override this method for setup code that needs to run for each test separately.
+        /// </summary>
+        protected override void OnSetup()
+        {
+            base.OnSetup();
+            SessionFactory.Statistics.Clear();
+        }
+
+        private void GenerateShipAndContainers()
         {
             Ship ship1 =
                 new Ship
@@ -39,7 +48,6 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
             int i = 0;
             while (i++ < 3)
             {
-                // ReSharper disable once ObjectCreationAsStatement
                 new CargoContainer
                 {
                     Code = $"C{i:D}",
@@ -52,7 +60,6 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
             i = 0;
             while (i++ < 3)
             {
-                // ReSharper disable once ObjectCreationAsStatement
                 new CargoContainer
                 {
                     Code = $"S{i:D}",
@@ -61,17 +68,15 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
                 };
             }
 
-            Ship ship2 =
-                new Ship
-                {
-                    Code = "X2"
-                };
+            Ship ship2 = new Ship
+                         {
+                             Code = "X2"
+                         };
 
             // third batch of containers "C"
             i = 5;
             while (i++ < 10)
             {
-                // ReSharper disable once ObjectCreationAsStatement
                 new CargoContainer
                 {
                     Code = $"C{i:D}",
@@ -90,7 +95,6 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
             i = 10;
             while (i++ < 13)
             {
-                // ReSharper disable once ObjectCreationAsStatement
                 new CargoContainer
                 {
                     Code = $"S{i:D}",
@@ -99,67 +103,61 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Dt
                 };
             }
 
-            async Task CreateShips(CancellationToken can)
-            {
-                await ShipRepository.MergeAsync(ship1, can);
-                await ShipRepository.MergeAsync(ship2, can);
-                await ShipRepository.MergeAsync(ship3, can);
-            }
-
             // persist
-            await RunInsideTransactionAsync(CreateShips, true, cancellationToken);
+            RunInsideTransaction(
+                () =>
+                {
+                    ShipRepository.Merge(ship1);
+                    ShipRepository.Merge(ship2);
+                    ShipRepository.Merge(ship3);
+                },
+                true);
         }
 
         [Test]
-        public async Task TestAddingShipsAndContainers()
+        public void TestAddingShipsAndContainers()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            GenerateShipAndContainers();
         }
 
         [Test]
-        public async Task TestDtoMappingShipsX()
+        public void TestDtoMappingShipsX()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            GenerateShipAndContainers();
+
             IList<ContainerDto> dtos = null;
 
-            async Task Action(CancellationToken cancellationToken)
-            {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("X", cancellationToken);
-            }
-
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            RunInsideTransaction(
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("X"); },
+                true);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
         }
 
         [Test]
-        public async Task TestDtoMappingShipsXPaged()
+        public void TestDtoMappingShipsXPaged()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
-            IPagedList<ContainerDto> dtos = null;
+            GenerateShipAndContainers();
 
-            async Task Action(CancellationToken cancellationToken)
-            {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodePagedAsync(2, 10, "X", cancellationToken);
-            }
+            PagedList<ContainerDto> dtos = null;
 
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            RunInsideTransaction(
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCodePaged(2, 10, "X"); },
+                true);
 
             Assert.IsTrue(dtos.Items.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
         }
 
         [Test]
-        public async Task TestDtoMappingShipsZ()
+        public void TestDtoMappingShipsZ()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            GenerateShipAndContainers();
+
             IList<ContainerDto> dtos = null;
 
-            async Task Action(CancellationToken cancellationToken)
-            {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("Z", cancellationToken);
-            }
-
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            RunInsideTransaction(
+                () => { dtos = ShipRepository.FindContainersFromShipsMatchingCode("Z"); },
+                true);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
             Assert.AreEqual(3, dtos.Count);

@@ -9,18 +9,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
+using System.Linq;
+
+using PPWCode.Vernacular.NHibernate.III.Providers;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public class UserRepository
+        : TestRepository<User>,
+          IUserRepository
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
+        public UserRepository(ISessionProvider sessionProvider)
             : base(sessionProvider)
         {
+        }
+
+        public User GetUserByName(string name)
+        {
+            return Get(qry => qry.Where(u => u.Name == name));
         }
     }
 }

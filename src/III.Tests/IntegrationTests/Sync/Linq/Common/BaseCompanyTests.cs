@@ -1,4 +1,4 @@
-// Copyright 2020 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,14 +9,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Threading;
-using System.Threading.Tasks;
-
-using JetBrains.Annotations;
-
 using NUnit.Framework;
 
-using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Repositories;
+using PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common.Repositories;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common
@@ -36,23 +31,23 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Com
             WITH_2_CHILDREN
         }
 
-        [CanBeNull]
-        private CompanyRepository _repository;
+        protected override void OnSetup()
+        {
+            base.OnSetup();
+
+            Repository = new CompanyRepository(SessionProvider);
+        }
 
         protected override void OnTeardown()
         {
-            _repository = null;
+            Repository = null;
 
             base.OnTeardown();
         }
 
-        [NotNull]
-        protected CompanyRepository Repository
-            => _repository ?? (_repository = new CompanyRepository(SessionProviderAsync));
+        protected CompanyRepository Repository { get; private set; }
 
-        protected async Task<Company> CreateCompanyAsync(
-            CompanyCreationType companyCreationType,
-            CancellationToken cancellationToken)
+        protected Company CreateCompany(CompanyCreationType companyCreationType)
         {
             Company company =
                 new IctCompany
@@ -81,10 +76,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Com
                 };
             }
 
-            Company savedCompany =
-                await Repository
-                    .MergeAsync(company, cancellationToken)
-                    .ConfigureAwait(false);
+            Company savedCompany = RunInsideTransaction(() => Repository.Merge(company), true);
             Assert.IsNotNull(savedCompany);
             Assert.AreNotSame(company, savedCompany);
             Assert.AreEqual(1, savedCompany.PersistenceVersion);

@@ -9,12 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading;
+using System.Threading.Tasks;
+
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
     public interface IUserRepository : ITestRepository<User>
     {
-        User GetUserByName(string name);
+        Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken);
     }
 }

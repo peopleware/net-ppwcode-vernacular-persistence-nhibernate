@@ -9,16 +9,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
+using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.Persistence.IV;
 
-namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
+namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.Linq.Common.Repositories
 {
-    public class CompanyRepository
-        : TestRepository<Company>,
-          ICompanyRepository
+    public abstract class TestRepository<T>
+        : LinqRepository<T, int>,
+          ITestRepository<T>
+        where T : class, IIdentity<int>
     {
-        public CompanyRepository(ISessionProviderAsync sessionProvider)
+        protected TestRepository(ISessionProvider sessionProvider)
             : base(sessionProvider)
         {
         }

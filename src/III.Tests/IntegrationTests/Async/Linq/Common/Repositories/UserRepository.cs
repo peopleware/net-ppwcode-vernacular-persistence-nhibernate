@@ -10,8 +10,10 @@
 // limitations under the License.
 
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
-using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Common.Repositories
@@ -20,14 +22,12 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Async.Linq.Co
         : TestRepository<User>,
           IUserRepository
     {
-        public UserRepository(ISessionProvider sessionProvider)
+        public UserRepository(ISessionProviderAsync sessionProvider)
             : base(sessionProvider)
         {
         }
 
-        public User GetUserByName(string name)
-        {
-            return Get(qry => qry.Where(u => u.Name == name));
-        }
+        public async Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken)
+            => await GetAsync(qry => qry.Where(u => u.Name == name), cancellationToken);
     }
 }
