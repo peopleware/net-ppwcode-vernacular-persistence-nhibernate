@@ -21,6 +21,9 @@
     <!-- MUDO: Common.Loging.Log4Net208 only supports net461 -->
     <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" NoWarn="NU1701" />
 
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="All" />
   </ItemGroup>
