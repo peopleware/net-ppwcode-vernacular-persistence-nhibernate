@@ -11,7 +11,7 @@
 
 using JetBrains.Annotations;
 
-using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories;
+using PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories;
 using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common

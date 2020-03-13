@@ -9,13 +9,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.II.Async.Interfaces;
-using PPWCode.Vernacular.Persistence.III;
+using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
-    public interface ITestRepository<T> : IRepositoryAsync<T, int>
-        where T : class, IIdentity<int>
+    public interface IRoleRepository : ITestRepository<Role>
     {
     }
 }

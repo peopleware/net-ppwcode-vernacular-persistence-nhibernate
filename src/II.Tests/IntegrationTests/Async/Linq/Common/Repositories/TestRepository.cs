@@ -1,4 +1,4 @@
-﻿// Copyright 2020 by PeopleWare n.v..
+// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,25 +9,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
+using PPWCode.Vernacular.NHibernate.II.Async.Implementations;
 using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
-using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
+using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
-    public class UserRepository
-        : TestRepository<User>,
-          IUserRepository
+    public abstract class TestRepository<T>
+        : LinqRepositoryAsync<T, int>,
+          ITestRepository<T>
+        where T : class, IIdentity<int>
     {
-        public UserRepository(ISessionProviderAsync sessionProvider)
-            : base(sessionProvider)
+        protected TestRepository(ISessionProviderAsync sessionProviderAsync)
+            : base(sessionProviderAsync)
         {
         }
-
-        public async Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken)
-            => await GetAsync(qry => qry.Where(u => u.Name == name), cancellationToken);
     }
 }

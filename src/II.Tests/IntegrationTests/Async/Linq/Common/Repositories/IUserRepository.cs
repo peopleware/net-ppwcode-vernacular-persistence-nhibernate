@@ -1,4 +1,4 @@
-// Copyright 2020 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -9,11 +9,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading;
+using System.Threading.Tasks;
+
 using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
-    public interface ICompanyRepository : ITestRepository<Company>
+    public interface IUserRepository : ITestRepository<User>
     {
+        Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken);
     }
 }

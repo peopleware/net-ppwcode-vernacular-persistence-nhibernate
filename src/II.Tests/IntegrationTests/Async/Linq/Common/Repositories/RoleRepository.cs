@@ -12,7 +12,7 @@
 using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.II.Tests.Model.Common;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
     public class RoleRepository
         : TestRepository<Role>,

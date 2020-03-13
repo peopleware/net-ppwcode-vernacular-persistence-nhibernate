@@ -9,20 +9,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using PPWCode.Vernacular.NHibernate.II.Async.Implementations;
-using PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers;
+using PPWCode.Vernacular.NHibernate.II.Async.Interfaces;
 using PPWCode.Vernacular.Persistence.III;
 
-namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Repositories
+namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Common.Repositories
 {
-    public abstract class TestRepository<T>
-        : LinqRepositoryAsync<T, int>,
-          ITestRepository<T>
+    public interface ITestRepository<T> : IRepositoryAsync<T, int>
         where T : class, IIdentity<int>
     {
-        protected TestRepository(ISessionProviderAsync sessionProviderAsync)
-            : base(sessionProviderAsync)
-        {
-        }
     }
 }
