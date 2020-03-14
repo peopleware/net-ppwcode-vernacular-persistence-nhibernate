@@ -32,6 +32,10 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc cref="IRegisterEventListener" />
+    /// <inheritdoc cref="IPostUpdateEventListener" />
+    /// <inheritdoc cref="IPostInsertEventListener" />
+    /// <inheritdoc cref="IPostDeleteEventListener" />
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
     public abstract class AuditLogEventListener<TId, TAuditEntity, TContext>
@@ -56,14 +60,17 @@ namespace PPWCode.Vernacular.NHibernate.III
             UseUtc = useUtc;
         }
 
+        /// <inheritdoc cref="IIdentityProvider" />
         [NotNull]
         public IIdentityProvider IdentityProvider { get; }
 
+        /// <inheritdoc cref="ITimeProvider" />
         [NotNull]
         public ITimeProvider TimeProvider { get; }
 
         public bool UseUtc { get; }
 
+        /// <inheritdoc cref="IPostDeleteEventListener.OnPostDeleteAsync" />
         [NotNull]
         public async Task OnPostDeleteAsync([NotNull] PostDeleteEvent @event, CancellationToken cancellationToken)
         {
@@ -79,6 +86,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="IPostDeleteEventListener.OnPostDelete" />
         public virtual void OnPostDelete([NotNull] PostDeleteEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
@@ -93,6 +101,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="IPostInsertEventListener.OnPostInsertAsync" />
         [NotNull]
         public async Task OnPostInsertAsync([NotNull] PostInsertEvent @event, CancellationToken cancellationToken)
         {
@@ -108,6 +117,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="IPostInsertEventListener.OnPostInsert" />
         public virtual void OnPostInsert([NotNull] PostInsertEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
@@ -122,6 +132,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="IPostUpdateEventListener.OnPostUpdateAsync" />
         [NotNull]
         public async Task OnPostUpdateAsync([NotNull] PostUpdateEvent @event, CancellationToken cancellationToken)
         {
@@ -137,6 +148,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
+        /// <inheritdoc cref="IPostUpdateEventListener.OnPostUpdate" />
         public virtual void OnPostUpdate([NotNull] PostUpdateEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());

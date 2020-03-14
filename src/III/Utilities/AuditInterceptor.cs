@@ -22,6 +22,22 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <summary>
+    ///     <para>An interceptor that stamps audit information.</para>
+    ///     <para>
+    ///         An entity that implements one of the following interfaces, is a candidate for audit stamping.
+    ///         Also the entity must have the constraints implemented of <typeparamref name="T" />.
+    ///         <list type="bullet">
+    ///             <item>
+    ///                 <see cref="IInsertAuditable" />
+    ///             </item>
+    ///             <item>
+    ///                 <see cref="IUpdateAuditable" />
+    ///             </item>
+    ///         </list>
+    ///     </para>
+    /// </summary>
+    /// <typeparam name="T">A type that have the <see cref="IEquatable{T}" /> implemented</typeparam>
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
     public class AuditInterceptor<T> : EmptyInterceptor
@@ -42,9 +58,11 @@ namespace PPWCode.Vernacular.NHibernate.III
             UseUtc = useUtc;
         }
 
+        /// <inheritdoc cref="IIdentityProvider"/>
         [NotNull]
         public IIdentityProvider IdentityProvider { get; }
 
+        /// <inheritdoc cref="ITimeProvider"/>
         [NotNull]
         public ITimeProvider TimeProvider { get; }
 
@@ -137,25 +155,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             return true;
         }
 
-        /// <summary>
-        ///     Called when an object is detected to be dirty, during a flush.
-        /// </summary>
-        /// <param name="entity">The given entity.</param>
-        /// <param name="id">The id of the given entity.</param>
-        /// <param name="currentState">The current state of the entity.</param>
-        /// <param name="previousState">The previous state of the entity.</param>
-        /// <param name="propertyNames">The property names.</param>
-        /// <param name="types">The types.</param>
-        /// <remarks>
-        ///     The interceptor may modify the detected <c>currentState</c>, which will be propagated to
-        ///     both the database and the persistent object. Note that all flushes end in an actual
-        ///     synchronization with the database, in which as the new <c>currentState</c> will be propagated
-        ///     to the object, but not necessarily (immediately) to the database. It is strongly recommended
-        ///     that the interceptor <b>not</b> modify the <c>previousState</c>.
-        /// </remarks>
-        /// <returns>
-        ///     A boolean indicating whether the user modified the  <paramref name="currentState" /> in any way.
-        /// </returns>
+        /// <inheritdoc />
         public override bool OnFlushDirty(
             [NotNull] object entity,
             [NotNull] object id,
@@ -165,21 +165,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             [NotNull] IType[] types)
             => CanAudit(entity, id) && SetAuditInfo(entity, currentState, propertyNames, false);
 
-        /// <summary>
-        ///     Called before an object is saved.
-        /// </summary>
-        /// <param name="entity">The given entity.</param>
-        /// <param name="id">The id of the given entity.</param>
-        /// <param name="state">The state of the entity.</param>
-        /// <param name="propertyNames">The property names.</param>
-        /// <param name="types">The types.</param>
-        /// <remarks>
-        ///     The interceptor may modify the <c>state</c>, which will be used for the SQL <c>INSERT</c>
-        ///     and propagated to the persistent object.
-        /// </remarks>
-        /// <returns>
-        ///     A boolean indicating whether the user modified the <c>state</c> in any way.
-        /// </returns>
+        /// <inheritdoc />
         public override bool OnSave(
             [NotNull] object entity,
             [NotNull] object id,

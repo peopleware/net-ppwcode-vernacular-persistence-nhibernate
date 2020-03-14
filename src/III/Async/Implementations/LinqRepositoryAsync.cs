@@ -25,6 +25,7 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
 {
+    /// <inheritdoc />
     public abstract class LinqRepositoryAsync<TRoot, TId>
         : RepositoryAsync<TRoot, TId>
         where TRoot : class, IIdentity<TId>

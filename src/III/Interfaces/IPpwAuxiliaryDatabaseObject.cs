@@ -16,6 +16,7 @@ using NHibernate.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public interface IPpwAuxiliaryDatabaseObject : IAuxiliaryDatabaseObject
     {
         void SetConfiguration([NotNull] Configuration configuration);

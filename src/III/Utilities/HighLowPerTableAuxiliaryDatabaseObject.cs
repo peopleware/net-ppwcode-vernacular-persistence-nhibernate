@@ -23,6 +23,7 @@ using NHibernate.Mapping.ByCode;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {
         protected HighLowPerTableAuxiliaryDatabaseObject([NotNull] IPpwHbmMapping ppwHbmMapping)

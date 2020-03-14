@@ -17,6 +17,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 {
     public interface INhInterceptor
     {
+        /// <inheritdoc cref="IInterceptor"/>
         [CanBeNull]
         IInterceptor GetInterceptor();
     }

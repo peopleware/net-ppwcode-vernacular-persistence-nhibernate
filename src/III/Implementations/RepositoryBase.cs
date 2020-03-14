@@ -32,21 +32,26 @@ namespace PPWCode.Vernacular.NHibernate.III
             SessionProvider = sessionProvider ?? throw new ArgumentNullException(nameof(sessionProvider));
         }
 
+        /// <inheritdoc cref="ISessionProvider"/>
         [NotNull]
         public ISessionProvider SessionProvider { get; }
 
+        /// <inheritdoc cref="ISession"/>
         [NotNull]
         protected ISession Session
             => SessionProvider.Session;
 
+        /// <inheritdoc cref="ITransactionProvider"/>
         [NotNull]
         protected ITransactionProvider TransactionProvider
             => SessionProvider.TransactionProvider;
 
+        /// <inheritdoc cref="ISafeEnvironmentProvider"/>
         [NotNull]
         protected ISafeEnvironmentProvider SafeEnvironmentProvider
             => SessionProvider.SafeEnvironmentProvider;
 
+        /// <inheritdoc cref="IsolationLevel"/>
         protected IsolationLevel IsolationLevel
             => SessionProvider.IsolationLevel;
 

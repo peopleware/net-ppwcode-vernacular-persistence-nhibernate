@@ -11,10 +11,14 @@
 
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using NHibernate.Cfg;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
+    [UsedImplicitly]
     public class NhProperties : INhProperties
     {
         public IEnumerable<KeyValuePair<string, string>> GetProperties(Configuration configuration)

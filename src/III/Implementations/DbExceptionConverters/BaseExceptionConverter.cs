@@ -21,6 +21,7 @@ using PPWCode.Vernacular.NHibernate.III.DbConstraint;
 
 namespace PPWCode.Vernacular.NHibernate.III.DbExceptionConverters
 {
+    /// <inheritdoc cref="ISQLExceptionConverter" />
     public abstract class BaseExceptionConverter
         : ISQLExceptionConverter,
           IConfigurable
@@ -32,16 +33,19 @@ namespace PPWCode.Vernacular.NHibernate.III.DbExceptionConverters
             ViolatedConstraintNameExtracter = violatedConstraintNameExtracter ?? throw new ArgumentNullException(nameof(violatedConstraintNameExtracter));
         }
 
+        /// <inheritdoc cref="IViolatedConstraintNameExtracter" />
         [NotNull]
         public IViolatedConstraintNameExtracter ViolatedConstraintNameExtracter { get; }
 
         [CanBeNull]
         protected IDictionary<string, string> Configuration { get; private set; }
 
+        /// <inheritdoc cref="IDbConstraints" />
         [CanBeNull]
         protected IDbConstraints DbConstraints
             => _dbConstraints ?? (_dbConstraints = ViolatedConstraintNameExtracter as IDbConstraints);
 
+        /// <inheritdoc cref="IConfigurable.Configure" />
         void IConfigurable.Configure([NotNull] IDictionary<string, string> properties)
         {
             if (properties == null)
@@ -53,9 +57,11 @@ namespace PPWCode.Vernacular.NHibernate.III.DbExceptionConverters
             DbConstraints?.Initialize(Configuration);
         }
 
+        /// <inheritdoc cref="ISQLExceptionConverter.Convert" />
         Exception ISQLExceptionConverter.Convert([NotNull] AdoExceptionContextInfo adoExceptionContextInfo)
             => OnConvert(adoExceptionContextInfo);
 
+        /// <inheritdoc cref="ISQLExceptionConverter.Convert" />
         [NotNull]
         protected abstract Exception OnConvert([NotNull] AdoExceptionContextInfo adoExceptionContextInfo);
 

@@ -15,12 +15,15 @@ using NHibernate;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public class NhInterceptor : INhInterceptor
     {
+        /// <inheritdoc cref="IInterceptor" />
         [CanBeNull]
         [UsedImplicitly]
         public IInterceptor Interceptor { get; set; }
 
+        /// <inheritdoc />
         public IInterceptor GetInterceptor()
             => Interceptor;
     }

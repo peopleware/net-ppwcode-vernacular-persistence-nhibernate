@@ -25,6 +25,7 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public abstract class QueryOverRepository<TRoot, TId>
         : Repository<TRoot, TId>
         where TRoot : class, IIdentity<TId>

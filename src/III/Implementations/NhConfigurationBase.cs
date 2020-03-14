@@ -18,6 +18,7 @@ using NHibernate.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public abstract class NhConfigurationBase : INhConfiguration
     {
         private readonly object _locker = new object();
@@ -39,27 +40,35 @@ namespace PPWCode.Vernacular.NHibernate.III
             AuxiliaryDatabaseObjects = auxiliaryDatabaseObjects;
         }
 
+        /// <inheritdoc cref="INhProperties" />
         [NotNull]
         protected INhProperties NhProperties { get; }
 
+        /// <inheritdoc cref="IRegisterEventListener" />
         [NotNull]
         protected IEnumerable<IRegisterEventListener> RegisterEventListeners { get; }
 
+        /// <inheritdoc cref="GetConfiguration" />
         [NotNull]
         protected abstract Configuration Configuration { get; }
 
+        /// <inheritdoc cref="INhInterceptor" />
         [NotNull]
         protected INhInterceptor NhInterceptor { get; }
 
+        /// <inheritdoc cref="IPpwHbmMapping" />
         [NotNull]
         protected IPpwHbmMapping PpwHbmMapping { get; }
 
+        /// <inheritdoc cref="IMappingAssemblies" />
         [NotNull]
         protected IMappingAssemblies MappingAssemblies { get; }
 
+        /// <inheritdoc cref="IAuxiliaryDatabaseObject" />
         [NotNull]
         protected IAuxiliaryDatabaseObject[] AuxiliaryDatabaseObjects { get; }
 
+        /// <inheritdoc />
         public Configuration GetConfiguration()
         {
             if (_configuration == null)

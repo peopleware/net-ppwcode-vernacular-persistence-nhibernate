@@ -17,6 +17,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 {
     public interface INHibernateSessionFactory
     {
+        /// <inheritdoc cref="ISessionFactory"/>
         [NotNull]
         ISessionFactory SessionFactory { get; }
     }

@@ -26,6 +26,8 @@ using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
+    [UsedImplicitly]
     public abstract class NhFasterConfiguration : NhConfiguration
     {
         private const string ConfigFile = "hibernate.cfg.xml";
@@ -67,6 +69,7 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         protected abstract string Namespace { get; }
 
+        /// <inheritdoc />
         protected override Configuration Configuration
         {
             get

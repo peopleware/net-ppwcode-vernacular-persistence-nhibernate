@@ -24,6 +24,9 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc cref="IRegisterEventListener" />
+    /// <inheritdoc cref="IPreUpdateEventListener" />
+    /// <inheritdoc cref="IPreInsertEventListener" />
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
     public class CivilizedEventListener
@@ -31,12 +34,7 @@ namespace PPWCode.Vernacular.NHibernate.III
           IPreUpdateEventListener,
           IPreInsertEventListener
     {
-        /// <summary>
-        ///     Return true if the operation should be vetoed.
-        /// </summary>
-        /// <param name="event">The given event.</param>
-        /// <param name="cancellationToken">The given cancellation token.</param>
-        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        /// <inheritdoc cref="IPreInsertEventListener.OnPreInsertAsync" />
         [NotNull]
         public virtual Task<bool> OnPreInsertAsync([NotNull] PreInsertEvent @event, CancellationToken cancellationToken)
         {
@@ -59,23 +57,14 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        /// <summary>
-        ///     Return true if the operation should be vetoed.
-        /// </summary>
-        /// <param name="event">The given event.</param>
-        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        /// <inheritdoc cref="IPreInsertEventListener.OnPreInsert" />
         public virtual bool OnPreInsert([NotNull] PreInsertEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
         }
 
-        /// <summary>
-        ///     Return true if the operation should be vetoed.
-        /// </summary>
-        /// <param name="event">The given event.</param>
-        /// <param name="cancellationToken">The given cancellation token.</param>
-        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        /// <inheritdoc cref="IPreUpdateEventListener.OnPreUpdateAsync" />
         [NotNull]
         public virtual Task<bool> OnPreUpdateAsync([NotNull] PreUpdateEvent @event, CancellationToken cancellationToken)
         {
@@ -98,11 +87,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        /// <summary>
-        ///     Return true if the operation should be vetoed.
-        /// </summary>
-        /// <param name="event">The given event.</param>
-        /// <returns>A boolean indicating whether the operation should be vetoed.</returns>
+        /// <inheritdoc cref="IPreUpdateEventListener.OnPreUpdate" />
         public virtual bool OnPreUpdate([NotNull] PreUpdateEvent @event)
         {
             ValidateObject(@event.Entity);

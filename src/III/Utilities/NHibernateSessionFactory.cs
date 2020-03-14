@@ -16,6 +16,7 @@ using NHibernate.Cfg;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public class NHibernateSessionFactory : INHibernateSessionFactory
     {
         private readonly object _locker = new object();
@@ -31,7 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected Configuration Configuration
             => _nhConfiguration.GetConfiguration();
 
-        [NotNull]
+        /// <inheritdoc cref="ISessionFactory" />
         public virtual ISessionFactory SessionFactory
         {
             get

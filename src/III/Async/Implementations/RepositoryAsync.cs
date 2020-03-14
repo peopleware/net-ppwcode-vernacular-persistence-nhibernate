@@ -37,13 +37,16 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
             SessionProviderAsync = sessionProviderAsync;
         }
 
+        /// <inheritdoc cref="ISessionProviderAsync" />
         [NotNull]
         public ISessionProviderAsync SessionProviderAsync { get; }
 
+        /// <inheritdoc cref="ITransactionProviderAsync" />
         [NotNull]
         protected ITransactionProviderAsync TransactionProviderAsync
             => SessionProviderAsync.TransactionProviderAsync;
 
+        /// <inheritdoc cref="ISafeEnvironmentProviderAsync" />
         [NotNull]
         protected ISafeEnvironmentProviderAsync SafeEnvironmentProviderAsync
             => SessionProviderAsync.SafeEnvironmentProviderAsync;

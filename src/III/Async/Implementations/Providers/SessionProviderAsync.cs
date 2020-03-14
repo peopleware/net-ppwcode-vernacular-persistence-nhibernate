@@ -39,9 +39,13 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers
             SafeEnvironmentProviderAsync = safeEnvironmentProviderAsync;
         }
 
+        /// <inheritdoc />
         public ITransactionProviderAsync TransactionProviderAsync { get; }
+
+        /// <inheritdoc />
         public ISafeEnvironmentProviderAsync SafeEnvironmentProviderAsync { get; }
 
+        /// <inheritdoc />
         public async Task FlushAsync(CancellationToken cancellationToken)
         {
             async Task NHibernateFlushAsync(CancellationToken can)

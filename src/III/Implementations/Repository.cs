@@ -21,6 +21,7 @@ using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III
 {
+    /// <inheritdoc />
     public abstract class Repository<TRoot, TId>
         : RepositoryBase<TRoot, TId>,
           IRepository<TRoot, TId>

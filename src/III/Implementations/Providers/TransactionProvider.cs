@@ -18,8 +18,10 @@ using IsolationLevel = System.Data.IsolationLevel;
 
 namespace PPWCode.Vernacular.NHibernate.III.Providers
 {
+    /// <inheritdoc />
     public class TransactionProvider : ITransactionProvider
     {
+        /// <inheritdoc />
         public void Run(ISession session, IsolationLevel isolationLevel, Action action)
         {
             Func<int> ActionWrapper()
@@ -34,6 +36,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Providers
             Run(session, isolationLevel, ActionWrapper());
         }
 
+        /// <inheritdoc />
         public TResult Run<TResult>(ISession session, IsolationLevel isolationLevel, Func<TResult> func)
         {
             if (session == null)
