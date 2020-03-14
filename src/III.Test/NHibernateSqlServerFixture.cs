@@ -85,8 +85,10 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         }
 
         [NotNull]
-        protected virtual string FixedConnectionString
-            => ConfigHelper.GetConnectionString(CatalogName) ?? DefaultFixedConnectionString;
+        protected override string FixedConnectionString
+            => !string.IsNullOrWhiteSpace(base.FixedConnectionString)
+                   ? base.FixedConnectionString
+                   : DefaultFixedConnectionString;
 
         [NotNull]
         protected virtual string DefaultFixedConnectionString

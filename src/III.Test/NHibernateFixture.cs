@@ -11,12 +11,17 @@
 
 using System;
 using System.Data;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Common.Logging;
 
 using HibernatingRhinos.Profiler.Appender;
 
 using JetBrains.Annotations;
+
+using Microsoft.Extensions.Configuration;
 
 using Moq;
 
@@ -28,6 +33,7 @@ using PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers;
 using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.DbConstraint;
 using PPWCode.Vernacular.NHibernate.III.Providers;
+using PPWCode.Vernacular.NHibernate.III.Test.Log4Net;
 using PPWCode.Vernacular.Persistence.IV;
 
 namespace PPWCode.Vernacular.NHibernate.III.Test
@@ -45,24 +51,57 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         [CanBeNull]
         private ISessionProviderAsync _sessionProviderAsync;
 
+        [CanBeNull]
+        private AppSettings _appSettings;
+
         protected abstract Configuration Configuration { get; }
         protected abstract string IdentityName { get; }
         protected abstract DateTime UtcNow { get; }
 
+        /// <inheritdoc />
+        protected override void OnFixtureSetup()
+        {
+            IConfiguration config =
+                new ConfigurationBuilder()
+                    .AddJsonFile(@"appsettings.json", false, false)
+                    .AddEnvironmentVariables(@"PPWCODE_TESTS")
+                    .Build();
+            _appSettings = new AppSettings();
+            config
+                .GetSection(@"appSettings")
+                .Bind(_appSettings);
+
+            log4net.Util.LogLog.InternalDebugging = true;
+            LogManager.Adapter =
+                new Log4NetLoggerFactoryAdapter(
+                    Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly(),
+                    null);
+        }
+
+        /// <inheritdoc />
+        protected override void OnFixtureTeardown()
+        {
+            _appSettings = null;
+        }
+
         protected virtual bool UseProfiler
-            => ConfigHelper.GetAppSetting("UseProfiler", false);
+            => _appSettings?.UseProfiler ?? false;
 
         protected virtual bool SuppressProfilingWhileCreatingSchema
-            => ConfigHelper.GetAppSetting("SuppressProfilingWhileCreatingSchema", true);
+            => _appSettings?.SuppressProfilingWhileCreatingSchema ?? true;
 
         protected virtual bool ShowSql
-            => ConfigHelper.GetAppSetting("ShowSql", true);
+            => _appSettings?.ShowSql ?? false;
 
         protected virtual bool FormatSql
-            => ConfigHelper.GetAppSetting("FormatSql", true);
+            => _appSettings?.FormatSql ?? false;
 
         protected virtual bool GenerateStatistics
-            => ConfigHelper.GetAppSetting("GenerateStatistics", true);
+            => _appSettings?.GenerateStatistics ?? true;
+
+        [CanBeNull]
+        protected virtual string FixedConnectionString
+            => _appSettings?.FixedConnectionString;
 
         [NotNull]
         protected virtual ISessionFactory SessionFactory
@@ -220,6 +259,32 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
             {
                 SessionProviderAsync.Session.Clear();
             }
+        }
+
+        protected class AppSettings
+        {
+            [UsedImplicitly]
+            public bool UseProfiler { get; set; }
+
+            [UsedImplicitly]
+            public bool SuppressProfilingWhileCreatingSchema { get; set; }
+
+            [UsedImplicitly]
+            public bool ShowSql { get; set; }
+
+            [UsedImplicitly]
+            public bool FormatSql { get; set; }
+
+            [UsedImplicitly]
+            public bool GenerateStatistics { get; set; }
+
+            [UsedImplicitly]
+            [CanBeNull]
+            public string FixedConnectionString { get; set; }
+
+            /// <inheritdoc />
+            public override string ToString()
+                => $"{nameof(UseProfiler)}: {UseProfiler}, {nameof(SuppressProfilingWhileCreatingSchema)}: {SuppressProfilingWhileCreatingSchema}, {nameof(ShowSql)}: {ShowSql}, {nameof(FormatSql)}: {FormatSql}, {nameof(GenerateStatistics)}: {GenerateStatistics}";
         }
     }
 }

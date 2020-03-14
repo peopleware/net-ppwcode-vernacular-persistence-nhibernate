@@ -9,16 +9,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Collections.Generic;
 using System.Data;
-#if NET461
-using System.Data.Sql;
-#endif
 using System.Data.SqlClient;
-#if NET461
-using System.Linq;
-#endif
 
 using JetBrains.Annotations;
 
@@ -46,27 +39,8 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         }
 
         [NotNull]
-        public static string GetConnectionString([NotNull] string dataSource, [CanBeNull] string catalog)
-            => GetConnectionString(dataSource, catalog, true);
-
-        [CanBeNull]
-        public static string GetConnectionString([NotNull] string connectionStringKey)
-            => ConfigHelper.GetConnectionString(connectionStringKey);
-
-        [NotNull]
         private static SqlConnection GetConnection([NotNull] string dataSource, [CanBeNull] string catalog, bool pooling)
             => new SqlConnection(GetConnectionString(dataSource, catalog, pooling));
-
-        [NotNull]
-        public static SqlConnection GetConnection([NotNull] string dataSource, [CanBeNull] string catalog)
-            => new SqlConnection(GetConnectionString(dataSource, catalog));
-
-        [CanBeNull]
-        public static SqlConnection GetConnection([NotNull] string connectionStringKey)
-        {
-            string connectionString = GetConnectionString(connectionStringKey);
-            return connectionString != null ? new SqlConnection(connectionString) : null;
-        }
 
         private static void ExecuteCommands(
             [NotNull] SqlConnection connection,
@@ -118,30 +92,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         }
 
         private static bool DataSourceExists([NotNull] string dataSource)
-        {
-            bool result = (dataSource == @".") || dataSource.Equals(@"localhost", StringComparison.InvariantCultureIgnoreCase);
-#if NET461
-            if (!result)
-            {
-                SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
-                DataTable table = instance.GetDataSources();
-                string[] items = dataSource.Split('\\');
-                if ((items.Length == 1) || (items.Length == 2))
-                {
-                    string serverName = items[0];
-                    string instanceName = items.Length == 1 ? string.Empty : items[1];
-                    result =
-                        table
-                            .AsEnumerable()
-                            .Any(r => (r.Field<string>(@"ServerName") ?? string.Empty).Equals(serverName, StringComparison.InvariantCultureIgnoreCase)
-                                      && (r.Field<string>(@"Instancename") ?? string.Empty).Equals(instanceName, StringComparison.InvariantCultureIgnoreCase));
-                }
-            }
-#else
-            result = true;
-#endif
-            return result;
-        }
+            => true;
 
         public static bool CatalogExists([NotNull] string dataSource, [CanBeNull] string catalog)
         {

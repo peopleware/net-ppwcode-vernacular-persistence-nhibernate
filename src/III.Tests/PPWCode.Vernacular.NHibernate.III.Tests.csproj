@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>false</IsPackable>
@@ -18,9 +18,6 @@
   <ItemGroup>
     <PackageReference Include="log4net" Version="[2.0.8]" />
 
-    <!-- MUDO: Common.Loging.Log4Net208 only supports net461 -->
-    <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" NoWarn="NU1701" />
-
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
 
@@ -30,6 +27,21 @@
 
   <ItemGroup>
     <ProjectReference Include="..\III.Test\PPWCode.Vernacular.NHibernate.III.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="hibernate.cfg.xml" />
+    <Content Include="hibernate.cfg.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="log4net.config" />
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
  </Project>
