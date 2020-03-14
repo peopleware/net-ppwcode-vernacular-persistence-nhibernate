@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
+using NHibernate;
+
 using PPWCode.Vernacular.NHibernate.II.Providers;
 
 namespace PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers
@@ -21,12 +23,15 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Interfaces.Providers
     /// <inheritdoc />
     public interface ISessionProviderAsync : ISessionProvider
     {
+        /// <inheritdoc cref="ITransactionProviderAsync" />
         [NotNull]
         ITransactionProviderAsync TransactionProviderAsync { get; }
 
+        /// <inheritdoc cref="ISafeEnvironmentProviderAsync" />
         [NotNull]
         ISafeEnvironmentProviderAsync SafeEnvironmentProviderAsync { get; }
 
+        /// <inheritdoc cref="ISession.FlushAsync" />
         [NotNull]
         Task FlushAsync(CancellationToken cancellationToken);
     }

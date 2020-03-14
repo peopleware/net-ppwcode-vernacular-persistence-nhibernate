@@ -19,6 +19,7 @@ using NHibernate.Engine;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     [Serializable]
     public abstract class GenericWellKnownInstanceType<T, TId> : ImmutableUserTypeBase
         where T : class

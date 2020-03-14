@@ -25,6 +25,7 @@ using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class UniqueConstraintsForNullableColumn<TEntity>
         : PpwAuxiliaryDatabaseObject
         where TEntity : class

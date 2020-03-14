@@ -23,6 +23,7 @@ using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class LinqRepository<TRoot, TId>
         : Repository<TRoot, TId>
         where TRoot : class, IIdentity<TId>

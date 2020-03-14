@@ -17,6 +17,7 @@ using NHibernate;
 
 namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
+    /// <inheritdoc />
     public class SessionProvider : ISessionProvider
     {
         public SessionProvider(
@@ -31,11 +32,19 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             IsolationLevel = isolationLevel;
         }
 
+        /// <inheritdoc />
         public ISession Session { get; }
+
+        /// <inheritdoc />
         public ITransactionProvider TransactionProvider { get; }
+
+        /// <inheritdoc />
         public ISafeEnvironmentProvider SafeEnvironmentProvider { get; }
+
+        /// <inheritdoc />
         public IsolationLevel IsolationLevel { get; }
 
+        /// <inheritdoc />
         public void Flush()
             => TransactionProvider.Run(Session, IsolationLevel, () => SafeEnvironmentProvider.Run(nameof(Flush), () => Session.Flush()));
     }

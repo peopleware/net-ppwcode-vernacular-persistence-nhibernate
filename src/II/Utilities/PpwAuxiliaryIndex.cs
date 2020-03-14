@@ -26,6 +26,8 @@ using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
+    [UsedImplicitly]
     public abstract class PpwAuxiliaryIndex<TEntity> : PpwAuxiliaryDatabaseObject
         where TEntity : class
     {

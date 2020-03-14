@@ -22,6 +22,7 @@ using NHibernate.Connection;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Castle Windsor usage")]
     [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider

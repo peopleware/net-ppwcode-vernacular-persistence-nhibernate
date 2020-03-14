@@ -24,6 +24,7 @@ using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc cref="IPpwAuxiliaryDatabaseObject" />
     public abstract class PpwAuxiliaryDatabaseObject
         : AbstractAuxiliaryDatabaseObject,
           IPpwAuxiliaryDatabaseObject
@@ -38,6 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             PpwHbmMapping = ppwHbmMapping;
         }
 
+        /// <inheritdoc cref="IPpwHbmMapping" />
         [NotNull]
         public IPpwHbmMapping PpwHbmMapping { get; }
 
