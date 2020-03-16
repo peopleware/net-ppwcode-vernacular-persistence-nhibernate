@@ -13,11 +13,14 @@ using System.Collections.Generic;
 
 using NHibernate.Mapping;
 
+using NUnit.Framework;
+
 using PPWCode.Vernacular.NHibernate.III.Test;
 using PPWCode.Vernacular.NHibernate.III.Tests.Model.Common;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
 {
+    [Parallelizable(ParallelScope.Fixtures)]
     public abstract class BaseQueryTests : BaseRepositoryFixture<int, TestIntAuditLog>
     {
         private IPpwHbmMapping _ppwHbmMapping;

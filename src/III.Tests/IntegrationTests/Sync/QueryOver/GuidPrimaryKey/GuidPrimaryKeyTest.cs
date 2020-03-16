@@ -1,4 +1,4 @@
-// Copyright 2020 by PeopleWare n.v..
+﻿// Copyright 2020 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -19,6 +19,7 @@ using PPWCode.Vernacular.NHibernate.III.Tests.Model.GuidPrimaryKey;
 
 namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests.Sync.QueryOver.GuidPrimaryKey
 {
+    [Parallelizable(ParallelScope.Fixtures)]
     public class GuidPrimaryKeyTest : BaseRepositoryFixture<Guid, TestGuidAuditLog>
     {
         private IPpwHbmMapping _ppwHbmMapping;
