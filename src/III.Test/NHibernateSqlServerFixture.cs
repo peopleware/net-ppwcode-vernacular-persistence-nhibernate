@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 
 using JetBrains.Annotations;
 
@@ -78,9 +77,9 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
             get
             {
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(FixedConnectionString);
-                long ticks = DateTime.Now.Ticks;
-                builder.InitialCatalog = $"{builder.InitialCatalog}.{ticks.ToString(CultureInfo.InvariantCulture)}";
-                return builder.ToString();
+                Guid guid = Guid.NewGuid();
+                builder.InitialCatalog = $"{builder.InitialCatalog}.{guid:D}";
+                return builder.ConnectionString;
             }
         }
 
