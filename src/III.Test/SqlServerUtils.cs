@@ -23,24 +23,25 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
     {
         [NotNull]
         private static string GetConnectionString(
-            [NotNull] string dataSource,
+            [NotNull] string sqlConnectionString,
             [CanBeNull] string catalog,
             bool pooling)
         {
             SqlConnectionStringBuilder builder =
-                new SqlConnectionStringBuilder
+                new SqlConnectionStringBuilder(sqlConnectionString)
                 {
-                    DataSource = dataSource,
                     InitialCatalog = catalog ?? @"master",
-                    IntegratedSecurity = true,
                     Pooling = pooling
                 };
             return builder.ConnectionString;
         }
 
         [NotNull]
-        private static SqlConnection GetConnection([NotNull] string dataSource, [CanBeNull] string catalog, bool pooling)
-            => new SqlConnection(GetConnectionString(dataSource, catalog, pooling));
+        private static SqlConnection GetConnection(
+            [NotNull] string sqlConnectionString,
+            [CanBeNull] string catalog,
+            bool pooling)
+            => new SqlConnection(GetConnectionString(sqlConnectionString, catalog, pooling));
 
         private static void ExecuteCommands(
             [NotNull] SqlConnection connection,
@@ -79,26 +80,29 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         }
 
         private static void ExecuteCommands(
-            [NotNull] string dataSource,
+            [NotNull] string sqlConnectionString,
             [CanBeNull] string catalog,
             bool pooling,
             int commandTimeout,
             [NotNull] IEnumerable<string> scripts)
         {
-            using (SqlConnection connection = GetConnection(dataSource, catalog, pooling))
+            using (SqlConnection connection = GetConnection(sqlConnectionString, catalog, pooling))
             {
                 ExecuteCommands(connection, commandTimeout, scripts);
             }
         }
 
-        private static bool DataSourceExists([NotNull] string dataSource)
+        private static bool DataSourceExists(
+            [NotNull] string sqlConnectionString)
             => true;
 
-        public static bool CatalogExists([NotNull] string dataSource, [CanBeNull] string catalog)
+        public static bool CatalogExists(
+            [NotNull] string sqlConnectionString,
+            [CanBeNull] string catalog)
         {
             const string CmdText = @"select null from master.dbo.sysdatabases where name=@name";
 
-            using (SqlConnection connection = GetConnection(dataSource, null, false))
+            using (SqlConnection connection = GetConnection(sqlConnectionString, null, false))
             {
                 connection.Open();
                 using (SqlCommand sqlCommand = new SqlCommand(CmdText, connection))
@@ -118,10 +122,13 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
             }
         }
 
-        public static void DropCatalog([NotNull] string dataSource, [CanBeNull] string catalog)
+        public static void DropCatalog(
+            [NotNull] string sqlConnectionString,
+            [CanBeNull] string catalog)
         {
-            if (!DataSourceExists(dataSource))
+            if (!DataSourceExists(sqlConnectionString))
             {
+                string dataSource = new SqlConnectionStringBuilder(sqlConnectionString).DataSource;
                 throw new SemanticException($"datasource={dataSource} unknown");
             }
 
@@ -132,10 +139,13 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
                 $"alter database [{catalog}] set single_user with rollback immediate",
                 $"drop database [{catalog}]"
             };
-            ExecuteCommands(dataSource, null, false, 0, commands);
+            ExecuteCommands(sqlConnectionString, null, false, 0, commands);
         }
 
-        public static void CreateCatalog([NotNull] string dataSource, [CanBeNull] string catalog, bool simpleMode)
+        public static void CreateCatalog(
+            [NotNull] string sqlConnectionString,
+            [CanBeNull] string catalog,
+            bool simpleMode)
         {
             IList<string> commands =
                 new List<string>
@@ -147,7 +157,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
                 commands.Add($"alter database [{catalog}] set recovery simple with no_wait");
             }
 
-            ExecuteCommands(dataSource, null, false, 0, commands);
+            ExecuteCommands(sqlConnectionString, null, false, 0, commands);
         }
     }
 }

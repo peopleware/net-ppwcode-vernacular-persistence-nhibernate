@@ -195,20 +195,20 @@ namespace PPWCode.Vernacular.NHibernate.III.Test
         protected virtual void CreateCatalog()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(ConnectionString);
-            if (SqlServerUtils.CatalogExists(builder.DataSource, builder.InitialCatalog))
+            if (SqlServerUtils.CatalogExists(ConnectionString, builder.InitialCatalog))
             {
-                SqlServerUtils.DropCatalog(builder.DataSource, builder.InitialCatalog);
+                SqlServerUtils.DropCatalog(ConnectionString, builder.InitialCatalog);
             }
 
-            SqlServerUtils.CreateCatalog(builder.DataSource, builder.InitialCatalog, true);
+            SqlServerUtils.CreateCatalog(ConnectionString, builder.InitialCatalog, true);
         }
 
         protected virtual void DropCatalog()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(ConnectionString);
-            if (SqlServerUtils.CatalogExists(builder.DataSource, builder.InitialCatalog))
+            if (SqlServerUtils.CatalogExists(ConnectionString, builder.InitialCatalog))
             {
-                SqlServerUtils.DropCatalog(builder.DataSource, builder.InitialCatalog);
+                SqlServerUtils.DropCatalog(ConnectionString, builder.InitialCatalog);
             }
         }
     }
