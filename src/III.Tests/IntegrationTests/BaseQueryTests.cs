@@ -25,9 +25,6 @@ namespace PPWCode.Vernacular.NHibernate.III.Tests.IntegrationTests
         protected override string CatalogName
             => $"Test.{GetType().Assembly.GetName().Name}";
 
-        protected override string ConnectionString
-            => FixedConnectionString;
-
         protected override IPpwHbmMapping PpwHbmMapping
             => _ppwHbmMapping ?? (_ppwHbmMapping = new TestsSimpleModelMapper(new TestsMappingAssemblies()));
 
