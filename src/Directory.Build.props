@@ -34,16 +34,16 @@
     <Product>PPWCode</Product>
     <Authors>dvdwouwe;rvdginste</Authors>
     <Company>Peopleware NV</Company>
-    <Copyright>Copyright © Peopleware NV 2014-2018</Copyright>
+    <Copyright>Copyright © Peopleware NV 2014-2020</Copyright>
 
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
 
     <PackageTags>ppwcode vernacular nhibernate</PackageTags>
     <PackageProjectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</PackageProjectUrl>
-    <PackageIconUrl>http://peopleware.github.io/net-ppwcode-util-oddsandends/ppwcode_logo.jpg</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>ppwcode_logo.jpg</PackageIcon>
 
     <PackageReleaseNotes>
       <![CDATA[
@@ -71,6 +71,8 @@
           Castle.Windsor (5.0.0)
       - Add object context to AuditLogEventListener
       - Support in repositories (LinqRepository, QueryOverRepository) for EmptyResultException]]>
+4.0.0 - Add Async support
+      - improve documentation
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
@@ -86,6 +88,13 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
+  <!-- include supporting files in NuGet package -->
+  <ItemGroup>
+    <None Include="../../assets/ppwcode_logo.jpg" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../NOTICE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

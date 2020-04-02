@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{788185DD-7404-47DF-AFF3-698298A6F934}"
-	ProjectSection(SolutionItems) = preProject
-		Directory.Build.props = Directory.Build.props
-		StyleCop-Tests.ruleset = StyleCop-Tests.ruleset
-		StyleCop.ruleset = StyleCop.ruleset
-		version.props = version.props
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E-8AD7-4771-856E-47D86A5FAD33}"
 	ProjectSection(SolutionItems) = preProject
 		..\init-psake.ps1 = ..\init-psake.ps1
@@ -30,6 +22,26 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "II.CastleWindsor", "II.CastleWindsor\PPWCode.Vernacular.NHibernate.II.CastleWindsor.csproj", "{C3704071-18D7-488C-9EF7-127E7B874EA9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "II.Firebird", "II.Firebird\PPWCode.Vernacular.NHibernate.II.Firebird.csproj", "{9A28EE76-6342-46CC-9E70-23E377C866DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pack", "pack", "{90C8CCB5-85CF-41CC-90DA-AD02E596196D}"
+ProjectSection(SolutionItems) = preProject
+	..\LICENSE = ..\LICENSE
+	..\NOTICE = ..\NOTICE
+	..\README.md = ..\README.md
+	..\assets\ppwcode_logo.jpg = ..\assets\ppwcode_logo.jpg
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{08D43C06-110B-4584-BC0C-D97F125B9B8D}"
+ProjectSection(SolutionItems) = preProject
+	Directory.Build.props = Directory.Build.props
+	version.props = version.props
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stylecop", "stylecop", "{1CA5F1CA-2101-488C-9E84-D1D937459E0A}"
+ProjectSection(SolutionItems) = preProject
+	StyleCop-Tests.ruleset = StyleCop-Tests.ruleset
+	StyleCop.ruleset = StyleCop.ruleset
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

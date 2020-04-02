@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFramework>net461</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
@@ -12,18 +12,6 @@
     <!-- Stylecop -->
     <CodeAnalysisRuleSet>..\StyleCop-Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Pack>True</Pack>
-    </None>
-    <None Include="..\..\NOTICE">
-      <Pack>True</Pack>
-    </None>
-    <None Include="..\..\README.md">
-      <Pack>True</Pack>
-    </None>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
