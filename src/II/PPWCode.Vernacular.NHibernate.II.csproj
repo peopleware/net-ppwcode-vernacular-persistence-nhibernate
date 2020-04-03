@@ -21,7 +21,7 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="PPWCode.Vernacular.Persistence.III" Version="[2.0.0-rc010012, 3)" />
+    <PackageReference Include="PPWCode.Vernacular.Persistence.III" Version="[2.0.0, 3)" />
     <PackageReference Include="NHibernate" Version="[5.2.7, 6)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5)" />
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3)" />
