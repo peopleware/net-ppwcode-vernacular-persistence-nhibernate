@@ -71,8 +71,27 @@
           Castle.Windsor (5.0.0)
       - Add object context to AuditLogEventListener
       - Support in repositories (LinqRepository, QueryOverRepository) for EmptyResultException]]>
-4.0.0 - Add Async support
-      - improve documentation
+4.0.0 - Rework of IRepository / Repository / LinqRepository
+        * Remove ILinqRepository interface, prevent leakage of queries outside our repository
+        * improve documentation
+        * add LoadById member to IRepository
+        * Add support for Counting records
+        * Add Async support for LinqRepository
+        * Projecting an Entity to a Dto directly
+      - HbmMapping / Auxillary
+        * Including support for indices: covering / filtering for SQLServer / PostGre
+        * Better support for many-to-many default mapping
+      - Add a TContext type to the AuditLogEventListener
+      - Upgrade packages to latest version
+        * nHibernate (5.2.7)
+        * NHibernateProfiler.Appender (5.0.5043)
+        * Firebird (7.1.1)
+        * PostgreSQL (4.1.2)
+        * SqlServer ADO.Net drivers (4.8.0)
+        * Moq (4.13.1)
+        * NUnit (3.12.0)
+        * Castle.Windsor (5.0.1)
+      - re-arrange tests (namespaces, ..)
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
