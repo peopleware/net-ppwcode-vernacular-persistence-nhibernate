@@ -46,15 +46,15 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
         public ISafeEnvironmentProviderAsync SafeEnvironmentProviderAsync { get; }
 
         /// <inheritdoc />
-        public async Task FlushAsync(CancellationToken cancellationToken)
+        public Task FlushAsync(CancellationToken cancellationToken)
         {
-            async Task NHibernateFlushAsync(CancellationToken can)
-                => await Session.FlushAsync(can).ConfigureAwait(false);
+            Task NHibernateFlushAsync(CancellationToken can)
+                => Session.FlushAsync(can);
 
-            async Task SafeFlushAsync(CancellationToken can)
-                => await SafeEnvironmentProviderAsync.RunAsync(nameof(FlushAsync), NHibernateFlushAsync, can).ConfigureAwait(false);
+            Task SafeFlushAsync(CancellationToken can)
+                => SafeEnvironmentProviderAsync.RunAsync(nameof(FlushAsync), NHibernateFlushAsync, can);
 
-            await TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeFlushAsync, cancellationToken).ConfigureAwait(false);
+            return TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeFlushAsync, cancellationToken);
         }
     }
 }

@@ -52,8 +52,8 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations
             => SessionProviderAsync.SafeEnvironmentProviderAsync;
 
         /// <inheritdoc />
-        public async Task<TRoot> GetByIdAsync(TId id, CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(GetByIdAsync), can => GetByIdInternalAsync(id, can), cancellationToken).ConfigureAwait(false);
+        public Task<TRoot> GetByIdAsync(TId id, CancellationToken cancellationToken)
+            => ExecuteAsync(nameof(GetByIdAsync), can => GetByIdInternalAsync(id, can), cancellationToken);
 
         /// <inheritdoc />
         public async Task<TRoot> LoadByIdAsync(TId id, CancellationToken cancellationToken)
@@ -85,70 +85,70 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations
         }
 
         /// <inheritdoc />
-        public async Task<TRoot> MergeAsync(TRoot entity, CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(MergeAsync), can => MergeInternalAsync(entity, can), cancellationToken).ConfigureAwait(false);
+        public Task<TRoot> MergeAsync(TRoot entity, CancellationToken cancellationToken)
+            => ExecuteAsync(nameof(MergeAsync), can => MergeInternalAsync(entity, can), cancellationToken);
 
         /// <inheritdoc />
-        public async Task SaveOrUpdateAsync(TRoot entity, CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(SaveOrUpdateAsync), can => SaveOrUpdateInternalAsync(entity, can), cancellationToken).ConfigureAwait(false);
+        public Task SaveOrUpdateAsync(TRoot entity, CancellationToken cancellationToken)
+            => ExecuteAsync(nameof(SaveOrUpdateAsync), can => SaveOrUpdateInternalAsync(entity, can), cancellationToken);
 
         /// <inheritdoc />
-        public async Task DeleteAsync(TRoot entity, CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(DeleteAsync), can => DeleteInternalAsync(entity, can), cancellationToken).ConfigureAwait(false);
+        public Task DeleteAsync(TRoot entity, CancellationToken cancellationToken)
+            => ExecuteAsync(nameof(DeleteAsync), can => DeleteInternalAsync(entity, can), cancellationToken);
 
         [NotNull]
         [ItemCanBeNull]
-        protected virtual async Task<TResult> ExecuteAsync<TResult>(
+        protected virtual Task<TResult> ExecuteAsync<TResult>(
             [NotNull] string requestDescription,
             [NotNull] Func<CancellationToken, Task<TResult>> lambda,
             CancellationToken cancellationToken)
-            => await ExecuteAsync(requestDescription, lambda, null, cancellationToken).ConfigureAwait(false);
+            => ExecuteAsync(requestDescription, lambda, null, cancellationToken);
 
         [NotNull]
         [ItemCanBeNull]
-        protected virtual async Task<TResult> ExecuteAsync<TResult>(
+        protected virtual Task<TResult> ExecuteAsync<TResult>(
             [NotNull] string requestDescription,
             [NotNull] Func<CancellationToken, Task<TResult>> lambda,
             [CanBeNull] TRoot entity,
             CancellationToken cancellationToken)
         {
-            async Task<TResult> SafeAsync(CancellationToken can)
-                => await SafeEnvironmentProviderAsync.RunAsync<TRoot, TId, TResult>(requestDescription, lambda, entity, cancellationToken).ConfigureAwait(false);
+            Task<TResult> SafeAsync(CancellationToken can)
+                => SafeEnvironmentProviderAsync.RunAsync<TRoot, TId, TResult>(requestDescription, lambda, entity, cancellationToken);
 
-            return await TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeAsync, cancellationToken).ConfigureAwait(false);
+            return TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeAsync, cancellationToken);
         }
 
         [NotNull]
-        protected virtual async Task ExecuteAsync(
+        protected virtual Task ExecuteAsync(
             [NotNull] string requestDescription,
             [NotNull] Func<CancellationToken, Task> lambda,
             CancellationToken cancellationToken)
-            => await ExecuteAsync(requestDescription, lambda, null, cancellationToken).ConfigureAwait(false);
+            => ExecuteAsync(requestDescription, lambda, null, cancellationToken);
 
         [NotNull]
-        protected virtual async Task ExecuteAsync(
+        protected virtual Task ExecuteAsync(
             [NotNull] string requestDescription,
             [NotNull] Func<CancellationToken, Task> lambda,
             [CanBeNull] TRoot entity,
             CancellationToken cancellationToken)
         {
-            async Task SafeAsync(CancellationToken can)
-                => await SafeEnvironmentProviderAsync.RunAsync<TRoot, TId>(requestDescription, lambda, entity, cancellationToken).ConfigureAwait(false);
+            Task SafeAsync(CancellationToken can)
+                => SafeEnvironmentProviderAsync.RunAsync<TRoot, TId>(requestDescription, lambda, entity, cancellationToken);
 
-            await TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeAsync, cancellationToken).ConfigureAwait(false);
+            return TransactionProviderAsync.RunAsync(Session, IsolationLevel, SafeAsync, cancellationToken);
         }
 
         /// <inheritdoc cref="GetByIdAsync" />
         [NotNull]
         [ItemCanBeNull]
-        protected virtual async Task<TRoot> GetByIdInternalAsync([NotNull] TId id, CancellationToken cancellationToken)
-            => await Session.GetAsync<TRoot>(id, cancellationToken).ConfigureAwait(false);
+        protected virtual Task<TRoot> GetByIdInternalAsync([NotNull] TId id, CancellationToken cancellationToken)
+            => Session.GetAsync<TRoot>(id, cancellationToken);
 
         /// <inheritdoc cref="LoadByIdAsync" />
         [NotNull]
         [ItemNotNull]
-        protected virtual async Task<TRoot> LoadByIdInternalAsync([NotNull] TId id, CancellationToken cancellationToken)
-            => await Session.LoadAsync<TRoot>(id, cancellationToken).ConfigureAwait(false);
+        protected virtual Task<TRoot> LoadByIdInternalAsync([NotNull] TId id, CancellationToken cancellationToken)
+            => Session.LoadAsync<TRoot>(id, cancellationToken);
 
         /// <inheritdoc cref="FindAllAsync" />
         [NotNull]

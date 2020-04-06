@@ -40,7 +40,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
         }
 
         /// <inheritdoc />
-        public async Task RunAsync(
+        public Task RunAsync(
             string requestDescription,
             Func<CancellationToken, Task> lambda,
             CancellationToken cancellationToken)
@@ -51,11 +51,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
                 return default;
             }
 
-            await RunAsync(requestDescription, WrapperAsync, cancellationToken).ConfigureAwait(false);
+            return RunAsync(requestDescription, WrapperAsync, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<TResult> RunAsync<TResult>(
+        public Task<TResult> RunAsync<TResult>(
             string requestDescription,
             Func<CancellationToken, Task<TResult>> lambda,
             CancellationToken cancellationToken)
@@ -74,11 +74,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
             string FailedMessage()
                 => $"Request {requestDescription} failed.";
 
-            return await RunAsync(StartMessage, FinishMessage, FailedMessage, lambda, cancellationToken).ConfigureAwait(false);
+            return RunAsync(StartMessage, FinishMessage, FailedMessage, lambda, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task RunAsync<TEntity, TId>(
+        public Task RunAsync<TEntity, TId>(
             string requestDescription,
             Func<CancellationToken, Task> lambda,
             TEntity entity,
@@ -92,11 +92,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
                 return default;
             }
 
-            await RunAsync<TEntity, TId, int>(requestDescription, WrapperAsync, entity, cancellationToken).ConfigureAwait(false);
+            return RunAsync<TEntity, TId, int>(requestDescription, WrapperAsync, entity, cancellationToken);
         }
 
         /// <inheritdoc />
-        public async Task<TResult> RunAsync<TEntity, TId, TResult>(
+        public Task<TResult> RunAsync<TEntity, TId, TResult>(
             string requestDescription,
             Func<CancellationToken, Task<TResult>> lambda,
             TEntity entity,
@@ -124,7 +124,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
                        ? $"Request {requestDescription} for class {typeof(TEntity).Name}, entity={entity} failed"
                        : $"Request {requestDescription} for class {typeof(TEntity).Name} failed";
 
-            return await RunAsync(StartMessage, FinishMessage, FailedMessage, lambda, cancellationToken).ConfigureAwait(false);
+            return RunAsync(StartMessage, FinishMessage, FailedMessage, lambda, cancellationToken);
         }
 
         [NotNull]
