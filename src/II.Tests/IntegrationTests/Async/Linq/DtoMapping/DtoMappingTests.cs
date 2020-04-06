@@ -27,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Dto
         public ShipRepository ShipRepository
             => new ShipRepository(SessionProviderAsync);
 
-        private async Task GenerateShipAndContainersAsync(CancellationToken cancellationToken)
+        private Task GenerateShipAndContainersAsync(CancellationToken cancellationToken)
         {
             Ship ship1 =
                 new Ship
@@ -101,33 +101,31 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Dto
 
             async Task CreateShips(CancellationToken can)
             {
-                await ShipRepository.MergeAsync(ship1, can);
-                await ShipRepository.MergeAsync(ship2, can);
-                await ShipRepository.MergeAsync(ship3, can);
+                await ShipRepository.MergeAsync(ship1, can).ConfigureAwait(false);
+                await ShipRepository.MergeAsync(ship2, can).ConfigureAwait(false);
+                await ShipRepository.MergeAsync(ship3, can).ConfigureAwait(false);
             }
 
             // persist
-            await RunInsideTransactionAsync(CreateShips, true, cancellationToken);
+            return RunInsideTransactionAsync(CreateShips, true, cancellationToken);
         }
 
         [Test]
         public async Task TestAddingShipsAndContainers()
-        {
-            await GenerateShipAndContainersAsync(CancellationToken);
-        }
+            => await GenerateShipAndContainersAsync(CancellationToken).ConfigureAwait(false);
 
         [Test]
         public async Task TestDtoMappingShipsX()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            await GenerateShipAndContainersAsync(CancellationToken).ConfigureAwait(false);
             IList<ContainerDto> dtos = null;
 
             async Task Action(CancellationToken cancellationToken)
             {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("X", cancellationToken);
+                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("X", cancellationToken).ConfigureAwait(false);
             }
 
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            await RunInsideTransactionAsync(Action, true, CancellationToken).ConfigureAwait(false);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
         }
@@ -135,15 +133,15 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Dto
         [Test]
         public async Task TestDtoMappingShipsXPaged()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            await GenerateShipAndContainersAsync(CancellationToken).ConfigureAwait(false);
             IPagedList<ContainerDto> dtos = null;
 
             async Task Action(CancellationToken cancellationToken)
             {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodePagedAsync(2, 10, "X", cancellationToken);
+                dtos = await ShipRepository.FindContainersFromShipsMatchingCodePagedAsync(2, 10, "X", cancellationToken).ConfigureAwait(false);
             }
 
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            await RunInsideTransactionAsync(Action, true, CancellationToken).ConfigureAwait(false);
 
             Assert.IsTrue(dtos.Items.Select(d => d.ShipCode).All(c => c.StartsWith("X")));
         }
@@ -151,15 +149,15 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Dto
         [Test]
         public async Task TestDtoMappingShipsZ()
         {
-            await GenerateShipAndContainersAsync(CancellationToken);
+            await GenerateShipAndContainersAsync(CancellationToken).ConfigureAwait(false);
             IList<ContainerDto> dtos = null;
 
             async Task Action(CancellationToken cancellationToken)
             {
-                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("Z", cancellationToken);
+                dtos = await ShipRepository.FindContainersFromShipsMatchingCodeAsync("Z", cancellationToken).ConfigureAwait(false);
             }
 
-            await RunInsideTransactionAsync(Action, true, CancellationToken);
+            await RunInsideTransactionAsync(Action, true, CancellationToken).ConfigureAwait(false);
 
             Assert.IsTrue(dtos.Select(d => d.ShipCode).All(c => c.StartsWith("Z")));
             Assert.AreEqual(3, dtos.Count);

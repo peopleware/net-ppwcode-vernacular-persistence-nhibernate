@@ -49,11 +49,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Com
             {
                 foreach (string roleName in roleNames)
                 {
-                    roles.Add(await RoleRepository.MergeAsync(CreateRoleModel(roleName), can));
+                    roles.Add(await RoleRepository.MergeAsync(CreateRoleModel(roleName), can).ConfigureAwait(false));
                 }
             }
 
-            await RunInsideTransactionAsync(Action, clearSession, cancellationToken);
+            await RunInsideTransactionAsync(Action, clearSession, cancellationToken).ConfigureAwait(false);
             Assert.That(SessionFactory.Statistics.EntityInsertCount, Is.EqualTo(previousEntityInsertCount + roleNames.Count()));
             return roles;
         }

@@ -29,11 +29,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Dto
         {
         }
 
-        public async Task<IList<ContainerDto>> FindContainersFromShipsMatchingCodeAsync(string code, CancellationToken cancellationToken)
-            => await FindAsync(FindContainersQuery(code), cancellationToken);
+        public Task<IList<ContainerDto>> FindContainersFromShipsMatchingCodeAsync(string code, CancellationToken cancellationToken)
+            => FindAsync(FindContainersQuery(code), cancellationToken);
 
-        public async Task<IPagedList<ContainerDto>> FindContainersFromShipsMatchingCodePagedAsync(int pageIndex, int pageSize, string code, CancellationToken cancellationToken)
-            => await FindPagedAsync(FindContainersQuery(code), pageIndex, pageSize, cancellationToken);
+        public Task<IPagedList<ContainerDto>> FindContainersFromShipsMatchingCodePagedAsync(int pageIndex, int pageSize, string code, CancellationToken cancellationToken)
+            => FindPagedAsync(FindContainersQuery(code), pageIndex, pageSize, cancellationToken);
 
         protected virtual Func<IQueryable<Ship>, IQueryable<ContainerDto>> FindContainersQuery(string code)
             => qry =>

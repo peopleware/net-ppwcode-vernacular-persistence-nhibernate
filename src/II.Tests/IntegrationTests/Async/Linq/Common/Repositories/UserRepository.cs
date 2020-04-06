@@ -27,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Tests.IntegrationTests.Async.Linq.Com
         {
         }
 
-        public async Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken)
-            => await GetAsync(qry => qry.Where(u => u.Name == name), cancellationToken);
+        public Task<User> GetUserByNameAsync(string name, CancellationToken cancellationToken)
+            => GetAsync(qry => qry.Where(u => u.Name == name), cancellationToken);
     }
 }
