@@ -32,7 +32,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers
           ITransactionProviderAsync
     {
         /// <inheritdoc />
-        public async Task RunAsync(
+        public Task RunAsync(
             ISession session,
             IsolationLevel isolationLevel,
             Func<CancellationToken, Task> lambda,
@@ -44,7 +44,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers
                 return default;
             }
 
-            await RunAsync(session, isolationLevel, WrapperFunc, cancellationToken).ConfigureAwait(false);
+            return RunAsync(session, isolationLevel, WrapperFunc, cancellationToken);
         }
 
         /// <inheritdoc />

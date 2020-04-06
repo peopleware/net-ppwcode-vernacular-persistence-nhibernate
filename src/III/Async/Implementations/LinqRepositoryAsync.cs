@@ -40,22 +40,20 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
         [NotNull]
         [ItemCanBeNull]
-        public virtual async Task<TResult> GetAsync<TResult>(
+        public virtual Task<TResult> GetAsync<TResult>(
             [NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> lambda,
             CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(GetAsync), can => GetInternalAsync(lambda, can), cancellationToken)
-                   .ConfigureAwait(false);
+            => ExecuteAsync(nameof(GetAsync), can => GetInternalAsync(lambda, can), cancellationToken);
 
         /// <inheritdoc cref="LinqRepository{TRoot,TId}.GetAtIndex{TResult}" />
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
         [NotNull]
         [ItemCanBeNull]
-        public virtual async Task<TResult> GetAtIndexAsync<TResult>(
+        public virtual Task<TResult> GetAtIndexAsync<TResult>(
             [NotNull] Func<IQueryable<TRoot>, IQueryable<TResult>> lambda,
             int index,
             CancellationToken cancellationToken)
-            => await ExecuteAsync(nameof(GetAtIndexAsync), can => GetAtIndexInternalAsync(lambda, index, can), cancellationToken)
-                   .ConfigureAwait(false);
+            => ExecuteAsync(nameof(GetAtIndexAsync), can => GetAtIndexInternalAsync(lambda, index, can), cancellationToken);
 
         /// <inheritdoc
         ///     cref="LinqRepository{TRoot,TId}.Find{TResult}(System.Func{System.Linq.IQueryable{TRoot},System.Linq.IQueryable{TResult}})" />
@@ -110,24 +108,21 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
         ///     cref="LinqRepository{TRoot,TId}.Count" />
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
         [NotNull]
-        public virtual async Task<int> CountAsync(
+        public virtual Task<int> CountAsync(
             [NotNull] Func<IQueryable<TRoot>, IQueryable<TRoot>> lambda,
             CancellationToken cancellationToken)
-            => await ExecuteAsync(
-                       nameof(CountAsync),
-                       can => CountInternalAsync(() => lambda(CreateQueryable()), can),
-                       cancellationToken)
-                   .ConfigureAwait(false);
+            => ExecuteAsync(
+                nameof(CountAsync),
+                can => CountInternalAsync(() => lambda(CreateQueryable()), can),
+                cancellationToken);
 
         /// <inheritdoc />
-        protected override async Task<IList<TRoot>> FindAllInternalAsync(CancellationToken cancellationToken)
-            => await FindInternalAsync(CreateQueryable, null, null, cancellationToken)
-                   .ConfigureAwait(false);
+        protected override Task<IList<TRoot>> FindAllInternalAsync(CancellationToken cancellationToken)
+            => FindInternalAsync(CreateQueryable, null, null, cancellationToken);
 
         /// <inheritdoc />
-        protected override async Task<IList<TRoot>> FindByIdsInternalAsync(TId[] ids, CancellationToken cancellationToken)
-            => await FindInternalAsync(() => CreateQueryable().Where(e => ids.Contains(e.Id)), null, null, cancellationToken)
-                   .ConfigureAwait(false);
+        protected override Task<IList<TRoot>> FindByIdsInternalAsync(TId[] ids, CancellationToken cancellationToken)
+            => FindInternalAsync(() => CreateQueryable().Where(e => ids.Contains(e.Id)), null, null, cancellationToken);
 
         /// <inheritdoc cref="LinqRepository{TRoot,TId}.Get{TResult}" />
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work.</param>
