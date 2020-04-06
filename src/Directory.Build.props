@@ -37,10 +37,10 @@
     <Copyright>Copyright © Peopleware NV 2014-2020</Copyright>
 
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
 
     <PackageTags>ppwcode vernacular nhibernate</PackageTags>
-    <PackageProjectUrl>https://github.com/net-ppwcode-vernacular-nhibernate</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageIcon>ppwcode_logo.jpg</PackageIcon>
