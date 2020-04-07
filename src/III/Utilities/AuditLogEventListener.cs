@@ -272,37 +272,40 @@ namespace PPWCode.Vernacular.NHibernate.III
 
             List<PpwAuditLogPair> auditLogPairs = new List<PpwAuditLogPair>();
             int[] fieldIndices = @event.Persister.FindDirty(@event.State, @event.OldState, @event.Entity, @event.Session);
-            foreach (int dirtyFieldIndex in fieldIndices)
+            if (fieldIndices != null)
             {
-                string dirtyPropertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
-                if ((auditLogItem.Properties != null)
-                    && auditLogItem.Properties.TryGetValue(dirtyPropertyName, out AuditLogActionEnum auditLogAction))
+                foreach (int dirtyFieldIndex in fieldIndices)
                 {
-                    if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
+                    string dirtyPropertyName = @event.Persister.PropertyNames[dirtyFieldIndex];
+                    if ((auditLogItem.Properties != null)
+                        && auditLogItem.Properties.TryGetValue(dirtyPropertyName, out AuditLogActionEnum auditLogAction))
                     {
-                        object oldValue = @event.OldState[dirtyFieldIndex];
-                        IType valueNHibernateType = @event.Persister.PropertyTypes[dirtyFieldIndex];
-                        object newValue = @event.State[dirtyFieldIndex];
-                        IDictionary<string, PpwAuditLog> oldAuditLogs =
-                            CreatePpwAuditLogs(dirtyPropertyName, oldValue, valueNHibernateType, context)
-                                .ToDictionary(l => l.PropertyName);
-                        IDictionary<string, PpwAuditLog> newAuditLogs =
-                            CreatePpwAuditLogs(dirtyPropertyName, newValue, valueNHibernateType, context)
-                                .ToDictionary(l => l.PropertyName);
-
-                        ISet<string> propertyNames =
-                            new HashSet<string>(
-                                oldAuditLogs
-                                    .Select(al => al.Key)
-                                    .Union(newAuditLogs.Select(al => al.Key)));
-
-                        foreach (string propertyName in propertyNames)
+                        if ((auditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.NONE)
                         {
-                            oldAuditLogs.TryGetValue(propertyName, out PpwAuditLog oldAuditLog);
-                            newAuditLogs.TryGetValue(propertyName, out PpwAuditLog newAuditLog);
-                            if (oldAuditLog?.Value != newAuditLog?.Value)
+                            object oldValue = @event.OldState[dirtyFieldIndex];
+                            IType valueNHibernateType = @event.Persister.PropertyTypes[dirtyFieldIndex];
+                            object newValue = @event.State[dirtyFieldIndex];
+                            IDictionary<string, PpwAuditLog> oldAuditLogs =
+                                CreatePpwAuditLogs(dirtyPropertyName, oldValue, valueNHibernateType, context)
+                                    .ToDictionary(l => l.PropertyName);
+                            IDictionary<string, PpwAuditLog> newAuditLogs =
+                                CreatePpwAuditLogs(dirtyPropertyName, newValue, valueNHibernateType, context)
+                                    .ToDictionary(l => l.PropertyName);
+
+                            ISet<string> propertyNames =
+                                new HashSet<string>(
+                                    oldAuditLogs
+                                        .Select(al => al.Key)
+                                        .Union(newAuditLogs.Select(al => al.Key)));
+
+                            foreach (string propertyName in propertyNames)
                             {
-                                auditLogPairs.Add(new PpwAuditLogPair(oldAuditLog, newAuditLog));
+                                oldAuditLogs.TryGetValue(propertyName, out PpwAuditLog oldAuditLog);
+                                newAuditLogs.TryGetValue(propertyName, out PpwAuditLog newAuditLog);
+                                if (oldAuditLog?.Value != newAuditLog?.Value)
+                                {
+                                    auditLogPairs.Add(new PpwAuditLogPair(oldAuditLog, newAuditLog));
+                                }
                             }
                         }
                     }
