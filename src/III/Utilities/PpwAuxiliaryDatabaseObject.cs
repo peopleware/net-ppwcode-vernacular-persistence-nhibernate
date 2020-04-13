@@ -65,6 +65,7 @@ namespace PPWCode.Vernacular.NHibernate.III
             => GetPersistentClassFor(type)?.Table.Name;
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetDiscriminatorColumnNameFor([NotNull] Type type)
         {
             return
@@ -78,6 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetDiscriminatorValuesFor([NotNull] Type type)
         {
             return
@@ -95,6 +97,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual Column[] GetColumns<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
         {
             PropertyInfo propInfo = GetPropertyInfo(propertyLambda);
@@ -114,12 +117,14 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetColumnNames<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
             => GetColumns(propertyLambda)
                 .Select(c => c.Name)
                 .ToArray();
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetIdentifierColumnNames([NotNull] Type type)
         {
             PersistentClass persistentClass = GetPersistentClassFor(type);

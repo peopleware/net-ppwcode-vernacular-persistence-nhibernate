@@ -78,6 +78,8 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Interfaces
         /// <remarks>
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
+        [NotNull]
+        [ItemCanBeNull]
         Task<TRoot> MergeAsync([CanBeNull] TRoot entity, CancellationToken cancellationToken = default);
 
         /// <inheritdoc cref="ISession.SaveOrUpdateAsync(object,System.Threading.CancellationToken)" />
@@ -88,12 +90,14 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Interfaces
         /// <remarks>
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
+        [NotNull]
         Task SaveOrUpdateAsync([CanBeNull] TRoot entity, CancellationToken cancellationToken = default);
 
         /// <inheritdoc cref="ISession.DeleteAsync(object,System.Threading.CancellationToken)" />
         /// <remarks>
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
+        [NotNull]
         Task DeleteAsync([CanBeNull] TRoot entity, CancellationToken cancellationToken = default);
     }
 }

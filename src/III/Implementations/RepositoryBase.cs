@@ -73,7 +73,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             => Execute(requestDescription, func, null);
 
         [NotNull]
-        protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] IEnumerable<TId> ids)
+        [ItemNotNull]
+        protected virtual IEnumerable<TId[]> GetSegmentedIds([NotNull] [ItemNotNull] IEnumerable<TId> ids)
         {
             ISet<TId> uniqueIds = new HashSet<TId>(ids);
             int count = uniqueIds.Count;
