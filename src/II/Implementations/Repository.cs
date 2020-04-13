@@ -1,4 +1,4 @@
-﻿// Copyright 2017 by PeopleWare n.v..
+// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -106,7 +106,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                 return Session.Merge(entity);
             }
 
-            return default(TRoot);
+            return default;
         }
 
         /// <inheritdoc cref="SaveOrUpdate" />
