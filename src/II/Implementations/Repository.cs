@@ -1,4 +1,4 @@
-// Copyright 2017 by PeopleWare n.v..
+﻿// Copyright 2017 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -87,7 +87,9 @@ namespace PPWCode.Vernacular.NHibernate.II
         protected abstract IList<TRoot> FindAllInternal();
 
         /// <inheritdoc cref="FindByIds"/>
-        protected abstract IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> segment);
+        [NotNull]
+        [ItemNotNull]
+        protected abstract IEnumerable<TRoot> FindByIdsInternal([NotNull] [ItemNotNull] IEnumerable<TId> segment);
 
         /// <inheritdoc cref="Merge" />
         /// <remarks>Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.</remarks>

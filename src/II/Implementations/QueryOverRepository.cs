@@ -90,6 +90,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(func)) ?? new List<TRoot>();
 
@@ -106,6 +107,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(alias, func)) ?? new List<TRoot>();
 
@@ -124,6 +126,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(func, skip, count)) ?? new List<TRoot>();
 
@@ -143,6 +146,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     A list of the records satisfying the given <paramref name="func" />.
         /// </returns>
         [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(alias, func, skip, count)) ?? new List<TRoot>();
 
@@ -260,6 +264,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             => CreateQueryOver().List<TRoot>();
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
             try
@@ -274,6 +279,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
             try
@@ -288,6 +294,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
             try
@@ -313,6 +320,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
             try

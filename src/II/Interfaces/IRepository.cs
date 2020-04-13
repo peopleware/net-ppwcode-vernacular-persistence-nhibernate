@@ -29,14 +29,14 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
         [CanBeNull]
-        T GetById(TId id);
+        T GetById([NotNull] TId id);
 
         /// <inheritdoc cref="ISession.Load{T}(object)" />
         /// <remarks>
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
         [NotNull]
-        T LoadById(TId id);
+        T LoadById([NotNull] TId id);
 
         /// <summary>
         ///     Find all records of type <typeparamref name="T" />.
@@ -48,6 +48,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
         /// </remarks>
         [NotNull]
+        [ItemNotNull]
         IList<T> FindAll();
 
         /// <summary>Gets an list of entities by their ids.</summary>
@@ -60,7 +61,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         /// </remarks>
         [NotNull]
         [ItemNotNull]
-        IList<T> FindByIds([NotNull] IEnumerable<TId> ids);
+        IList<T> FindByIds([NotNull] [ItemNotNull] IEnumerable<TId> ids);
 
         /// <inheritdoc cref="ISession.Merge{T}(T)" />
         /// <exception cref="NotFoundException">

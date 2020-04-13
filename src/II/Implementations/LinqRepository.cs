@@ -190,9 +190,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             => FindInternal(CreateQueryable, null, null);
 
         /// <inheritdoc cref="Repository{TRoot,TId}.FindByIdsInternal" />
-        [NotNull]
-        [ItemNotNull]
-        protected override IEnumerable<TRoot> FindByIdsInternal([NotNull] IEnumerable<TId> ids)
+        protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
             => FindInternal(() => CreateQueryable().Where(e => ids.Contains(e.Id)), null, null);
 
         /// <inheritdoc cref="Get{TResult}" />

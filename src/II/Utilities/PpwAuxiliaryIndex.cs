@@ -56,10 +56,12 @@ namespace PPWCode.Vernacular.NHibernate.II
             => GetPersistentClassFor(typeof(TEntity));
 
         [NotNull]
+        [ItemNotNull]
         protected virtual Column[] GetColumns(Expression<Func<TEntity, object>> propertyLambda)
             => base.GetColumns(propertyLambda);
 
         [NotNull]
+        [ItemNotNull]
         protected virtual Column[] GetDiscriminatorColumnsFor([NotNull] Type type)
             => GetPersistentClassFor(type)
                    ?.Discriminator
@@ -69,6 +71,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                ?? EmptyColumnArray;
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetDiscriminatorValues()
             => GetDiscriminatorValuesFor(typeof(TEntity));
 
