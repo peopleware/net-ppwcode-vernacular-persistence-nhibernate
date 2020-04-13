@@ -63,7 +63,7 @@ namespace PPWCode.Vernacular.NHibernate.III.Async.Implementations
         /// <inheritdoc />
         public async Task<IList<TRoot>> FindAllAsync(CancellationToken cancellationToken)
             => await ExecuteAsync(nameof(FindAllAsync), FindAllInternalAsync, cancellationToken).ConfigureAwait(false)
-               ?? throw new ProgrammingError("Should never happen, implementation of {nameof(FindAllInternalAsync)} should always return a IList<TRoot>, where TRoot is of type {typeof(TRoot).FullName}");
+               ?? throw new ProgrammingError($"Should never happen, implementation of {nameof(FindAllInternalAsync)} should always return a IList<TRoot>, where TRoot is of type {typeof(TRoot).FullName}");
 
         /// <inheritdoc />
         public async Task<IList<TRoot>> FindByIdsAsync(IEnumerable<TId> ids, CancellationToken cancellationToken)
