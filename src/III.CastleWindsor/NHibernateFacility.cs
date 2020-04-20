@@ -22,6 +22,8 @@ using NHibernate;
 using NHibernate.Mapping;
 
 using PPWCode.Vernacular.Exceptions.IV;
+using PPWCode.Vernacular.NHibernate.III.Async.Implementations.Providers;
+using PPWCode.Vernacular.NHibernate.III.Async.Interfaces.Providers;
 using PPWCode.Vernacular.NHibernate.III.DbConstraint;
 using PPWCode.Vernacular.NHibernate.III.Providers;
 using PPWCode.Vernacular.Persistence.IV;
@@ -45,6 +47,9 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
         private Type _safeEnvironmentProvider;
         private Type _sessionProvider;
         private Type _transactionProvider;
+        private Type _safeEnvironmentProviderAsync;
+        private Type _sessionProviderAsync;
+        private Type _transactionProviderAsync;
         private bool _useCivilizedEventListener = true;
 
         public NHibernateFacility UseQueryOverCustomExpressions<T>()
@@ -61,10 +66,24 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
             return this;
         }
 
+        public NHibernateFacility UseTransactionProviderAsync<T>()
+            where T : ITransactionProviderAsync
+        {
+            _transactionProviderAsync = typeof(T);
+            return this;
+        }
+
         public NHibernateFacility UseSafeEnvironmentProvider<T>()
             where T : ISafeEnvironmentProvider
         {
             _safeEnvironmentProvider = typeof(T);
+            return this;
+        }
+
+        public NHibernateFacility UseSafeEnvironmentProviderAsync<T>()
+            where T : ISafeEnvironmentProviderAsync
+        {
+            _safeEnvironmentProviderAsync = typeof(T);
             return this;
         }
 
@@ -79,6 +98,14 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
             where T : ISessionProvider
         {
             _sessionProvider = typeof(T);
+            _isolationLevel = isolationLevel;
+            return this;
+        }
+
+        public NHibernateFacility UseSessionProviderAsync<T>(IsolationLevel? isolationLevel)
+            where T : ISessionProviderAsync
+        {
+            _sessionProviderAsync = typeof(T);
             _isolationLevel = isolationLevel;
             return this;
         }
@@ -184,13 +211,29 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                             .LifestyleSingleton());
             }
 
-            Type transactionProvider = _transactionProvider ?? typeof(TransactionProvider);
-            Kernel
-                .Register(
-                    Component
-                        .For<ITransactionProvider>()
-                        .ImplementedBy(transactionProvider)
-                        .LifeStyle.Singleton);
+            if ((_transactionProviderAsync == null) && (_transactionProvider == null))
+            {
+                _transactionProviderAsync = typeof(TransactionProviderAsync);
+            }
+
+            if (_transactionProviderAsync != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ITransactionProvider, ITransactionProviderAsync>()
+                            .ImplementedBy(_transactionProviderAsync)
+                            .LifeStyle.Singleton);
+            }
+            else
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ITransactionProvider>()
+                            .ImplementedBy(_transactionProvider)
+                            .LifeStyle.Singleton);
+            }
 
             Type exceptionTranslator = _exceptionTranslator ?? typeof(ExceptionTranslator);
             Kernel
@@ -200,13 +243,29 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                         .ImplementedBy(exceptionTranslator)
                         .LifeStyle.Singleton);
 
-            Type safeEnvironmentProvider = _safeEnvironmentProvider ?? typeof(SafeEnvironmentProvider);
-            Kernel
-                .Register(
-                    Component
-                        .For<ISafeEnvironmentProvider>()
-                        .ImplementedBy(safeEnvironmentProvider)
-                        .LifeStyle.Singleton);
+            if ((_safeEnvironmentProviderAsync == null) && (_safeEnvironmentProvider == null))
+            {
+                _safeEnvironmentProviderAsync = typeof(SafeEnvironmentProviderAsync);
+            }
+
+            if (_safeEnvironmentProviderAsync != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ISafeEnvironmentProvider, ISafeEnvironmentProviderAsync>()
+                            .ImplementedBy(_safeEnvironmentProviderAsync)
+                            .LifeStyle.Singleton);
+            }
+            else
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ISafeEnvironmentProvider>()
+                            .ImplementedBy(_safeEnvironmentProvider)
+                            .LifeStyle.Singleton);
+            }
 
             if (_useCivilizedEventListener && !Kernel.HasComponent(typeof(CivilizedEventListener)))
             {
@@ -271,15 +330,32 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                             })
                         .LifeStyle.Is(lifestyleType));
 
-            Type sessionProvider = _sessionProvider ?? typeof(SessionProvider);
             IsolationLevel isolationLevel = _isolationLevel ?? IsolationLevel.Unspecified;
-            Kernel
-                .Register(
-                    Component
-                        .For<ISessionProvider>()
-                        .ImplementedBy(sessionProvider)
-                        .DependsOn(Dependency.OnValue<IsolationLevel>(isolationLevel))
-                        .LifeStyle.Transient);
+            if ((_sessionProviderAsync == null) && (_sessionProvider == null))
+            {
+                _sessionProviderAsync = typeof(SessionProviderAsync);
+            }
+
+            if (_sessionProviderAsync != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ISessionProvider, ISessionProviderAsync>()
+                            .ImplementedBy(_sessionProviderAsync)
+                            .DependsOn(Dependency.OnValue<IsolationLevel>(isolationLevel))
+                            .LifeStyle.Transient);
+            }
+            else
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ISessionProvider>()
+                            .ImplementedBy(_sessionProvider)
+                            .DependsOn(Dependency.OnValue<IsolationLevel>(isolationLevel))
+                            .LifeStyle.Transient);
+            }
 
             if (_queryOverCustomExpressions != null)
             {
