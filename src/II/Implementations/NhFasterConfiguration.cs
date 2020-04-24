@@ -22,18 +22,18 @@ using JetBrains.Annotations;
 using NHibernate.Cfg;
 using NHibernate.Mapping;
 
-using PPWCode.Vernacular.NHibernate.II.Providers;
-
 using Environment = System.Environment;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
+    [UsedImplicitly]
     public abstract class NhFasterConfiguration : NhConfiguration
     {
         private const string ConfigFile = "hibernate.cfg.xml";
 
         [NotNull]
-        private static readonly ILog _logger = LogManager.GetLogger<SafeEnvironmentProvider>();
+        private static readonly ILog _logger = LogManager.GetLogger<NhFasterConfiguration>();
 
         protected NhFasterConfiguration(
             [NotNull] INhInterceptor nhInterceptor,
@@ -69,6 +69,7 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         protected abstract string Namespace { get; }
 
+        /// <inheritdoc />
         protected override Configuration Configuration
         {
             get

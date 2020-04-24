@@ -11,14 +11,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using JetBrains.Annotations;
 
+using PPWCode.Vernacular.Exceptions.III;
 using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc cref="IRepository{T,TId}" />
     public abstract class Repository<TRoot, TId>
         : RepositoryBase<TRoot, TId>,
           IRepository<TRoot, TId>
@@ -35,8 +38,28 @@ namespace PPWCode.Vernacular.NHibernate.II
             => Execute(nameof(GetById), () => GetByIdInternal(id));
 
         /// <inheritdoc />
+        public virtual TRoot LoadById(TId id)
+            => Execute(nameof(LoadById), () => LoadByIdInternal(id))
+               ?? throw new ProgrammingError($"Unexpected null result while load<{typeof(TRoot).FullName}>({id}).");
+
+        /// <inheritdoc />
         public virtual IList<TRoot> FindAll()
             => Execute(nameof(FindAll), FindAllInternal) ?? new List<TRoot>();
+
+        /// <inheritdoc />
+        public virtual IList<TRoot> FindByIds(IEnumerable<TId> ids)
+            => Execute(
+                   nameof(FindByIds),
+                   () =>
+                   {
+                       List<TRoot> result = new List<TRoot>();
+                       foreach (TId[] segment in GetSegmentedIds(ids).Where(s => s.Length > 0))
+                       {
+                           result.AddRange(FindByIdsInternal(segment));
+                       }
+
+                       return result;
+                   }) ?? new List<TRoot>();
 
         /// <inheritdoc />
         public virtual TRoot Merge(TRoot entity)
@@ -55,8 +78,21 @@ namespace PPWCode.Vernacular.NHibernate.II
             => Session.Get<TRoot>(id);
 
         [NotNull]
+        protected virtual TRoot LoadByIdInternal([NotNull] TId id)
+            => Session.Load<TRoot>(id);
+
+        /// <inheritdoc cref="FindAll" />
+        [NotNull]
+        [ItemNotNull]
         protected abstract IList<TRoot> FindAllInternal();
 
+        /// <inheritdoc cref="FindByIds"/>
+        [NotNull]
+        [ItemNotNull]
+        protected abstract IEnumerable<TRoot> FindByIdsInternal([NotNull] [ItemNotNull] IEnumerable<TId> segment);
+
+        /// <inheritdoc cref="Merge" />
+        /// <remarks>Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         [ContractAnnotation("entity:null => null; entity:notnull => notnull")]
         protected virtual TRoot MergeInternal(TRoot entity)
         {
@@ -72,9 +108,11 @@ namespace PPWCode.Vernacular.NHibernate.II
                 return Session.Merge(entity);
             }
 
-            return default(TRoot);
+            return default;
         }
 
+        /// <inheritdoc cref="SaveOrUpdate" />
+        /// <remarks>Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.</remarks>
         protected virtual void SaveOrUpdateInternal([CanBeNull] TRoot entity)
         {
             if (entity != null)
@@ -89,6 +127,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             }
         }
 
+        /// <inheritdoc cref="Delete" />
         protected virtual void DeleteInternal([CanBeNull] TRoot entity)
         {
             if ((entity != null) && !entity.IsTransient)

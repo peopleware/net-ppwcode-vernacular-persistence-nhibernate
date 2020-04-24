@@ -20,6 +20,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         bool IsMultiLog { get; }
 
         [NotNull]
+        [ItemNotNull]
         IEnumerable<PpwAuditLog> GetMultiLogs([NotNull] string propertyName);
 
         [NotNull]

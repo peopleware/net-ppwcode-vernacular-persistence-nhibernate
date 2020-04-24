@@ -25,6 +25,7 @@ using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class UniqueConstraintsForNullableColumn<TEntity>
         : PpwAuxiliaryDatabaseObject
         where TEntity : class
@@ -105,7 +106,7 @@ namespace PPWCode.Vernacular.NHibernate.II
 
         [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute", Justification = "reviewed")]
         [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "reviewed")]
-        public class Context
+        protected class Context
         {
             public Context(
                 [NotNull] UniqueConstraintsForNullableColumn<TEntity> auxiliaryDatabaseObject,

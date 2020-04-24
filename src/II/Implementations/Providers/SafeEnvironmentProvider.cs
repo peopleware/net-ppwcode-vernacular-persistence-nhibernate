@@ -21,6 +21,7 @@ using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
+    /// <inheritdoc />
     public class SafeEnvironmentProvider : ISafeEnvironmentProvider
     {
         [NotNull]
@@ -31,9 +32,11 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             ExceptionTranslator = exceptionTranslator ?? throw new ArgumentNullException(nameof(exceptionTranslator));
         }
 
+        /// <inheritdoc cref="IExceptionTranslator" />
         [NotNull]
         public IExceptionTranslator ExceptionTranslator { get; }
 
+        /// <inheritdoc />
         public void Run(string requestDescription, Action action)
         {
             if (action == null)
@@ -44,6 +47,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             Run(requestDescription, ActionToDummyFunc(action));
         }
 
+        /// <inheritdoc />
         public TResult Run<TResult>(string requestDescription, Func<TResult> func)
         {
             if (func == null)
@@ -63,6 +67,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             return Run(StartMessage, FinishMessage, FailedMessage, func);
         }
 
+        /// <inheritdoc />
         public void Run<TEntity, TId>(string requestDescription, Action action, TEntity entity)
             where TEntity : class, IIdentity<TId>
             where TId : IEquatable<TId>
@@ -75,6 +80,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
             Run<TEntity, TId, int>(requestDescription, ActionToDummyFunc(action), entity);
         }
 
+        /// <inheritdoc />
         public TResult Run<TEntity, TId, TResult>(string requestDescription, Func<TResult> func, TEntity entity)
             where TEntity : class, IIdentity<TId>
             where TId : IEquatable<TId>
@@ -111,7 +117,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
                };
 
         [CanBeNull]
-        private TResult Run<TResult>(
+        protected virtual TResult Run<TResult>(
             [NotNull] Func<string> startMessage,
             [NotNull] Func<string> finishedMessage,
             [NotNull] Func<string> failedMessage,

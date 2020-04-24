@@ -21,6 +21,7 @@ using NHibernate.Mapping;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public class NhConfiguration : NhConfigurationBase
     {
         public NhConfiguration(

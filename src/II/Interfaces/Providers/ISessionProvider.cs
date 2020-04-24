@@ -10,8 +10,6 @@
 // limitations under the License.
 
 using System.Data;
-using System.Threading;
-using System.Threading.Tasks;
 
 using JetBrains.Annotations;
 
@@ -21,17 +19,22 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
     public interface ISessionProvider
     {
+        /// <inheritdoc cref="ISession" />
         [NotNull]
         ISession Session { get; }
 
+        /// <inheritdoc cref="ITransactionProvider" />
         [NotNull]
         ITransactionProvider TransactionProvider { get; }
 
+        /// <inheritdoc cref="ISafeEnvironmentProvider" />
         [NotNull]
         ISafeEnvironmentProvider SafeEnvironmentProvider { get; }
 
+        /// <inheritdoc cref="IsolationLevel" />
         IsolationLevel IsolationLevel { get; }
+
+        /// <inheritdoc cref="ISession.Flush" />
         void Flush();
-        Task FlushAsync(CancellationToken cancellationToken);
     }
 }

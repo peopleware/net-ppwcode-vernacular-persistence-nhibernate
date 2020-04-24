@@ -18,6 +18,7 @@ using NHibernate.UserTypes;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class ImmutableUserTypeBase : IUserType
     {
         public new bool Equals(object x, object y)

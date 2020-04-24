@@ -14,6 +14,8 @@ using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
+using NHibernate;
+
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
@@ -22,43 +24,70 @@ namespace PPWCode.Vernacular.NHibernate.II
         where T : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
-        /// <summary>
-        ///     Gets an entity by its id.
-        /// </summary>
-        /// <param name="id">The given primary key.</param>
-        /// <returns>The entity with the given id or null if not found.</returns>
+        /// <inheritdoc cref="ISession.Get{T}(object)" />
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
         [CanBeNull]
-        T GetById(TId id);
+        T GetById([NotNull] TId id);
+
+        /// <inheritdoc cref="ISession.Load{T}(object)" />
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
+        [NotNull]
+        T LoadById([NotNull] TId id);
 
         /// <summary>
-        ///     Find all the records.
+        ///     Find all records of type <typeparamref name="T" />.
         /// </summary>
         /// <returns>
         ///     A list of records, the list is <b>never</b> a null-reference.
         /// </returns>
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
         [NotNull]
+        [ItemNotNull]
         IList<T> FindAll();
 
-        /// <summary>
-        ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
-        ///     An object is returned that represents the new record, this object is always a <e>new</e> object.
-        /// </summary>
-        /// <param name="entity">The entity to be saved or updated.</param>
-        /// <returns>The persistent entity.</returns>
+        /// <summary>Gets an list of entities by their ids.</summary>
+        /// <param name="ids">The given primary keys.</param>
+        /// <returns>
+        ///     The entities with the given ids which could be found, if not found no entity with the id is returned.
+        /// </returns>
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
+        [NotNull]
+        [ItemNotNull]
+        IList<T> FindByIds([NotNull] [ItemNotNull] IEnumerable<TId> ids);
+
+        /// <inheritdoc cref="ISession.Merge{T}(T)" />
+        /// <exception cref="NotFoundException">
+        ///     The normal behaviour of nHibernate is that the <c>Merge</c> transforms an UPDATE for a not-found-PK into a
+        ///     CREATE. We will not do this in our code-base. In this case we will throw an exception.
+        /// </exception>
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
         [ContractAnnotation("null => null; notnull => notnull")]
         T Merge(T entity);
 
-        /// <summary>
-        ///     A record is saved or updated in the DB to represent <paramref name="entity" />.
-        ///     An object is returned that represents the new record.
-        /// </summary>
-        /// <param name="entity">An attached entity to be saved or updated.</param>
+        /// <inheritdoc cref="ISession.SaveOrUpdate(object)" />
+        /// <exception cref="NotFoundException">
+        ///     The normal behaviour of nHibernate is that the <c>SaveOrUpdate</c> transforms an UPDATE for a not-found-PK into a
+        ///     CREATE. We will not do this in our code-base. In this case we will throw an exception.
+        /// </exception>
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
         void SaveOrUpdate([CanBeNull] T entity);
 
-        /// <summary>
-        ///     The record that represents <paramref name="entity" /> is deleted from the DB.
-        /// </summary>
-        /// <param name="entity">The given entity.</param>
+        /// <inheritdoc cref="ISession.Delete(object)" />
+        /// <remarks>
+        ///     Runs in an isolated environment. This ensures a transaction is active and exceptions are being triaged.
+        /// </remarks>
         void Delete([CanBeNull] T entity);
     }
 }

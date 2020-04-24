@@ -10,6 +10,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -17,15 +18,16 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 
 using NHibernate;
+using NHibernate.Criterion;
 
 using PPWCode.Vernacular.NHibernate.II.Providers;
 using PPWCode.Vernacular.Persistence.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class QueryOverRepository<TRoot, TId>
-        : Repository<TRoot, TId>,
-          IQueryOverRepository<TRoot, TId>
+        : Repository<TRoot, TId>
         where TRoot : class, IIdentity<TId>
         where TId : IEquatable<TId>
     {
@@ -34,35 +36,177 @@ namespace PPWCode.Vernacular.NHibernate.II
         {
         }
 
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
         public virtual TRoot Get(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Get), () => GetInternal(alias, func));
 
+        /// <summary>
+        ///     Gets an entity by a function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
         public virtual TRoot Get(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Get), () => GetInternal(func));
 
+        /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <param name="index">The given index.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
         public virtual TRoot GetAtIndex(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index)
             => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(func, index));
 
+        /// <summary>
+        ///     Executes the given query <paramref name="func" /> and returns the entity at position <paramref name="index" />
+        ///     in the result.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <param name="index">The given index.</param>
+        /// <returns>The entity that is filtered by the function or null if not found.</returns>
+        [CanBeNull]
         public virtual TRoot GetAtIndex(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int index)
             => Execute(nameof(GetAtIndex), () => GetAtIndexInternal(alias, func, index));
 
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(func)) ?? new List<TRoot>();
 
+        /// <summary>
+        ///     Find the records complying with the given function.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(Find), () => FindInternal(alias, func)) ?? new List<TRoot>();
 
+        /// <summary>
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
+        /// </summary>
+        /// <param name="func">The given function.</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
+        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions.</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(func, skip, count)) ?? new List<TRoot>();
 
+        /// <summary>
+        ///     Find the records complying with the given function. In this result-set, <paramref name="skip" /> tuples are skipped
+        ///     and then <paramref name="count" /> are taken as a result-set.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The given function.</param>
+        /// <param name="skip">Maximum tuples to skip, if <c>null</c> is specified no tuples are skipped.</param>
+        /// <param name="count">Maximum tuples to be read from the result-set, if <c>null</c> is specified all records are read.</param>
+        /// <remarks>
+        ///     <h3>Extra post condition.s</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     A list of the records satisfying the given <paramref name="func" />.
+        /// </returns>
+        [NotNull]
+        [ItemNotNull]
         public virtual IList<TRoot> Find(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
             => Execute(nameof(Find), () => FindInternal(alias, func, skip, count)) ?? new List<TRoot>();
 
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        [NotNull]
         public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
 
+        /// <summary>
+        ///     Find a set of records complying with the given function.
+        ///     Only a subset of records are returned based on <paramref name="pageSize" /> and <paramref name="pageIndex" />.
+        /// </summary>
+        /// <param name="pageIndex">The index of the page, indices start from 1.</param>
+        /// <param name="pageSize">The size of a page, must be greater then 0.</param>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <remarks>
+        ///     <h3>Extra post conditions</h3>
+        ///     <para>All elements of the resulting set fulfill <paramref name="func" />.</para>
+        /// </remarks>
+        /// <returns>
+        ///     An implementation of <see cref="IPagedList{T}" /> that holds a max. of <paramref name="pageSize" /> records.
+        /// </returns>
+        [NotNull]
         public virtual IPagedList<TRoot> FindPaged(int pageIndex, int pageSize, Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
             => Execute(nameof(FindPaged), () => FindPagedInternal(pageIndex, pageSize, alias, func)) ?? new PagedList<TRoot>(Enumerable.Empty<TRoot>(), pageIndex, pageSize, 0);
+
+        /// <summary>
+        ///     Calculates the number of records complying with the given function.
+        /// </summary>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <returns>
+        ///     Number of records that satisfying the given <paramref name="func" />.
+        /// </returns>
+        public virtual int Count(Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(Count), () => CountInternal(func));
+
+        /// <summary>
+        ///     Calculates the number of records complying with the given function.
+        /// </summary>
+        /// <param name="alias">An additional alias.</param>
+        /// <param name="func">The predicates that the data must fulfill.</param>
+        /// <returns>
+        ///     Number of records that satisfying the given <paramref name="func" />.
+        /// </returns>
+        public virtual int Count(Expression<Func<TRoot>> alias, Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => Execute(nameof(Count), () => CountInternal(alias, func));
 
         [CanBeNull]
         protected virtual TRoot GetInternal([NotNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
@@ -120,6 +264,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             => CreateQueryOver().List<TRoot>();
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
             try
@@ -134,6 +279,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
         {
             try
@@ -148,6 +294,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
             try
@@ -173,6 +320,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual IList<TRoot> FindInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func, int? skip, int? count)
         {
             try
@@ -241,6 +389,29 @@ namespace PPWCode.Vernacular.NHibernate.II
                 return new PagedList<TDto>(Enumerable.Empty<TDto>(), 1, pageSize, 0);
             }
         }
+
+        protected virtual int CountInternal([CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+            => CountInternal(null, func);
+
+        protected virtual int CountInternal([CanBeNull] Expression<Func<TRoot>> alias, [CanBeNull] Func<IQueryOver<TRoot, TRoot>, IQueryOver<TRoot, TRoot>> func)
+        {
+            try
+            {
+                IQueryOver<TRoot, TRoot> queryOver =
+                    alias != null
+                        ? CreateQueryOver(alias)
+                        : CreateQueryOver();
+                return func?.Invoke(queryOver).RowCount() ?? queryOver.RowCount();
+            }
+            catch (EmptyResultException)
+            {
+                return 0;
+            }
+        }
+
+        /// <inheritdoc />
+        protected override IEnumerable<TRoot> FindByIdsInternal(IEnumerable<TId> ids)
+            => FindInternal(qry => qry.Where(e => e.Id.IsIn((ICollection)ids)));
 
         [NotNull]
         protected virtual IQueryOver<TRoot, TRoot> CreateQueryOver()

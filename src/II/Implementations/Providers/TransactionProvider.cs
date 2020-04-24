@@ -14,35 +14,30 @@ using System.Transactions;
 
 using NHibernate;
 
+using IsolationLevel = System.Data.IsolationLevel;
+
 namespace PPWCode.Vernacular.NHibernate.II.Providers
 {
+    /// <inheritdoc />
     public class TransactionProvider : ITransactionProvider
     {
-        public void Run(ISession session, System.Data.IsolationLevel isolationLevel, Action action)
+        /// <inheritdoc />
+        public void Run(ISession session, IsolationLevel isolationLevel, Action action)
         {
             Func<int> ActionWrapper()
             {
                 return () =>
                        {
                            action.Invoke();
-                           return default(int);
+                           return default;
                        };
-            }
-
-            if (session == null)
-            {
-                throw new ArgumentNullException(nameof(session));
-            }
-
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
             }
 
             Run(session, isolationLevel, ActionWrapper());
         }
 
-        public TResult Run<TResult>(ISession session, System.Data.IsolationLevel isolationLevel, Func<TResult> func)
+        /// <inheritdoc />
+        public TResult Run<TResult>(ISession session, IsolationLevel isolationLevel, Func<TResult> func)
         {
             if (session == null)
             {

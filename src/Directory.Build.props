@@ -27,22 +27,23 @@
     <WarningsAsErrors />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <LangVersion>7.3</LangVersion>
 
     <!-- nuget package -->
     <Description>The PPWCode Vernacular NHibernate library version II</Description>
     <Product>PPWCode</Product>
     <Authors>dvdwouwe;rvdginste</Authors>
     <Company>Peopleware NV</Company>
-    <Copyright>Copyright © Peopleware NV 2014-2018</Copyright>
+    <Copyright>Copyright © Peopleware NV 2014-2020</Copyright>
 
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate.git</RepositoryUrl>
 
     <PackageTags>ppwcode vernacular nhibernate</PackageTags>
     <PackageProjectUrl>https://github.com/peopleware/net-ppwcode-vernacular-nhibernate</PackageProjectUrl>
-    <PackageIconUrl>http://peopleware.github.io/net-ppwcode-util-oddsandends/ppwcode_logo.jpg</PackageIconUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageIcon>ppwcode_logo.jpg</PackageIcon>
 
     <PackageReleaseNotes>
       <![CDATA[
@@ -70,6 +71,27 @@
           Castle.Windsor (5.0.0)
       - Add object context to AuditLogEventListener
       - Support in repositories (LinqRepository, QueryOverRepository) for EmptyResultException]]>
+4.0.0 - Rework of IRepository / Repository / LinqRepository
+        * Remove ILinqRepository interface, prevent leakage of queries outside our repository
+        * improve documentation
+        * add LoadById member to IRepository
+        * Add support for Counting records
+        * Add Async support for LinqRepository
+        * Projecting an Entity to a Dto directly
+      - HbmMapping / Auxillary
+        * Including support for indices: covering / filtering for SQLServer / PostGre
+        * Better support for many-to-many default mapping
+      - Add a TContext type to the AuditLogEventListener
+      - Upgrade packages to latest version
+        * nHibernate (5.2.7)
+        * NHibernateProfiler.Appender (5.0.5043)
+        * Firebird (7.1.1)
+        * PostgreSQL (4.1.2)
+        * SqlServer ADO.Net drivers (4.8.0)
+        * Moq (4.13.1)
+        * NUnit (3.12.0)
+        * Castle.Windsor (5.0.1)
+      - re-arrange tests (namespaces, ..)
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
@@ -85,6 +107,13 @@
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
+  <!-- include supporting files in NuGet package -->
+  <ItemGroup>
+    <None Include="../../assets/ppwcode_logo.jpg" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../NOTICE" Pack="true" PackagePath="/" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" Visible="false" />
+  </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

@@ -24,6 +24,7 @@ using PPWCode.Vernacular.Exceptions.III;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc cref="IPpwAuxiliaryDatabaseObject" />
     public abstract class PpwAuxiliaryDatabaseObject
         : AbstractAuxiliaryDatabaseObject,
           IPpwAuxiliaryDatabaseObject
@@ -38,6 +39,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             PpwHbmMapping = ppwHbmMapping;
         }
 
+        /// <inheritdoc cref="IPpwHbmMapping" />
         [NotNull]
         public IPpwHbmMapping PpwHbmMapping { get; }
 
@@ -63,6 +65,7 @@ namespace PPWCode.Vernacular.NHibernate.II
             => GetPersistentClassFor(type)?.Table.Name;
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetDiscriminatorColumnNameFor([NotNull] Type type)
         {
             return
@@ -76,6 +79,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetDiscriminatorValuesFor([NotNull] Type type)
         {
             return
@@ -93,6 +97,7 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual Column[] GetColumns<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
         {
             PropertyInfo propInfo = GetPropertyInfo(propertyLambda);
@@ -112,12 +117,14 @@ namespace PPWCode.Vernacular.NHibernate.II
         }
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetColumnNames<TSource>([NotNull] Expression<Func<TSource, object>> propertyLambda)
             => GetColumns(propertyLambda)
                 .Select(c => c.Name)
                 .ToArray();
 
         [NotNull]
+        [ItemNotNull]
         protected virtual string[] GetIdentifierColumnNames([NotNull] Type type)
         {
             PersistentClass persistentClass = GetPersistentClassFor(type);

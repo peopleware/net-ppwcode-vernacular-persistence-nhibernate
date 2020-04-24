@@ -23,6 +23,7 @@ using NHibernate.Mapping.ByCode;
 
 namespace PPWCode.Vernacular.NHibernate.II
 {
+    /// <inheritdoc />
     public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {
         protected HighLowPerTableAuxiliaryDatabaseObject([NotNull] IPpwHbmMapping ppwHbmMapping)
@@ -116,6 +117,8 @@ namespace PPWCode.Vernacular.NHibernate.II
                 script.AppendLine("GO");
                 script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL;");
                 script.AppendLine("GO");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD PRIMARY KEY ({context.EntityNameColumnName});");
+                script.AppendLine("GO");
 
                 HashSet<HbmClass> hbmClasses = new HashSet<HbmClass>(HbmClasses.Where(c => c.schema == schemaName));
                 foreach (HbmClass hbmClass in hbmClasses)
@@ -149,6 +152,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                 script.AppendLine($"  DELETE FROM {generatorTableName};");
                 script.AppendLine($"  execute statement 'ALTER TABLE {generatorTableName} ADD {context.EntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(context.Dialect)}) NOT NULL';");
                 script.AppendLine($"  execute statement 'ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL';");
+                script.AppendLine($"  execute statement 'ALTER TABLE {generatorTableName} ADD PRIMARY KEY ({context.EntityNameColumnName})';");
             }
 
             script.AppendLine("end");
@@ -169,6 +173,7 @@ namespace PPWCode.Vernacular.NHibernate.II
                 script.AppendLine($"DELETE FROM {generatorTableName};");
                 script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.EntityNameColumnName} VARCHAR({GeneratorEntityNameColumnLength(context.Dialect)}) NOT NULL;");
                 script.AppendLine($"ALTER TABLE {generatorTableName} ADD {context.TableNameColumnName} VARCHAR({GeneratorTableNameColumnLength(context.Dialect)}) NOT NULL;");
+                script.AppendLine($"ALTER TABLE {generatorTableName} ADD PRIMARY KEY ({context.EntityNameColumnName});");
 
                 HashSet<HbmClass> hbmClasses = new HashSet<HbmClass>(HbmClasses.Where(c => c.schema == schemaName));
                 foreach (HbmClass hbmClass in hbmClasses)

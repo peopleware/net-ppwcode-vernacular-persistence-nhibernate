@@ -17,6 +17,7 @@ namespace PPWCode.Vernacular.NHibernate.II
 {
     public interface INhConfiguration
     {
+        /// <inheritdoc cref="Configuration"/>
         [NotNull]
         Configuration GetConfiguration();
     }
