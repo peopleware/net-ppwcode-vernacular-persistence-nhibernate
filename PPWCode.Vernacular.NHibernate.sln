@@ -13,8 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "psake", "psake", "{90949B3E-8AD7-4771-856E-47D86A5FAD33}"
 	ProjectSection(SolutionItems) = preProject
-		..\init-psake.ps1 = ..\init-psake.ps1
-		..\psakefile.ps1 = ..\psakefile.ps1
+		init-psake.ps1 = init-psake.ps1
+		psakefile.ps1 = psakefile.ps1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.III", "src\III\PPWCode.Vernacular.NHibernate.III.csproj", "{83256CEB-BA1A-4614-9ACA-653049FFBDAC}"
@@ -37,7 +37,7 @@ ProjectSection(SolutionItems) = preProject
 	src\StyleCop-Tests.ruleset = src\StyleCop-Tests.ruleset
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Package", "Package", "{3AEF4753-C796-470B-865E-50A07A308F52}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{3AEF4753-C796-470B-865E-50A07A308F52}"
 ProjectSection(SolutionItems) = preProject
 	LICENSE = LICENSE
 	NOTICE = NOTICE
