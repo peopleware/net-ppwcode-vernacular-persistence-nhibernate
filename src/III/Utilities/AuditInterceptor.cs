@@ -49,8 +49,8 @@ namespace PPWCode.Vernacular.NHibernate.III
         private const string LastModifiedByPropertyName = "LastModifiedBy";
 
         public AuditInterceptor(
-            [NotNull] IIdentityProvider identityProvider,
-            [NotNull] ITimeProvider timeProvider,
+            [JetBrains.Annotations.NotNull] IIdentityProvider identityProvider,
+            [JetBrains.Annotations.NotNull] ITimeProvider timeProvider,
             bool useUtc)
         {
             IdentityProvider = identityProvider;
@@ -59,27 +59,27 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IIdentityProvider"/>
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public IIdentityProvider IdentityProvider { get; }
 
         /// <inheritdoc cref="ITimeProvider"/>
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public ITimeProvider TimeProvider { get; }
 
         public bool UseUtc { get; }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected ConcurrentDictionary<Property, int> IndexCache { get; } = new ConcurrentDictionary<Property, int>();
 
-        protected virtual bool CanAudit([NotNull] object entity, [NotNull] object id)
+        protected virtual bool CanAudit([JetBrains.Annotations.NotNull] object entity, [JetBrains.Annotations.NotNull] object id)
             => true;
 
         protected virtual void Set(
-            [NotNull] Type entityType,
-            [NotNull] string[] propertyNames,
-            [NotNull] object[] state,
-            [NotNull] string propertyName,
-            [NotNull] object value)
+            [JetBrains.Annotations.NotNull] Type entityType,
+            [JetBrains.Annotations.NotNull] string[] propertyNames,
+            [JetBrains.Annotations.NotNull] object[] state,
+            [JetBrains.Annotations.NotNull] string propertyName,
+            [JetBrains.Annotations.NotNull] object value)
         {
             int index = IndexCache.GetOrAdd(new Property(entityType, propertyName), k => Array.IndexOf(propertyNames, propertyName));
             if (index >= 0)
@@ -90,8 +90,8 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         protected virtual bool SetAuditInfo(
             [CanBeNull] object entity,
-            [NotNull] object[] currentState,
-            [NotNull] string[] propertyNames,
+            [JetBrains.Annotations.NotNull] object[] currentState,
+            [JetBrains.Annotations.NotNull] string[] propertyNames,
             bool onSave)
         {
             if (!(entity is IPersistentObject<T> persistentObject))
@@ -157,21 +157,21 @@ namespace PPWCode.Vernacular.NHibernate.III
 
         /// <inheritdoc />
         public override bool OnFlushDirty(
-            [NotNull] object entity,
-            [NotNull] object id,
-            [NotNull] object[] currentState,
-            [NotNull] object[] previousState,
-            [NotNull] string[] propertyNames,
-            [NotNull] IType[] types)
+            [JetBrains.Annotations.NotNull] object entity,
+            [JetBrains.Annotations.NotNull] object id,
+            [JetBrains.Annotations.NotNull] object[] currentState,
+            [JetBrains.Annotations.NotNull] object[] previousState,
+            [JetBrains.Annotations.NotNull] string[] propertyNames,
+            [JetBrains.Annotations.NotNull] IType[] types)
             => CanAudit(entity, id) && SetAuditInfo(entity, currentState, propertyNames, false);
 
         /// <inheritdoc />
         public override bool OnSave(
-            [NotNull] object entity,
-            [NotNull] object id,
-            [NotNull] object[] state,
-            [NotNull] string[] propertyNames,
-            [NotNull] IType[] types)
+            [JetBrains.Annotations.NotNull] object entity,
+            [JetBrains.Annotations.NotNull] object id,
+            [JetBrains.Annotations.NotNull] object[] state,
+            [JetBrains.Annotations.NotNull] string[] propertyNames,
+            [JetBrains.Annotations.NotNull] IType[] types)
             => CanAudit(entity, id) && SetAuditInfo(entity, state, propertyNames, true);
 
         protected struct Property : IEquatable<Property>

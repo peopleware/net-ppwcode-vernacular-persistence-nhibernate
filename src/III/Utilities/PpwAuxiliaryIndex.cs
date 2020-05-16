@@ -46,7 +46,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected virtual string Filter
             => null;
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected abstract string GetIndexName();
 
         protected abstract bool IsUnique();
@@ -55,14 +55,14 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected virtual PersistentClass GetPersistentClassFor()
             => GetPersistentClassFor(typeof(TEntity));
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual Column[] GetColumns(Expression<Func<TEntity, object>> propertyLambda)
             => base.GetColumns(propertyLambda);
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
-        protected virtual Column[] GetDiscriminatorColumnsFor([NotNull] Type type)
+        protected virtual Column[] GetDiscriminatorColumnsFor([JetBrains.Annotations.NotNull] Type type)
             => GetPersistentClassFor(type)
                    ?.Discriminator
                    ?.ColumnIterator
@@ -70,7 +70,7 @@ namespace PPWCode.Vernacular.NHibernate.III
                    .ToArray()
                ?? EmptyColumnArray;
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual string[] GetDiscriminatorValues()
             => GetDiscriminatorValuesFor(typeof(TEntity));
@@ -201,9 +201,9 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected class Context
         {
             public Context(
-                [NotNull] PpwAuxiliaryIndex<TEntity> auxiliaryDatabaseObject,
-                [NotNull] Dialect dialect,
-                [NotNull] IMapping mapping,
+                [JetBrains.Annotations.NotNull] PpwAuxiliaryIndex<TEntity> auxiliaryDatabaseObject,
+                [JetBrains.Annotations.NotNull] Dialect dialect,
+                [JetBrains.Annotations.NotNull] IMapping mapping,
                 [CanBeNull] string defaultCatalog,
                 [CanBeNull] string defaultSchema)
             {
@@ -249,13 +249,13 @@ namespace PPWCode.Vernacular.NHibernate.III
                 Filter = auxiliaryDatabaseObject.Filter;
             }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public PpwAuxiliaryIndex<TEntity> AuxiliaryDatabaseObject { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Dialect Dialect { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public IMapping Mapping { get; }
 
             [CanBeNull]
@@ -267,22 +267,22 @@ namespace PPWCode.Vernacular.NHibernate.III
             [CanBeNull]
             public string Schema { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Table Table { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public List<Column> Columns { get; }
 
             [CanBeNull]
             public List<Column> CoveringColumns { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string TableName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string IndexName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string ColumnNames { get; }
 
             [CanBeNull]

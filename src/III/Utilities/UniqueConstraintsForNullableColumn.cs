@@ -30,7 +30,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         : PpwAuxiliaryDatabaseObject
         where TEntity : class
     {
-        protected UniqueConstraintsForNullableColumn([NotNull] IPpwHbmMapping ppwHbmMapping)
+        protected UniqueConstraintsForNullableColumn([JetBrains.Annotations.NotNull] IPpwHbmMapping ppwHbmMapping)
             : base(ppwHbmMapping)
         {
         }
@@ -109,9 +109,9 @@ namespace PPWCode.Vernacular.NHibernate.III
         protected class Context
         {
             public Context(
-                [NotNull] UniqueConstraintsForNullableColumn<TEntity> auxiliaryDatabaseObject,
-                [NotNull] Dialect dialect,
-                [NotNull] IMapping mapping,
+                [JetBrains.Annotations.NotNull] UniqueConstraintsForNullableColumn<TEntity> auxiliaryDatabaseObject,
+                [JetBrains.Annotations.NotNull] Dialect dialect,
+                [JetBrains.Annotations.NotNull] IMapping mapping,
                 [CanBeNull] string defaultCatalog,
                 [CanBeNull] string defaultSchema)
             {
@@ -141,13 +141,13 @@ namespace PPWCode.Vernacular.NHibernate.III
                 QuotedColumnName = auxiliaryDatabaseObject.QuoteColumnName(Dialect, ColumnName);
             }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public UniqueConstraintsForNullableColumn<TEntity> AuxiliaryDatabaseObject { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Dialect Dialect { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public IMapping Mapping { get; }
 
             [CanBeNull]
@@ -162,22 +162,22 @@ namespace PPWCode.Vernacular.NHibernate.III
             [CanBeNull]
             public string QuotedSchemaName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Table Table { get; set; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Column Column { get; set; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string TableName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string QuotedTableName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string ColumnName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string QuotedColumnName { get; }
         }
     }

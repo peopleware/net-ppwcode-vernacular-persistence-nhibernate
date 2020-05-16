@@ -35,8 +35,8 @@ namespace PPWCode.Vernacular.NHibernate.III
           IPreInsertEventListener
     {
         /// <inheritdoc cref="IPreInsertEventListener.OnPreInsertAsync" />
-        [NotNull]
-        public virtual Task<bool> OnPreInsertAsync([NotNull] PreInsertEvent @event, CancellationToken cancellationToken)
+        [JetBrains.Annotations.NotNull]
+        public virtual Task<bool> OnPreInsertAsync([JetBrains.Annotations.NotNull] PreInsertEvent @event, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -58,15 +58,15 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPreInsertEventListener.OnPreInsert" />
-        public virtual bool OnPreInsert([NotNull] PreInsertEvent @event)
+        public virtual bool OnPreInsert([JetBrains.Annotations.NotNull] PreInsertEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;
         }
 
         /// <inheritdoc cref="IPreUpdateEventListener.OnPreUpdateAsync" />
-        [NotNull]
-        public virtual Task<bool> OnPreUpdateAsync([NotNull] PreUpdateEvent @event, CancellationToken cancellationToken)
+        [JetBrains.Annotations.NotNull]
+        public virtual Task<bool> OnPreUpdateAsync([JetBrains.Annotations.NotNull] PreUpdateEvent @event, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -88,7 +88,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPreUpdateEventListener.OnPreUpdate" />
-        public virtual bool OnPreUpdate([NotNull] PreUpdateEvent @event)
+        public virtual bool OnPreUpdate([JetBrains.Annotations.NotNull] PreUpdateEvent @event)
         {
             ValidateObject(@event.Entity);
             return false;

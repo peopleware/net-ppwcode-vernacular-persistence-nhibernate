@@ -1,9 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- target frameworks -->
-    <TargetFramework>netstandard2.0</TargetFramework>
-
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
     <Description>The PPWCode Vernacular NHibernate library version II.</Description>
@@ -11,6 +8,10 @@
 
     <!-- Stylecop -->
     <CodeAnalysisRuleSet>..\StyleCop.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_HasReferenceToSystemRuntime>true</_HasReferenceToSystemRuntime>
   </PropertyGroup>
 
   <ItemGroup>

@@ -27,7 +27,7 @@ namespace PPWCode.Vernacular.NHibernate.III
     [Serializable]
     public class PPWDriverConnectionProvider : DriverConnectionProvider
     {
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         private static readonly ILog _logger = LogManager.GetLogger<PPWDriverConnectionProvider>();
 
         /// <summary>

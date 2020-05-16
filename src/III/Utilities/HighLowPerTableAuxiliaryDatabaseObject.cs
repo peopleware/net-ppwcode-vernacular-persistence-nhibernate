@@ -26,36 +26,36 @@ namespace PPWCode.Vernacular.NHibernate.III
     /// <inheritdoc />
     public abstract class HighLowPerTableAuxiliaryDatabaseObject : PpwAuxiliaryDatabaseObject
     {
-        protected HighLowPerTableAuxiliaryDatabaseObject([NotNull] IPpwHbmMapping ppwHbmMapping)
+        protected HighLowPerTableAuxiliaryDatabaseObject([JetBrains.Annotations.NotNull] IPpwHbmMapping ppwHbmMapping)
             : base(ppwHbmMapping)
         {
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected abstract string GeneratorTableName { get; }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected abstract string GeneratorEntityNameColumnName { get; }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected abstract string GeneratorNextHiColumnName { get; }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected abstract string GeneratorTableNameColumnName { get; }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual IEnumerable<IGeneratorDef> GeneratorDefs
         {
             get { yield return Generators.HighLow; }
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual IEnumerable<string> SchemaNames
         {
             get { return HbmClasses.Select(c => c.schema).Distinct(); }
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual IEnumerable<HbmClass> HbmClasses
         {
             get
@@ -70,14 +70,14 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        protected abstract int GeneratorEntityNameColumnLength([NotNull] Dialect dialect);
+        protected abstract int GeneratorEntityNameColumnLength([JetBrains.Annotations.NotNull] Dialect dialect);
 
-        protected abstract int GeneratorTableNameColumnLength([NotNull] Dialect dialect);
+        protected abstract int GeneratorTableNameColumnLength([JetBrains.Annotations.NotNull] Dialect dialect);
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public override string SqlCreateString(
-            [NotNull] Dialect dialect,
-            [NotNull] IMapping mapping,
+            [JetBrains.Annotations.NotNull] Dialect dialect,
+            [JetBrains.Annotations.NotNull] IMapping mapping,
             [CanBeNull] string defaultCatalog,
             [CanBeNull] string defaultSchema)
         {
@@ -104,8 +104,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             return script;
         }
 
-        [NotNull]
-        public virtual string SqlCreateStringSqlServer([NotNull] Context context)
+        [JetBrains.Annotations.NotNull]
+        public virtual string SqlCreateStringSqlServer([JetBrains.Annotations.NotNull] Context context)
         {
             StringBuilder script = new StringBuilder();
             foreach (string schemaName in SchemaNames)
@@ -137,8 +137,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             return script.ToString();
         }
 
-        [NotNull]
-        public virtual string SqlCreateStringFirebird([NotNull] Context context)
+        [JetBrains.Annotations.NotNull]
+        public virtual string SqlCreateStringFirebird([JetBrains.Annotations.NotNull] Context context)
         {
             StringBuilder script = new StringBuilder();
 
@@ -159,12 +159,12 @@ namespace PPWCode.Vernacular.NHibernate.III
             return script.ToString();
         }
 
-        [NotNull]
-        public virtual string SqlCreateStringPostgreSQL([NotNull] Context context)
+        [JetBrains.Annotations.NotNull]
+        public virtual string SqlCreateStringPostgreSQL([JetBrains.Annotations.NotNull] Context context)
             => SqlCreateStringGeneric(context);
 
-        [NotNull]
-        public virtual string SqlCreateStringGeneric([NotNull] Context context)
+        [JetBrains.Annotations.NotNull]
+        public virtual string SqlCreateStringGeneric([JetBrains.Annotations.NotNull] Context context)
         {
             StringBuilder script = new StringBuilder();
             foreach (string schemaName in SchemaNames)
@@ -190,9 +190,9 @@ namespace PPWCode.Vernacular.NHibernate.III
             return script.ToString();
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public override string SqlDropString(
-            [NotNull] Dialect dialect,
+            [JetBrains.Annotations.NotNull] Dialect dialect,
             [CanBeNull] string defaultCatalog,
             [CanBeNull] string defaultSchema)
             => string.Empty;
@@ -201,9 +201,9 @@ namespace PPWCode.Vernacular.NHibernate.III
         public class Context
         {
             public Context(
-                [NotNull] HighLowPerTableAuxiliaryDatabaseObject auxiliaryDatabaseObject,
-                [NotNull] Dialect dialect,
-                [NotNull] IMapping mapping,
+                [JetBrains.Annotations.NotNull] HighLowPerTableAuxiliaryDatabaseObject auxiliaryDatabaseObject,
+                [JetBrains.Annotations.NotNull] Dialect dialect,
+                [JetBrains.Annotations.NotNull] IMapping mapping,
                 [CanBeNull] string defaultCatalog,
                 [CanBeNull] string defaultSchema)
             {
@@ -217,13 +217,13 @@ namespace PPWCode.Vernacular.NHibernate.III
                 TableNameColumnName = auxiliaryDatabaseObject.PpwHbmMapping.GetIdentifier(auxiliaryDatabaseObject.GeneratorTableNameColumnName);
             }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public HighLowPerTableAuxiliaryDatabaseObject AuxiliaryDatabaseObject { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public Dialect Dialect { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public IMapping Mapping { get; }
 
             [CanBeNull]
@@ -232,16 +232,16 @@ namespace PPWCode.Vernacular.NHibernate.III
             [CanBeNull]
             public string DefaultSchema { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string NextHiColumnName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string EntityNameColumnName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string TableNameColumnName { get; }
 
-            [NotNull]
+            [JetBrains.Annotations.NotNull]
             public string GetTableName(string schemaName)
             {
                 string quotedSchemaName = AuxiliaryDatabaseObject.QuoteSchemaName(Dialect, AuxiliaryDatabaseObject.RemoveBackTicks(schemaName));

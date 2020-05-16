@@ -12,6 +12,9 @@
     <FileVersion>$(InformationalVersion)</FileVersion>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
 
+    <!-- target frameworks -->
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+
     <!-- build paths -->
     <OutputPath>..\..\scratch\bin\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</OutputPath>
     <IntermediateOutputPath>..\..\scratch\obj\$(MSBuildProjectName)-$(Configuration)-$(Platform)\</IntermediateOutputPath>

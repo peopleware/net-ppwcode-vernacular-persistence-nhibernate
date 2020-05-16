@@ -51,8 +51,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             new ConcurrentDictionary<Type, AuditLogItem>();
 
         protected AuditLogEventListener(
-            [NotNull] IIdentityProvider identityProvider,
-            [NotNull] ITimeProvider timeProvider,
+            [JetBrains.Annotations.NotNull] IIdentityProvider identityProvider,
+            [JetBrains.Annotations.NotNull] ITimeProvider timeProvider,
             bool useUtc)
         {
             IdentityProvider = identityProvider;
@@ -61,18 +61,18 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IIdentityProvider" />
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public IIdentityProvider IdentityProvider { get; }
 
         /// <inheritdoc cref="ITimeProvider" />
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         public ITimeProvider TimeProvider { get; }
 
         public bool UseUtc { get; }
 
         /// <inheritdoc cref="IPostDeleteEventListener.OnPostDeleteAsync" />
-        [NotNull]
-        public async Task OnPostDeleteAsync([NotNull] PostDeleteEvent @event, CancellationToken cancellationToken)
+        [JetBrains.Annotations.NotNull]
+        public async Task OnPostDeleteAsync([JetBrains.Annotations.NotNull] PostDeleteEvent @event, CancellationToken cancellationToken)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
@@ -87,7 +87,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPostDeleteEventListener.OnPostDelete" />
-        public virtual void OnPostDelete([NotNull] PostDeleteEvent @event)
+        public virtual void OnPostDelete([JetBrains.Annotations.NotNull] PostDeleteEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.DELETE) == AuditLogActionEnum.DELETE)
@@ -102,8 +102,8 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPostInsertEventListener.OnPostInsertAsync" />
-        [NotNull]
-        public async Task OnPostInsertAsync([NotNull] PostInsertEvent @event, CancellationToken cancellationToken)
+        [JetBrains.Annotations.NotNull]
+        public async Task OnPostInsertAsync([JetBrains.Annotations.NotNull] PostInsertEvent @event, CancellationToken cancellationToken)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
@@ -118,7 +118,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPostInsertEventListener.OnPostInsert" />
-        public virtual void OnPostInsert([NotNull] PostInsertEvent @event)
+        public virtual void OnPostInsert([JetBrains.Annotations.NotNull] PostInsertEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.CREATE) == AuditLogActionEnum.CREATE)
@@ -133,8 +133,8 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPostUpdateEventListener.OnPostUpdateAsync" />
-        [NotNull]
-        public async Task OnPostUpdateAsync([NotNull] PostUpdateEvent @event, CancellationToken cancellationToken)
+        [JetBrains.Annotations.NotNull]
+        public async Task OnPostUpdateAsync([JetBrains.Annotations.NotNull] PostUpdateEvent @event, CancellationToken cancellationToken)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
@@ -149,7 +149,7 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         /// <inheritdoc cref="IPostUpdateEventListener.OnPostUpdate" />
-        public virtual void OnPostUpdate([NotNull] PostUpdateEvent @event)
+        public virtual void OnPostUpdate([JetBrains.Annotations.NotNull] PostUpdateEvent @event)
         {
             AuditLogItem auditLogItem = AuditLogItem.Find(@event.Entity.GetType());
             if ((auditLogItem.AuditLogAction & AuditLogActionEnum.UPDATE) == AuditLogActionEnum.UPDATE)
@@ -180,20 +180,20 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         protected abstract bool CanAuditLogFor(
-            [NotNull] AbstractEvent @event,
-            [NotNull] AuditLogItem auditLogItem,
+            [JetBrains.Annotations.NotNull] AbstractEvent @event,
+            [JetBrains.Annotations.NotNull] AuditLogItem auditLogItem,
             AuditLogActionEnum requestedLogAction);
 
         protected abstract TContext CreateContext(IPostDatabaseOperationEventArgs postDatabaseOperationEventArgs);
 
-        protected abstract void OnAddAuditEntities([NotNull] TContext context);
+        protected abstract void OnAddAuditEntities([JetBrains.Annotations.NotNull] TContext context);
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual TAuditEntity CreateAuditEntity(
-            [NotNull] string entryType,
-            [NotNull] string entityName,
-            [NotNull] string entityId,
-            [NotNull] TContext context,
+            [JetBrains.Annotations.NotNull] string entryType,
+            [JetBrains.Annotations.NotNull] string entityName,
+            [JetBrains.Annotations.NotNull] string entityId,
+            [JetBrains.Annotations.NotNull] TContext context,
             [CanBeNull] PpwAuditLog old,
             [CanBeNull] PpwAuditLog @new)
             => new TAuditEntity
@@ -208,12 +208,12 @@ namespace PPWCode.Vernacular.NHibernate.III
                    CreatedAt = UseUtc ? TimeProvider.UtcNow : TimeProvider.Now
                };
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
-            [NotNull] PostInsertEvent @event,
-            [NotNull] AuditLogItem auditLogItem,
-            [NotNull] TContext context)
+            [JetBrains.Annotations.NotNull] PostInsertEvent @event,
+            [JetBrains.Annotations.NotNull] AuditLogItem auditLogItem,
+            [JetBrains.Annotations.NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -251,12 +251,12 @@ namespace PPWCode.Vernacular.NHibernate.III
             return auditEntities;
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
-            [NotNull] PostUpdateEvent @event,
-            [NotNull] AuditLogItem auditLogItem,
-            [NotNull] TContext context)
+            [JetBrains.Annotations.NotNull] PostUpdateEvent @event,
+            [JetBrains.Annotations.NotNull] AuditLogItem auditLogItem,
+            [JetBrains.Annotations.NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -322,11 +322,11 @@ namespace PPWCode.Vernacular.NHibernate.III
             return auditLogs;
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual ICollection<TAuditEntity> GetAuditLogsFor(
-            [NotNull] PostDeleteEvent @event,
-            [NotNull] TContext context)
+            [JetBrains.Annotations.NotNull] PostDeleteEvent @event,
+            [JetBrains.Annotations.NotNull] TContext context)
         {
             string entityName = @event.Entity.GetType().Name;
             string entityId = @event.Id.ToString();
@@ -342,8 +342,8 @@ namespace PPWCode.Vernacular.NHibernate.III
         }
 
         protected virtual void SaveAuditLogs(
-            [NotNull] AbstractEvent @event,
-            [NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs)
+            [JetBrains.Annotations.NotNull] AbstractEvent @event,
+            [JetBrains.Annotations.NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs)
         {
             if (auditLogs.Count > 0)
             {
@@ -359,10 +359,10 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual async Task SaveAuditLogsAsync(
-            [NotNull] AbstractEvent @event,
-            [NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs,
+            [JetBrains.Annotations.NotNull] AbstractEvent @event,
+            [JetBrains.Annotations.NotNull] [ItemNotNull] ICollection<TAuditEntity> auditLogs,
             CancellationToken cancellationToken)
         {
             if (auditLogs.Count > 0)
@@ -380,13 +380,13 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         [ItemNotNull]
         protected virtual IEnumerable<PpwAuditLog> CreatePpwAuditLogs(
-            [NotNull] string propertyName,
+            [JetBrains.Annotations.NotNull] string propertyName,
             [CanBeNull] object value,
-            [NotNull] IType valueNHibernateType,
-            [NotNull] TContext context)
+            [JetBrains.Annotations.NotNull] IType valueNHibernateType,
+            [JetBrains.Annotations.NotNull] TContext context)
         {
             if (value != null)
             {
@@ -422,12 +422,12 @@ namespace PPWCode.Vernacular.NHibernate.III
             }
         }
 
-        [NotNull]
+        [JetBrains.Annotations.NotNull]
         protected virtual PpwAuditLog CreatePpwAuditLog(
-            [NotNull] string propertyName,
-            [NotNull] object value,
-            [NotNull] IType valueNhibernateType,
-            [NotNull] TContext context)
+            [JetBrains.Annotations.NotNull] string propertyName,
+            [JetBrains.Annotations.NotNull] object value,
+            [JetBrains.Annotations.NotNull] IType valueNhibernateType,
+            [JetBrains.Annotations.NotNull] TContext context)
             => value is DateTime dateTime
                    ? valueNhibernateType is DateType
                          ? new PpwAuditLog(propertyName, dateTime.ToString("yyyy-MM-dd"))
@@ -447,8 +447,8 @@ namespace PPWCode.Vernacular.NHibernate.III
             [CanBeNull]
             public IDictionary<string, AuditLogActionEnum> Properties { get; private set; }
 
-            [NotNull]
-            public static AuditLogItem Find([NotNull] Type t)
+            [JetBrains.Annotations.NotNull]
+            public static AuditLogItem Find([JetBrains.Annotations.NotNull] Type t)
             {
                 AuditLogItem result =
                     _domainTypes
