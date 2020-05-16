@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{788185DD-7404-47DF-AFF3-698298A6F934}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution-items", "solution-items", "{788185DD-7404-47DF-AFF3-698298A6F934}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = src\Directory.Build.props
-		StyleCop-Tests.ruleset = src\StyleCop-Tests.ruleset
-		StyleCop.ruleset = src\StyleCop.ruleset
 		version.props = src\version.props
 	EndProjectSection
 EndProject
@@ -31,18 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHiberna
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PPWCode.Vernacular.NHibernate.III.Firebird", "src\III.Firebird\PPWCode.Vernacular.NHibernate.III.Firebird.csproj", "{9A28EE76-6342-46CC-9E70-23E377C866DE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StyleCop", "StyleCop", "{D694C67A-338F-4C74-A483-AC30CBD44574}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "style-cop", "style-cop", "{D694C67A-338F-4C74-A483-AC30CBD44574}"
 ProjectSection(SolutionItems) = preProject
 	src\StyleCop.ruleset = src\StyleCop.ruleset
 	src\StyleCop-Tests.ruleset = src\StyleCop-Tests.ruleset
-EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{3AEF4753-C796-470B-865E-50A07A308F52}"
-ProjectSection(SolutionItems) = preProject
-	LICENSE = LICENSE
-	NOTICE = NOTICE
-	README.md = README.md
-	assets\ppwcode_logo.jpg = assets\ppwcode_logo.jpg
 EndProjectSection
 EndProject
 Global
