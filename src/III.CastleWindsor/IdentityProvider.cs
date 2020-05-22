@@ -18,7 +18,7 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
         /// <inheritdoc />
         public string IdentityName
             => Thread.CurrentPrincipal?.Identity?.IsAuthenticated == true
-                   ? Thread.CurrentPrincipal.Identity.Name
+                   ? Thread.CurrentPrincipal.Identity.Name ?? "Authenticated"
                    : "Not Authenticated";
     }
 }
