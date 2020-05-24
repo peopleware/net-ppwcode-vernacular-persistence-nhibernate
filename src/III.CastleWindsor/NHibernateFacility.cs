@@ -1,4 +1,4 @@
-// Copyright 2018 by PeopleWare n.v..
+﻿// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -381,7 +381,7 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                         Component
                             .For<IQueryOverCustomExpressions>()
                             .ImplementedBy(_queryOverCustomExpressions)
-                            .LifestyleSingleton());
+                            .LifeStyle.Singleton);
                 IQueryOverCustomExpressions queryOverCustomExpressions = Kernel.Resolve<IQueryOverCustomExpressions>();
                 queryOverCustomExpressions.Initialize();
             }
