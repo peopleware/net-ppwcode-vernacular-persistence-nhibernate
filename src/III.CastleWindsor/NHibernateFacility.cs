@@ -208,6 +208,7 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                     Component
                         .For<INhInterceptor>()
                         .ImplementedBy<NhInterceptor>()
+                        .IsFallback()
                         .LifeStyle.Singleton);
 
             IMappingAssemblies mappingAssemblies = Kernel.Resolve<IMappingAssemblies>();
