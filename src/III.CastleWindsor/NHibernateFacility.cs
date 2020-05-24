@@ -411,7 +411,7 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                 Kernel
                     .Register(
                         Component
-                            .For<ITimeProvider>()
+                            .For<IIdentityProvider>()
                             .ImplementedBy(_identityProvider)
                             .LifeStyle.Singleton);
             }
