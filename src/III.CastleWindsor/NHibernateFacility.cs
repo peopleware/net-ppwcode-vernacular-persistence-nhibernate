@@ -1,4 +1,4 @@
-﻿// Copyright 2018 by PeopleWare n.v..
+// Copyright 2018 by PeopleWare n.v..
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -50,6 +50,8 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
         private Type _safeEnvironmentProviderAsync;
         private Type _sessionProviderAsync;
         private Type _transactionProviderAsync;
+        private Type _identityProvider;
+        private Type _timeProvider;
         private bool _useCivilizedEventListener = true;
 
         public NHibernateFacility UseQueryOverCustomExpressions<T>()
@@ -161,6 +163,20 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
         public NHibernateFacility UseLifestyleTypeForSessions(LifestyleType lifestyleType)
         {
             _lifestyleType = lifestyleType;
+            return this;
+        }
+
+        public NHibernateFacility UseTimeProvider<T>()
+            where T : ITimeProvider
+        {
+            _timeProvider = typeof(T);
+            return this;
+        }
+
+        public NHibernateFacility UseIdentityProvider<T>()
+            where T : IIdentityProvider
+        {
+            _identityProvider = typeof(T);
             return this;
         }
 
@@ -369,7 +385,16 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                 queryOverCustomExpressions.Initialize();
             }
 
-            if (!Kernel.HasComponent(typeof(ITimeProvider)))
+            if (_timeProvider != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ITimeProvider>()
+                            .ImplementedBy(_timeProvider)
+                            .LifeStyle.Singleton);
+            }
+            else if (!Kernel.HasComponent(typeof(ITimeProvider)))
             {
                 Kernel
                     .Register(
@@ -380,7 +405,16 @@ namespace PPWCode.Vernacular.NHibernate.III.CastleWindsor
                             .LifeStyle.Singleton);
             }
 
-            if (!Kernel.HasComponent(typeof(IIdentityProvider)))
+            if (_identityProvider != null)
+            {
+                Kernel
+                    .Register(
+                        Component
+                            .For<ITimeProvider>()
+                            .ImplementedBy(_identityProvider)
+                            .LifeStyle.Singleton);
+            }
+            else if (!Kernel.HasComponent(typeof(IIdentityProvider)))
             {
                 Kernel
                     .Register(
