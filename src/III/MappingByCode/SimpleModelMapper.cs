@@ -22,6 +22,8 @@ using NHibernate;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Impl;
+using NHibernate.Type;
+using NHibernate.Util;
 
 using PPWCode.Vernacular.Exceptions.IV;
 
@@ -125,6 +127,15 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
             => true;
 
         protected virtual bool AdjustColumnForForeignGenerator
+            => false;
+
+        protected virtual bool MapDateTimeAsUtc
+            => false;
+
+        protected virtual bool MapEnumsAsString
+            => false;
+
+        protected virtual bool UseEnumNamesLength
             => false;
 
         protected virtual KeyTypeEnum PrimaryKeyType
@@ -753,6 +764,31 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
                 else
                 {
                     propertyCustomizer.Type(NHibernateUtil.StringClob);
+                }
+            }
+
+            Type memberType = member.MemberType();
+
+            // Should map DateTime as Utc?
+            if (MapDateTimeAsUtc && ((memberType == typeof(DateTime)) || (memberType == typeof(DateTime?))))
+            {
+                propertyCustomizer.Type<UtcDateTimeType>();
+            }
+
+            // special care for enum (no enum definitions with [Flags])?
+            if (MapEnumsAsString && memberType.IsEnumOrNullableEnum() && !memberType.IsDefined(typeof(FlagsAttribute), false))
+            {
+                Type enumType = memberType.IsNullable() ? memberType.NullableOf() : memberType;
+                Type enumStringType = typeof(EnumStringType<>).MakeGenericType(enumType);
+                propertyCustomizer.Type(enumStringType, null);
+                if (UseEnumNamesLength)
+                {
+                    int maxLength =
+                        enumType
+                            .GetEnumNames()
+                            .Select(n => n.Length)
+                            .Max();
+                    propertyCustomizer.Length(maxLength);
                 }
             }
         }
