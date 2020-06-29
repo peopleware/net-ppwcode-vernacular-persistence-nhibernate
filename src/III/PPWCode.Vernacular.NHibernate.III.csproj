@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PPWCode.Vernacular.Persistence.IV" Version="[1.0.0-rc010002, 2)" />
+    <PackageReference Include="PPWCode.Vernacular.Persistence.IV" Version="[1.0.0-rc010012, 2)" />
     <PackageReference Include="NHibernate" Version="[5.2.7, 6)" />
     <PackageReference Include="Iesi.Collections" Version="[4.0.4, 5)" />
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3)" />
