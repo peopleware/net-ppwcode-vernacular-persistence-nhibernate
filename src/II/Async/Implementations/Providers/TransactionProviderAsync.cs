@@ -64,7 +64,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Async.Implementations.Providers
                 throw new ArgumentNullException(nameof(lambda));
             }
 
-            if (session.Transaction.IsActive || (Transaction.Current != null))
+            if ((session.GetCurrentTransaction()?.IsActive == true) || (Transaction.Current != null))
             {
                 return await lambda(cancellationToken).ConfigureAwait(false);
             }

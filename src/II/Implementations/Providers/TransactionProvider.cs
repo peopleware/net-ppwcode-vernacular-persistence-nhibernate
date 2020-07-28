@@ -49,7 +49,7 @@ namespace PPWCode.Vernacular.NHibernate.II.Providers
                 throw new ArgumentNullException(nameof(func));
             }
 
-            if (session.Transaction.IsActive || (Transaction.Current != null))
+            if ((session.GetCurrentTransaction()?.IsActive == true) || (Transaction.Current != null))
             {
                 return func.Invoke();
             }
