@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <!-- nuget package -->
@@ -21,6 +21,7 @@
     <PackageReference Include="Remotion.Linq" Version="[2.2.0, 3)" />
     <PackageReference Include="Remotion.Linq.EagerFetching" Version="[2.2.0, 3)" />
     <PackageReference Include="Common.Logging" Version="[3.4.1, 4)" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
