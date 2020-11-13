@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>true</IsPackable>
@@ -21,11 +21,11 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="NUnit" Version="[3.12.0, 4)" />
-    <PackageReference Include="Moq" Version="4.14.5" />
-    <PackageReference Include="NHibernateProfiler.Appender" Version="5.0.5048" />
+    <PackageReference Include="Moq" Version="4.15.1" />
+    <PackageReference Include="NHibernateProfiler.Appender" Version="5.0.5051" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.7.1" />
     
-    <PackageReference Include="log4net" Version="[2.0.8, 3)" />
+    <PackageReference Include="log4net" Version="2.0.12" />
 
     <Reference Include="System.Data.DataSetExtensions" />
 

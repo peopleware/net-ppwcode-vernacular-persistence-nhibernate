@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- target frameworks -->
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
 
     <!-- nuget package -->
     <IsPackable>false</IsPackable>
@@ -12,7 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="PPWCode.Vernacular.NHibernate.II.Tests.csproj.DotSettings" />
+    <None Remove="PPWCode.Vernacular.NHibernate.II.Tests.csproj.DotSettings"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Common.Logging" Version="3.4.1"/>
+    <PackageReference Include="Common.Logging.Log4Net.Universal" Version="1.2.0"/>
+    <PackageReference Include="log4net" Version="2.0.12"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -22,10 +32,6 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="log4net" Version="[2.0.8]" />
-    <PackageReference Include="Common.Logging.Log4Net208" Version="[3.4.1, 4)" />
-
-    <ProjectReference Include="..\II.Test\PPWCode.Vernacular.NHibernate.II.Test.csproj" />
   </ItemGroup>
 
- </Project>
+</Project>
