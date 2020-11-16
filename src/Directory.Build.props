@@ -93,13 +93,18 @@
         * Castle.Windsor (5.0.1)
       - re-arrange tests (namespaces, ..)
 4.1.0 - Upgrade packages to latest version
-        * nHibernate (5.3.1)
-        * NHibernateProfiler.Appender (5.0.5047)
-        * Firebird (7.5.0)
+        * nHibernate (5.3.5)
+          ** IsActive on ITransaction should be replaced by GetCurrentTransaction()?.IsActive
+        * NHibernateProfiler.Appender (5.0.5051)
         * PostgreSQL (4.1.4)
-        * Moq (4.14.5)
+        * Moq (4.15.1)
         * System.Runtime.CompilerServices.Unsafe (4.5.4)
-        * System.Threading.Tasks.Extensions (4.5.4)]]>
+        * System.Diagnostics.DiagnosticSource (4.7.1)
+        * System.Threading.Tasks.Extensions (4.5.4)
+        * System.Data.SqlClient (4.8.2)
+        * log4net (2.0.12)
+        * Common Logging (3.4.1)
+        * use Common.Logging.Log4Net.Universal (1.0.0) package for bridge between Common.Logging an log4net]]>
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
