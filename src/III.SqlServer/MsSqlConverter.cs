@@ -93,21 +93,6 @@ namespace PPWCode.Vernacular.NHibernate.III.SqlServer
                         }
                     }
                 }
-
-                // check if one of the underlying errors indicates an update conflict
-                foreach (SqlError sqlError in sqle.Errors)
-                {
-                    // update conflict
-                    if ((sqlError.Number == 3960) || (sqlError.Number == 3961))
-                    {
-                        return new DbUpdateConflictException(
-                            sqle.Message,
-                            adoExceptionContextInfo.EntityId,
-                            adoExceptionContextInfo.EntityName,
-                            adoExceptionContextInfo.Sql,
-                            sqle);
-                    }
-                }
             }
 
             return SQLStateConverter.HandledNonSpecificException(adoExceptionContextInfo.SqlException, adoExceptionContextInfo.Message, adoExceptionContextInfo.Sql);
