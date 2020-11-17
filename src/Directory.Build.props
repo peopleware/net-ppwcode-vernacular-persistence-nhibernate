@@ -104,7 +104,8 @@
         * System.Data.SqlClient (4.8.2)
         * log4net (2.0.12)
         * Common Logging (3.4.1)
-        * use Common.Logging.Log4Net.Universal (1.0.0) package for bridge between Common.Logging an log4net]]>
+        * use Common.Logging.Log4Net.Universal (1.0.0) package for bridge between Common.Logging an log4net
+        * Castle.Windsor (5.1.0)]]>
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
