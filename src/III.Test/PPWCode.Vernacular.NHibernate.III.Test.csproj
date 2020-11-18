@@ -15,14 +15,14 @@
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
 
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="Moq" Version="4.14.5" />
-    <PackageReference Include="NHibernateProfiler.Appender" Version="5.0.5048" />
+    <PackageReference Include="Moq" Version="4.15.1" />
+    <PackageReference Include="NHibernateProfiler.Appender" Version="5.0.5051" />
     <PackageReference Include="log4net" Version="[2.0.8, 3)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.6" />
-    <PackageReference Include="PPWCode.Log4Net.Adapter" Version="1.0.0-rc010001" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.10" />
+    <PackageReference Include="PPWCode.Log4Net.Adapter" Version="[1.0.0, 2)" />
   </ItemGroup>
 
   <ItemGroup>
