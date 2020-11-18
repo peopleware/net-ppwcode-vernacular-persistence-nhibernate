@@ -98,6 +98,18 @@ namespace PPWCode.Vernacular.NHibernate.III.Firebird
                                 constraintName,
                                 null);
                     }
+
+                    case 335544451: /* Update conflicts with concurrent update */
+                    case 335544878: /* Concurrent transaction number is @1 */
+                    {
+                        return
+                            new DbUpdateConflictException(
+                                sqle.Message,
+                                adoExceptionContextInfo.EntityId,
+                                adoExceptionContextInfo.EntityName,
+                                adoExceptionContextInfo.Sql,
+                                null);
+                    }
                 }
             }
 
