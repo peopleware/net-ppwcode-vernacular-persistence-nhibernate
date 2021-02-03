@@ -126,9 +126,10 @@ namespace PPWCode.Vernacular.NHibernate.II
                     string[] segments = hbmClass.Name.Split(',');
                     string fullClassName = segments[0];
                     string tableName = RemoveBackTicks(hbmClass.table);
+                    long nextHi = GetNextHi(hbmClass);
 
                     script.AppendLine($"INSERT INTO {generatorTableName} ({context.NextHiColumnName}, {context.EntityNameColumnName}, {context.TableNameColumnName})");
-                    script.AppendLine($"VALUES (0, '{fullClassName}', '{tableName}');");
+                    script.AppendLine($"VALUES ({nextHi}, '{fullClassName}', '{tableName}');");
                 }
 
                 script.AppendLine("GO");
@@ -181,14 +182,18 @@ namespace PPWCode.Vernacular.NHibernate.II
                     string[] segments = hbmClass.Name.Split(',');
                     string fullClassName = segments[0];
                     string tableName = RemoveBackTicks(hbmClass.table);
+                    long nextHi = GetNextHi(hbmClass);
 
                     script.AppendLine($"INSERT INTO {generatorTableName} ({context.NextHiColumnName}, {context.EntityNameColumnName}, {context.TableNameColumnName})");
-                    script.AppendLine($"VALUES (0, '{fullClassName}', '{tableName}');");
+                    script.AppendLine($"VALUES ({nextHi}, '{fullClassName}', '{tableName}');");
                 }
             }
 
             return script.ToString();
         }
+
+        protected virtual long GetNextHi([NotNull] HbmClass hbmClass)
+            => 0L;
 
         [NotNull]
         public override string SqlDropString(
