@@ -20,10 +20,10 @@
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Castle.Windsor" Version="5.1.0"/>
-    <PackageReference Include="Castle.Core" Version="4.4.1"/>
+    <PackageReference Include="Castle.Windsor" Version="5.1.1" />
+    <PackageReference Include="Castle.Core" Version="4.4.1" />
 
-    <ProjectReference Include="..\II\PPWCode.Vernacular.NHibernate.II.csproj"/>
+    <ProjectReference Include="..\II\PPWCode.Vernacular.NHibernate.II.csproj" />
   </ItemGroup>
 
 </Project>
