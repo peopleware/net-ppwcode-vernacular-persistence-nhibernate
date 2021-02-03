@@ -105,7 +105,16 @@
         * log4net (2.0.12)
         * Common Logging (3.4.1)
         * use Common.Logging.Log4Net.Universal (1.0.0) package for bridge between Common.Logging an log4net
-        * Castle.Windsor (5.1.0)]]>
+        * Castle.Windsor (5.1.0)
+4.2.0 - Upgrade packages to latest version
+        * Castle.Windsor 5.1.0 -> 5.1.1
+        * FirebirdSql.Data.FirebirdClient 7.5.0 -> 7.10.1
+        * Npgsql 4.1.4 -> 5.0.3
+        * NUnit 3.12.0 -> 3.13.1
+        * Moq 4.15.1 -> 4.16.0
+        * NHibernateProfiler.Appender 5.0.5051 -> 6.0.6019
+        * System.Diagnostics.DiagnosticSource 4.7.1 -> 5.0.1
+      - Introduce GetNextHi() in class HighLowPerTableAuxiliaryDatabaseObject]]>
     </PackageReleaseNotes>
 
     <!-- SourceLink support -->
