@@ -866,8 +866,8 @@ namespace PPWCode.Vernacular.NHibernate.III.MappingByCode
                 collectionPropertiesCustomizer.Key(
                     k =>
                     {
-                        string keyColumnName = GetKeyColumnName(ForeignKeyType, member.Owner().Name, null);
-                        k.Column(keyColumnName);
+                        k.Column(GetKeyColumnName(ForeignKeyType, member.Owner().Name, null));
+                        k.ForeignKey($"FK_{GetTableNameForManyToMany(modelInspector, member, false)}_{GetKeyColumnName(ForeignKeyType, member.Owner().Name, false)}");
                     });
             }
             else if (modelInspector.IsSet(member.LocalMember)
